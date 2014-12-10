@@ -2,5 +2,28 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="manager.cpp" />
+    <ClCompile Include="proxy.cpp" />
+    <ClCompile Include="codebase\server.cpp">
+      <Filter>codebase</Filter>
+    </ClCompile>
+    <ClCompile Include="codebase\session.cpp">
+      <Filter>codebase</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="manager.h" />
+    <ClInclude Include="proxy.h" />
+    <ClInclude Include="codebase\server.h">
+      <Filter>codebase</Filter>
+    </ClInclude>
+    <ClInclude Include="codebase\session.h">
+      <Filter>codebase</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="codebase">
+      <UniqueIdentifier>{9f369a13-5908-41a9-863b-85a2bb945264}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

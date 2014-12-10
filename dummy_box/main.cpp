@@ -1,5 +1,10 @@
-#include <json/json.h>
+#include "box.h"
+#include "json/json.h"
+#include <vector>
 #include <cstdio>
+
+
+#include <boost/thread.hpp>
 
 int main(int argc, char** argv) {
 
@@ -32,17 +37,47 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    try
+    {
+        IOService io_service;
 
-    for (int i = 0, len = root.size(); i < len; ++i) {
-        const Json::Value& item = root[i];
-        const Json::Value& cloud = item["cloud"];
+        std::vector<Box> box_list;
+        for (int i = 0, len = root.size(); i < len; ++i) {
+            const Json::Value& item = root[i];
+            const Json::Value& cloud = item["cloud"];
 
-        printf("----------------------------------------------------------------\n");
-        printf("id %s\n", item["id"]);
-        printf("cloud::host %s\n", cloud["host"].asCString());
-        printf("cloud::port %d\n", cloud["port"].asInt());
+            const char* id = item["id"].asCString();
+            const char* host = cloud["host"].asCString();
+            const int   port = cloud["port"].asInt();
+
+            char sport[10];
+            sprintf(sport, "%d", port);
+
+            Tcp::resolver resolver(io_service);
+            Tcp::resolver::query query(host, sport);
+            Tcp::resolver::iterator iterator = resolver.resolve(query);
+
+            box_list.push_back(Box(io_service, iterator));
+        }
+
+        boost::thread t(boost::bind(&boost::asio::io_service::run, &io_service));
+
+        char line[1024 + 1];
+        while (std::cin.getline(line, 1024 + 1)) {
+            box_list[0].Write(line);
+        }
+
+        auto itr = box_list.begin();
+        auto end = box_list.end();
+        for (; itr != end; ++itr) {
+            itr->Close();
+        }
+        t.join();
     }
-    printf("----------------------------------------------------------------\n");
+    catch (std::exception& e)
+    {
+        std::cerr << "Exception: " << e.what() << "\n";
+    }
 
     return 0;
 }

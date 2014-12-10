@@ -1,12 +1,12 @@
 {
   "USER": {
-    "USER-ID-00": [],
-	"USER-ID-01": [],
-	"USER-ID-02": []
+    "USER-ID-00": ["BOX-ID-00", "BOX-ID-01"],
+    "USER-ID-01": ["BOX-ID-02"],
+    "USER-ID-02": ["BOX-ID-02"]
   },
   "BOX": {
     "BOX-ID-00": {"host": "localhost", "port": 8080},
-	"BOX-ID-01": {"host": "localhost", "port": 8080},
-	"BOX-ID-02": {"host": "localhost", "port": 8080}
+    "BOX-ID-01": {"host": "localhost", "port": 8081},
+    "BOX-ID-02": {"host": "localhost", "port": 8082}
   }
 }

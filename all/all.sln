@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(gyp)", "(gyp)", "{1A3E7631
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_box", "..\dummy_box\dummy_box.vcxproj", "{E17D6C06-AB84-4321-B782-3DF3626A549D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_client", "..\dummy_client\dummy_client.vcxproj", "{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -75,6 +77,10 @@ Global
 		{E17D6C06-AB84-4321-B782-3DF3626A549D}.Debug|Win32.Build.0 = Debug|Win32
 		{E17D6C06-AB84-4321-B782-3DF3626A549D}.Release|Win32.ActiveCfg = Release|Win32
 		{E17D6C06-AB84-4321-B782-3DF3626A549D}.Release|Win32.Build.0 = Release|Win32
+		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Debug|Win32.Build.0 = Debug|Win32
+		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Release|Win32.ActiveCfg = Release|Win32
+		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
