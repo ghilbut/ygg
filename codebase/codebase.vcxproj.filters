@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="boost_fwd.h" />
+    <ClInclude Include="object.h" />
+    <ClInclude Include="object_ref.h" />
+    <ClInclude Include="net\util.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net\tcp_client_impl.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net\tcp_client.h">
+      <Filter>net</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="object.cpp" />
+    <ClCompile Include="object_ref.cpp" />
+    <ClCompile Include="net\util.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\tcp_client_impl.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="net">
+      <UniqueIdentifier>{c583dec2-bc21-4485-b1d8-758ce797bc1c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

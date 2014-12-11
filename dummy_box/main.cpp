@@ -1,5 +1,6 @@
 #include "box.h"
-#include "json/json.h"
+#include "impl/box_desc.h"
+#include <json/json.h>
 #include <vector>
 #include <cstdio>
 
@@ -42,22 +43,16 @@ int main(int argc, char** argv) {
         IOService io_service;
 
         std::vector<Box> box_list;
-        for (int i = 0, len = root.size(); i < len; ++i) {
-            const Json::Value& item = root[i];
-            const Json::Value& cloud = item["cloud"];
+        const Json::Value items = root.get("items", Json::Value::null);
+        for (int i = 0, len = items.size(); i < len; ++i) {
 
-            const char* id = item["id"].asCString();
-            const char* host = cloud["host"].asCString();
-            const int   port = cloud["port"].asInt();
+            Json::FastWriter writer;
+            std::string json = writer.write(items[i]);
 
-            char sport[10];
-            sprintf(sport, "%d", port);
-
-            Tcp::resolver resolver(io_service);
-            Tcp::resolver::query query(host, sport);
-            Tcp::resolver::iterator iterator = resolver.resolve(query);
-
-            box_list.push_back(Box(io_service, iterator));
+            BoxDesc desc(json);
+            if (!desc.IsEmpty()) {
+                box_list.push_back(Box(io_service, desc));
+            }
         }
 
         boost::thread t(boost::bind(&boost::asio::io_service::run, &io_service));

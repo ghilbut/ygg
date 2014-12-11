@@ -2,32 +2,23 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="codebase\object.cpp">
-      <Filter>codebase</Filter>
-    </ClCompile>
-    <ClCompile Include="codebase\object_ref.cpp">
-      <Filter>codebase</Filter>
-    </ClCompile>
     <ClCompile Include="impl\box_impl.cpp">
+      <Filter>impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\box_desc.cpp">
       <Filter>impl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="box.h" />
-    <ClInclude Include="codebase\object_ref.h">
-      <Filter>codebase</Filter>
-    </ClInclude>
-    <ClInclude Include="codebase\object.h">
-      <Filter>codebase</Filter>
-    </ClInclude>
     <ClInclude Include="impl\box_impl.h">
+      <Filter>impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\box_desc.h">
       <Filter>impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="codebase">
-      <UniqueIdentifier>{eaabf8cf-6169-4639-8858-afa308826ee6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="impl">
       <UniqueIdentifier>{01ebecdc-203b-4e6a-83c5-06344babf925}</UniqueIdentifier>
     </Filter>

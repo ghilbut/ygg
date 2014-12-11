@@ -1,40 +1,24 @@
 #ifndef YGG_DUMMY_BOX_BOX_IMPL_H_
 #define YGG_DUMMY_BOX_BOX_IMPL_H_
 
+#include "box_desc.h"
 #include "codebase/object.h"
-#include <boost/asio.hpp>
-#include <deque>
-#include <string>
-
-typedef boost::asio::io_service IOService;
-typedef boost::asio::ip::tcp Tcp;
+#include "codebase/net/tcp_client.h"
 
 
-class BoxImpl : public codebase::Object {
+class BoxImpl : public codebase::Object, public codebase::net::TcpClient {
 public:
-    BoxImpl(IOService& io_service, Tcp::resolver::iterator endpoint_iterator);
+    BoxImpl(IOService& io_service, BoxDesc& desc);
     ~BoxImpl();
 
-    void Write(const std::string& text);
-    void Close();
+protected:
+    virtual void OnConnect(const boost::system::error_code& error);
+    virtual void OnError(const boost::system::error_code& error);
+    virtual void OnRecv(const std::string& data);
+    virtual void OnClosed();
 
 private:
-    void handle_connect(const boost::system::error_code& error);
-    void handle_read_size(const boost::system::error_code& error);
-    void handle_read_data(const boost::system::error_code& error);
-    void handle_write(const boost::system::error_code& error);
-
-    void do_read();
-    void do_write(const std::string& text);
-    void do_close();
-
-private:
-    IOService& io_service_;
-    Tcp::socket socket_;
-
-    uint32_t read_size_;
-    std::string read_buffer_;
-    std::deque<std::string> write_q_;
+    const BoxDesc desc_;
 };
 
 #endif  // YGG_DUMMY_BOX_BOX_IMPL_H_
