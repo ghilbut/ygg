@@ -2,5 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="impl\box_desc.cpp">
+      <Filter>impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\box_impl.cpp">
+      <Filter>impl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="box.h" />
+    <ClInclude Include="impl\box_desc.h">
+      <Filter>impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\box_impl.h">
+      <Filter>impl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="impl">
+      <UniqueIdentifier>{2b4b75ad-4e9a-42d2-9642-b560b62db05d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

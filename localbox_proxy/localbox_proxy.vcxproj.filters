@@ -10,6 +10,17 @@
     <ClCompile Include="codebase\session.cpp">
       <Filter>codebase</Filter>
     </ClCompile>
+    <ClCompile Include="http\http_websocket.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="http\http_server.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="localbox_manager.cpp" />
+    <ClCompile Include="localbox.cpp" />
+    <ClCompile Include="impl\localbox_desc_impl.cpp">
+      <Filter>impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="manager.h" />
@@ -20,10 +31,31 @@
     <ClInclude Include="codebase\session.h">
       <Filter>codebase</Filter>
     </ClInclude>
+    <ClInclude Include="http\http_websocket.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\http_server.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="http\http_server_delegate.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="localbox_manager.h" />
+    <ClInclude Include="localbox.h" />
+    <ClInclude Include="localbox_desc.h" />
+    <ClInclude Include="impl\localbox_desc_impl.h">
+      <Filter>impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="codebase">
       <UniqueIdentifier>{9f369a13-5908-41a9-863b-85a2bb945264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="http">
+      <UniqueIdentifier>{e1376608-8188-4290-8342-aa86a31cb3ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl">
+      <UniqueIdentifier>{50aac807-06a4-4a1b-854d-011341cf08fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

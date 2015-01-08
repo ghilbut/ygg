@@ -76,9 +76,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="boost_fwd.h" />
     <ClInclude Include="net\tcp_client.h" />
     <ClInclude Include="net\tcp_client_impl.h" />

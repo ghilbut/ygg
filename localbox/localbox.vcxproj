@@ -53,8 +53,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\third_party\mongoose-5.5;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -71,8 +72,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\third_party\mongoose-5.5;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -83,7 +85,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="impl\box_desc.cpp" />
+    <ClCompile Include="impl\box_impl.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\codebase\codebase.vcxproj">
+      <Project>{7958fc0e-6b1e-4e3d-830a-a7b6a75fac78}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\jsoncpp\jsoncpp.vcxproj">
+      <Project>{3048ec15-ad21-4316-93a7-0616330cf347}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\mongoose\mongoose.vcxproj">
+      <Project>{44fa95a4-0cdf-44a0-87a1-05cbabc10e4e}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="box.h" />
+    <ClInclude Include="impl\box_desc.h" />
+    <ClInclude Include="impl\box_impl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

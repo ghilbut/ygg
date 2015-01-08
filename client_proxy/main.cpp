@@ -1,12 +1,33 @@
 #include "mongoose.h"
 
+static void handle_request(struct mg_connection *conn) {
+    mg_printf_data(conn, "Hello! Requested URI is [%s]", conn->uri);
+}
+
+static void handle_websocket(struct mg_connection *conn) {
+    if (conn->content_len > 0) {
+        mg_websocket_write(conn, 1, conn->content, conn->content_len);
+    }
+}
+
 static int ev_handler(struct mg_connection *conn, enum mg_event ev) {
     switch (ev) {
-    case MG_AUTH: return MG_TRUE;
     case MG_REQUEST:
-        mg_printf_data(conn, "Hello! Requested URI is [%s]", conn->uri);
+        if (conn->is_websocket) {
+            handle_websocket(conn);
+        }
+        else {
+            handle_request(conn);
+        }
         return MG_TRUE;
-    default: return MG_FALSE;
+    case MG_WS_CONNECT:
+        return MG_FALSE;
+    case MG_CLOSE:
+        return MG_TRUE;
+    case MG_AUTH: 
+        return MG_TRUE;
+    default: 
+        return MG_FALSE;
     }
 }
 

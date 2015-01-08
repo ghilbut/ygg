@@ -1,10 +1,14 @@
 #include "manager.h"
+#include "localbox_manager.h"
 #include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <vector>
 
 
 int main() {
+
+    LocalBoxManager m;
+    m.Start();
 
     try {
         IOService io_service;
@@ -14,6 +18,7 @@ int main() {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
     
+    m.Stop();
 
     return 0;
 }
