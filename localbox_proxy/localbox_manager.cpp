@@ -62,8 +62,8 @@ bool LocalBoxManager::regLocalBox(HttpWebsocket* ws, const std::string& text) {
 
 
 
-	LocalBox* box = LocalBox::New(ws, text);
-	if (box == 0) {
+	LocalBox::Ptr box = LocalBox::New(ws, text);
+	if (box.get() == 0) {
 		// TODO(ghilbut): notify cause of construction failed on websocket
 		// ws->Close();
 		delete ws;
@@ -81,6 +81,5 @@ void LocalBoxManager::unregLocalBox(HttpWebsocket* ws) {
 		return;
 	}
 
-	LocalBox::Delete(box->second);
 	localboxTable_.erase(box);
 }

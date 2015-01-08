@@ -8,6 +8,7 @@
 
 
 class LocalBox;
+typedef boost::shared_ptr<LocalBox> LocalBoxPtr;
 
 class LocalBoxManager : public HttpServerDelegate {
 public:
@@ -33,7 +34,7 @@ private:
 private:
 	// NOTE(ghilbut): check timeout from ready time
 	std::map<HttpWebsocket*, time_t> readyTable_;
-	std::map<HttpWebsocket*, LocalBox*> localboxTable_;
+	std::map<HttpWebsocket*, LocalBoxPtr> localboxTable_;
     HttpServer server_;
 };
 

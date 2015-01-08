@@ -3,7 +3,7 @@
 #include <json/json.h>
 
 
-LocalBox* LocalBox::New(HttpWebsocket* ws, const std::string& json) {
+LocalBox::Ptr LocalBox::New(HttpWebsocket* ws, const std::string& json) {
 
 	LocalBoxDesc desc(json);
 	if (desc.IsEmpty()) {
@@ -11,7 +11,7 @@ LocalBox* LocalBox::New(HttpWebsocket* ws, const std::string& json) {
 		return 0;
 	}
 
-	return (new LocalBox(desc, ws));
+	return Ptr(new LocalBox(desc, ws), &LocalBox::Delete);
 }
 
 void LocalBox::Delete(LocalBox* box) {
