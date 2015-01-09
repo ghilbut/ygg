@@ -14,9 +14,9 @@
     <ClCompile Include="codebase\server.cpp" />
     <ClCompile Include="codebase\session.cpp" />
     <ClCompile Include="http\http_server.cpp" />
-    <ClCompile Include="http\http_websocket.cpp" />
+    <ClCompile Include="impl\http\http_websocket_impl.cpp" />
     <ClCompile Include="impl\localbox_desc_impl.cpp" />
-    <ClCompile Include="localbox.cpp" />
+    <ClCompile Include="impl\localbox_impl.cpp" />
     <ClCompile Include="localbox_manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
@@ -28,7 +28,9 @@
     <ClInclude Include="http\http_server.h" />
     <ClInclude Include="http\http_server_delegate.h" />
     <ClInclude Include="http\http_websocket.h" />
+    <ClInclude Include="impl\http\http_websocket_impl.h" />
     <ClInclude Include="impl\localbox_desc_impl.h" />
+    <ClInclude Include="impl\localbox_impl.h" />
     <ClInclude Include="localbox.h" />
     <ClInclude Include="localbox_desc.h" />
     <ClInclude Include="localbox_manager.h" />

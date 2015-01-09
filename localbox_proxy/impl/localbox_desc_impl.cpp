@@ -4,92 +4,62 @@
 #include <cassert>
 
 
-LocalBoxDesc::LocalBoxDesc() 
-	: impl_(0) {
-	// nothing
-}
-
 LocalBoxDesc::LocalBoxDesc(const std::string& json)
 	: impl_(Impl::New(json)) {
 	// nothing
 }
 
-LocalBoxDesc::LocalBoxDesc(const LocalBoxDesc& other) {
-	other.impl_->AddRef();
-}
-
-LocalBoxDesc::~LocalBoxDesc() {
-	impl_->Release();
+LocalBoxDesc::LocalBoxDesc(const LocalBoxDesc& other)
+    : impl_(other.impl_) {
+	
 }
 
 LocalBoxDesc& LocalBoxDesc::operator= (const LocalBoxDesc& other) {
-	if (impl_ != other.impl_) {
-		other.impl_->AddRef();
-		impl_->Release();
-		impl_ = other.impl_;
-	}
+    impl_ = other.impl_;
 	return *this;
 }
 
-bool LocalBoxDesc::operator== (const LocalBoxDesc& other) {
+bool LocalBoxDesc::operator== (const LocalBoxDesc& other) const {
 	return (impl_ == other.impl_);
 }
 
-bool LocalBoxDesc::operator!= (const LocalBoxDesc& other) {
+bool LocalBoxDesc::operator!= (const LocalBoxDesc& other) const {
 	return (impl_ != other.impl_);
 }
 
-bool LocalBoxDesc::IsEmpty() const {
-	return (impl_ == 0);
+bool LocalBoxDesc::IsNull() const {
+	return (impl_ == nullptr);
 }
 
 const char* LocalBoxDesc::id() const {
-	assert(impl_ != 0);
+	assert(impl_ != nullptr);
 	return impl_->id();
 }
 
 
-LocalBoxDesc::Impl::Impl(const std::string& json)
-	: invalid_(true)
-	, ref_count_(1) {
+LocalBoxDesc::Impl::Ptr LocalBoxDesc::Impl::New(const std::string& json) {
 
-	Json::Value root;
-	Json::Reader reader;
-	if (!reader.parse(json, root, false) || !root.isObject()) {
-		// TODO(ghilbut): send error on websockt
-		return;
-	}
+    Json::Value root;
+    Json::Reader reader;
+    if (!reader.parse(json, root, false) || !root.isObject()) {
+        // TODO(ghilbut): send error on websockt
+        return nullptr;
+    }
 
-	LocalBoxDesc* desc = new LocalBoxDesc();
+    Ptr self(new Impl(), &Impl::Delete);
 
-	Json::Value v = root.get("id", Json::nullValue);
-	if (!v.isString()) {
-		// TODO(ghilbut): send error on websockt
-		return;
-	}
-	id_ = v.asString();
+    Json::Value v = root.get("id", Json::nullValue);
+    if (!v.isString()) {
+        // TODO(ghilbut): send error on websockt
+        return nullptr;
+    }
+    self->id_ = v.asString();
 
-	invalid_ = false;
+    return self;
 }
 
-LocalBoxDesc::Impl* LocalBoxDesc::Impl::New(const std::string& json) {
-
-	Impl* self = new Impl(json);
-	if (self->invalid_) {
-		delete self;
-	}
-	return self;
-}
-
-int LocalBoxDesc::Impl::AddRef() const {
-	return ++ref_count_;
-}
-
-void LocalBoxDesc::Impl::Release() const {
-	--ref_count_;
-	if (ref_count_ < 1) {
-		delete this;
-	}
+void LocalBoxDesc::Impl::Delete(Impl* impl) {
+    delete impl;
 }
 
 const char* LocalBoxDesc::Impl::id() const {

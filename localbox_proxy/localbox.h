@@ -9,21 +9,23 @@
 class HttpWebsocket;
 
 class LocalBox {
-	typedef boost::shared_ptr<LocalBox> Ptr;
 public:
-	
-	static Ptr New(HttpWebsocket* ws, const std::string& json);
+    LocalBox() {}
+    ~LocalBox() {}
+
+    explicit LocalBox(const LocalBox& other);
+    LocalBox(const std::string& json, HttpWebsocket &ws);
+
+    LocalBox& operator= (const LocalBox& other);
+    bool operator== (const LocalBox& other) const;
+    bool operator!= (const LocalBox& other) const;
+
+    bool IsNull() const;
+
 
 private:
-	LocalBox(const LocalBoxDesc& desc, HttpWebsocket* ws);
-	~LocalBox();
-
-	static void Delete(LocalBox* box);
-
-private:
-	const LocalBoxDesc desc_;
-	HttpWebsocket* ws_;
-	
+    class Impl;
+    boost::shared_ptr<Impl> impl_;
 };
 
 #endif  // LOCALBOX_PROXY_LOCALBOX_H_

@@ -1,27 +1,25 @@
-#ifndef LOCALBOX_PROXY_LOCALBOX_DESC_IMPL_H_
-#define LOCALBOX_PROXY_LOCALBOX_DESC_IMPL_H_
+#ifndef LOCALBOX_PROXY_IMPL_LOCALBOX_DESC_IMPL_H_
+#define LOCALBOX_PROXY_IMPL_LOCALBOX_DESC_IMPL_H_
 
-#include <boost/atomic.hpp>
+#include <boost/noncopyable.hpp>
 #include <string>
 
 
-class LocalBoxDesc::Impl {
+class LocalBoxDesc::Impl : public boost::noncopyable {
 private:
-	Impl(const std::string& json);
-	~Impl() {}
-public:
-	static Impl* New(const std::string& json);
+    Impl() {}
+    ~Impl() {}
 
-	int AddRef() const;
-	void Release() const;
+public:
+    typedef boost::shared_ptr<Impl> Ptr;
+	static Ptr New(const std::string& json);
+    static void Delete(Impl* impl);
 
 	const char* id() const;
 
 
 private:
-	bool invalid_;
-	mutable boost::atomic_int ref_count_;
 	std::string id_;
 };
 
-#endif  // LOCALBOX_PROXY_LOCALBOX_DESC_IMPL_H_
+#endif  // LOCALBOX_PROXY_IMPL_LOCALBOX_DESC_IMPL_H_

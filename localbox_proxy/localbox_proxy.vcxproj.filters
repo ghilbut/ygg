@@ -10,16 +10,18 @@
     <ClCompile Include="codebase\session.cpp">
       <Filter>codebase</Filter>
     </ClCompile>
-    <ClCompile Include="http\http_websocket.cpp">
-      <Filter>http</Filter>
-    </ClCompile>
     <ClCompile Include="http\http_server.cpp">
       <Filter>http</Filter>
     </ClCompile>
     <ClCompile Include="localbox_manager.cpp" />
-    <ClCompile Include="localbox.cpp" />
     <ClCompile Include="impl\localbox_desc_impl.cpp">
       <Filter>impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\localbox_impl.cpp">
+      <Filter>impl</Filter>
+    </ClCompile>
+    <ClCompile Include="impl\http\http_websocket_impl.cpp">
+      <Filter>impl\http</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +48,12 @@
     <ClInclude Include="impl\localbox_desc_impl.h">
       <Filter>impl</Filter>
     </ClInclude>
+    <ClInclude Include="impl\localbox_impl.h">
+      <Filter>impl</Filter>
+    </ClInclude>
+    <ClInclude Include="impl\http\http_websocket_impl.h">
+      <Filter>impl\http</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="codebase">
@@ -56,6 +64,9 @@
     </Filter>
     <Filter Include="impl">
       <UniqueIdentifier>{50aac807-06a4-4a1b-854d-011341cf08fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="impl\http">
+      <UniqueIdentifier>{796af350-06e6-4f56-83ca-7c02ddaf82c6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

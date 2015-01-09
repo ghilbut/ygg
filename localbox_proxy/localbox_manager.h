@@ -20,21 +20,21 @@ public:
 
     // HttpServerDelegate
     virtual void OnRequest(void);
-    virtual void OnConnect(HttpWebsocket *ws);
-    virtual void OnTextMessage(HttpWebsocket *ws, const std::string& text);
-    virtual void OnClose(HttpWebsocket *ws);
+    virtual void OnConnect(HttpWebsocket &ws);
+    virtual void OnTextMessage(HttpWebsocket &ws, const std::string &text);
+    virtual void OnClose(HttpWebsocket &ws);
 
 
 private:
-	bool regLocalBox(HttpWebsocket* ws, const std::string& text);
-	void unregLocalBox(HttpWebsocket* ws);
+	bool regLocalBox(HttpWebsocket &ws, const std::string &text);
+	void unregLocalBox(HttpWebsocket &ws);
 
 
 
 private:
 	// NOTE(ghilbut): check timeout from ready time
-	std::map<HttpWebsocket*, time_t> readyTable_;
-	std::map<HttpWebsocket*, LocalBoxPtr> localboxTable_;
+	std::map<HttpWebsocket, time_t> readyTable_;
+	std::map<HttpWebsocket, LocalBox> localboxTable_;
     HttpServer server_;
 };
 

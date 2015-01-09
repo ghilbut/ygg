@@ -25,17 +25,19 @@ void LocalBoxManager::OnRequest(void) {
 
 }
 
-void LocalBoxManager::OnConnect(HttpWebsocket *ws) {
+void LocalBoxManager::OnConnect(HttpWebsocket &ws) {
 	// TODO(ghilbut): check timeout from connection to running state
 	readyTable_[ws] = time(0);
 }
 
-void LocalBoxManager::OnTextMessage(HttpWebsocket *ws, const std::string& text) {
-    ws->WriteText("ECHO: " + text);
+void LocalBoxManager::OnTextMessage(HttpWebsocket &ws, const std::string &text) {
+    ws.WriteText("ECHO: " + text);
 
 	const size_t erased = readyTable_.erase(ws);
 	if (erased == 1) {
-		regLocalBox(ws, text);
+        if (!regLocalBox(ws, text)) {
+            ws.Close();
+        }
 		return;
 	}
 
@@ -45,7 +47,7 @@ void LocalBoxManager::OnTextMessage(HttpWebsocket *ws, const std::string& text) 
 	}
 }
 
-void LocalBoxManager::OnClose(HttpWebsocket *ws) {
+void LocalBoxManager::OnClose(HttpWebsocket &ws) {
 
 	auto ready = readyTable_.find(ws);
 	if (ready != readyTable_.end()) {
@@ -58,15 +60,11 @@ void LocalBoxManager::OnClose(HttpWebsocket *ws) {
 
 
 
-bool LocalBoxManager::regLocalBox(HttpWebsocket* ws, const std::string& text) {
+bool LocalBoxManager::regLocalBox(HttpWebsocket &ws, const std::string &text) {
 
-
-
-	LocalBox::Ptr box = LocalBox::New(ws, text);
-	if (box.get() == 0) {
+    LocalBox box(text, ws);
+	if (box.IsNull()) {
 		// TODO(ghilbut): notify cause of construction failed on websocket
-		// ws->Close();
-		delete ws;
 		return false;
 	}
 	
@@ -74,7 +72,7 @@ bool LocalBoxManager::regLocalBox(HttpWebsocket* ws, const std::string& text) {
 	return true;
 }
 
-void LocalBoxManager::unregLocalBox(HttpWebsocket* ws) {
+void LocalBoxManager::unregLocalBox(HttpWebsocket &ws) {
 
 	auto box = localboxTable_.find(ws);
 	if (box == localboxTable_.end()) {
