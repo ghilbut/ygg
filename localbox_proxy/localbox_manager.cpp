@@ -1,6 +1,6 @@
 #include "localbox_manager.h"
 #include "localbox.h"
-#include "http/http_websocket.h"
+#include "codebase/net/http/http_websocket.h"
 
 
 LocalBoxManager::LocalBoxManager()
@@ -13,7 +13,7 @@ LocalBoxManager::~LocalBoxManager() {
 }
 
 void LocalBoxManager::Start() {
-    server_.Start(8080);
+    server_.Start(8070);
 }
 
 void LocalBoxManager::Stop() {
@@ -25,12 +25,12 @@ void LocalBoxManager::OnRequest(void) {
 
 }
 
-void LocalBoxManager::OnConnect(HttpWebsocket &ws) {
+void LocalBoxManager::OnConnect(codebase::HttpWebsocket &ws) {
 	// TODO(ghilbut): check timeout from connection to running state
 	readyTable_[ws] = time(0);
 }
 
-void LocalBoxManager::OnTextMessage(HttpWebsocket &ws, const std::string &text) {
+void LocalBoxManager::OnTextMessage(codebase::HttpWebsocket &ws, const std::string &text) {
     ws.WriteText("ECHO: " + text);
 
 	const size_t erased = readyTable_.erase(ws);
@@ -47,7 +47,7 @@ void LocalBoxManager::OnTextMessage(HttpWebsocket &ws, const std::string &text) 
 	}
 }
 
-void LocalBoxManager::OnClose(HttpWebsocket &ws) {
+void LocalBoxManager::OnClose(codebase::HttpWebsocket &ws) {
 
 	auto ready = readyTable_.find(ws);
 	if (ready != readyTable_.end()) {
@@ -60,10 +60,10 @@ void LocalBoxManager::OnClose(HttpWebsocket &ws) {
 
 
 
-bool LocalBoxManager::regLocalBox(HttpWebsocket &ws, const std::string &text) {
+bool LocalBoxManager::regLocalBox(codebase::HttpWebsocket &ws, const std::string &text) {
 
     LocalBox box(text, ws);
-	if (box.IsNull()) {
+	if (box == nullptr) {
 		// TODO(ghilbut): notify cause of construction failed on websocket
 		return false;
 	}
@@ -72,12 +72,12 @@ bool LocalBoxManager::regLocalBox(HttpWebsocket &ws, const std::string &text) {
 	return true;
 }
 
-void LocalBoxManager::unregLocalBox(HttpWebsocket &ws) {
+void LocalBoxManager::unregLocalBox(codebase::HttpWebsocket &ws) {
 
 	auto box = localboxTable_.find(ws);
 	if (box == localboxTable_.end()) {
 		return;
 	}
 
-	localboxTable_.erase(box);
+	localboxTable_.erase(ws);
 }

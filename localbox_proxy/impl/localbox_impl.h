@@ -1,26 +1,25 @@
 #ifndef LOCALBOX_PROXY_IMPL_LOCALBOX_IMPL_H_
 #define LOCALBOX_PROXY_IMPL_LOCALBOX_IMPL_H_
 
-#include "http/http_websocket.h"
+#include "http.h"
 #include "localbox_desc.h"
-#include <boost/noncopyable.hpp>
+#include "codebase/net/http/http_websocket.h"
+#include "codebase/object_impl.h"
 #include <string>
 
 
-class LocalBox::Impl : public boost::noncopyable {
-private:
-    Impl(const LocalBoxDesc& desc, HttpWebsocket &ws);
-    ~Impl() {}
+class LocalBox::Impl : public Object::Impl {
+	Impl(const LocalBoxDesc &desc, codebase::HttpWebsocket &ws);
+	~Impl() {}
 
 public:
-    typedef boost::shared_ptr<Impl> Ptr;
-    static Ptr New(const std::string& json, HttpWebsocket &ws);
-    static void Delete(Impl* impl);
+	static Impl* New(const std::string &json, codebase::HttpWebsocket &ws);
+	// static void Delete(Impl* impl);
 
 
 private:
 	const LocalBoxDesc desc_;
-	HttpWebsocket ws_;
+	codebase::HttpWebsocket ws_;
 };
 
 #endif  // LOCALBOX_PROXY_IMPL_LOCALBOX_IMPL_H_

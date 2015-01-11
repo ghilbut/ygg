@@ -47,9 +47,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\third_party\mongoose-5.5;$(ProjectDir)..;$(ProjectDir)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -65,8 +66,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\third_party\mongoose-5.5;$(ProjectDir)..;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -77,17 +79,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="boost_fwd.h" />
+    <ClInclude Include="impl\net\http\http_websocket_impl.h" />
+    <ClInclude Include="net\http\http_server.h" />
+    <ClInclude Include="net\http\http_server_delegate.h" />
+    <ClInclude Include="net\http\http_websocket.h" />
     <ClInclude Include="net\tcp_client.h" />
     <ClInclude Include="net\tcp_client_impl.h" />
     <ClInclude Include="net\util.h" />
     <ClInclude Include="object.h" />
-    <ClInclude Include="object_ref.h" />
+    <ClInclude Include="object_impl.h" />
+    <ClInclude Include="scoped_ptr.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="impl\net\http\http_websocket_impl.cpp" />
+    <ClCompile Include="impl\object_impl.cpp" />
+    <ClCompile Include="net\http\http_server.cpp" />
     <ClCompile Include="net\tcp_client_impl.cpp" />
     <ClCompile Include="net\util.cpp" />
-    <ClCompile Include="object.cpp" />
-    <ClCompile Include="object_ref.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,6 +4,10 @@
 #include <mongoose.h>
 #include <boost/bind.hpp>
 #include <cassert>
+#include <cstdio>
+
+
+namespace codebase {
 
 
 HttpServer::HttpServer(HttpServerDelegate &delegate)
@@ -25,8 +29,11 @@ void HttpServer::Start(int port) {
         return;
     }
 
+	char sport[16];
+	sprintf(sport, "%d", port);
+
     server_ = mg_create_server(this, &HttpServer::ev_handler);
-    mg_set_option(server_, "listening_port", "8070");
+    mg_set_option(server_, "listening_port", sport);
 
     running_ = true;
     continue_ = true;
@@ -114,3 +121,5 @@ int HttpServer::handle_ws_connect(struct mg_connection *conn) {
     delegate_.OnConnect(ws);
     return MG_FALSE;
 }
+
+}  // namespace codebase

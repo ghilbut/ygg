@@ -1,19 +1,17 @@
 #ifndef LOCALBOX_PROXY_IMPL_LOCALBOX_DESC_IMPL_H_
 #define LOCALBOX_PROXY_IMPL_LOCALBOX_DESC_IMPL_H_
 
-#include <boost/noncopyable.hpp>
+#include "codebase/object_impl.h"
 #include <string>
 
 
-class LocalBoxDesc::Impl : public boost::noncopyable {
-private:
-    Impl() {}
-    ~Impl() {}
+class LocalBoxDesc::Impl : public codebase::Object::Impl {
+	Impl() {}
+	~Impl() {}
 
 public:
-    typedef boost::shared_ptr<Impl> Ptr;
-	static Ptr New(const std::string& json);
-    static void Delete(Impl* impl);
+	static Impl* New(const std::string& json);
+	static void Delete(Impl* impl);
 
 	const char* id() const;
 

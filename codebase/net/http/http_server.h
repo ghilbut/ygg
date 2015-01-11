@@ -10,9 +10,12 @@ struct mg_server;
 struct mg_connection;
 enum mg_event;
 
+
+namespace codebase {
+
+
 class HttpServerDelegate;
 class HttpWebsocket;
-
 
 class HttpServer {
 public:
@@ -44,5 +47,8 @@ private:
     typedef std::map<struct mg_connection*, HttpWebsocket> WSTable;
     WSTable ws_table_;
 };
+
+
+}  // namespace codebase
 
 #endif  // LOCALBOX_PROXY_HTTP_HTTP_SERVER_H_

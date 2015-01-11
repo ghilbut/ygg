@@ -13,8 +13,6 @@
   <ItemGroup>
     <ClCompile Include="codebase\server.cpp" />
     <ClCompile Include="codebase\session.cpp" />
-    <ClCompile Include="http\http_server.cpp" />
-    <ClCompile Include="impl\http\http_websocket_impl.cpp" />
     <ClCompile Include="impl\localbox_desc_impl.cpp" />
     <ClCompile Include="impl\localbox_impl.cpp" />
     <ClCompile Include="localbox_manager.cpp" />
@@ -25,10 +23,7 @@
   <ItemGroup>
     <ClInclude Include="codebase\server.h" />
     <ClInclude Include="codebase\session.h" />
-    <ClInclude Include="http\http_server.h" />
-    <ClInclude Include="http\http_server_delegate.h" />
-    <ClInclude Include="http\http_websocket.h" />
-    <ClInclude Include="impl\http\http_websocket_impl.h" />
+    <ClInclude Include="http_fwd.h" />
     <ClInclude Include="impl\localbox_desc_impl.h" />
     <ClInclude Include="impl\localbox_impl.h" />
     <ClInclude Include="localbox.h" />
@@ -38,6 +33,9 @@
     <ClInclude Include="proxy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\codebase\codebase.vcxproj">
+      <Project>{7958fc0e-6b1e-4e3d-830a-a7b6a75fac78}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\jsoncpp\jsoncpp.vcxproj">
       <Project>{3048ec15-ad21-4316-93a7-0616330cf347}</Project>
     </ProjectReference>
@@ -90,6 +88,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\third_party\mongoose-5.5;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +107,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\third_party\mongoose-5.5;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

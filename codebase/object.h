@@ -1,26 +1,35 @@
-#ifndef YGG_DUMMY_BOX_OBJECT_H_
-#define YGG_DUMMY_BOX_OBJECT_H_
+#ifndef CODEBASE_OBJECT_H_
+#define CODEBASE_OBJECT_H_
 
-#include <atomic>
+#include <boost/shared_ptr.hpp>
 
 
 namespace codebase {
 
-class Object
-{
+
+class Object {
 public:
-    int AddRef();
-    int Release();
+	Object& operator= (const Object& other);
+	bool operator== (const Object& other) const;
+	bool operator!= (const Object& other) const;
+
+	bool operator== (std::nullptr_t) const;
+	bool operator!= (std::nullptr_t) const;
+
+	bool operator< (const Object& other) const;
+
 
 protected:
-    Object();
-    virtual ~Object();
+	class Impl;
+	boost::shared_ptr<Impl> impl_;
 
-private:
-    std::atomic_int ref_count_;
-    // std::atomic_int weak_count_;
+	Object() {}
+	explicit Object(Impl* impl);
+	explicit Object(const Object& other);
+	virtual ~Object() {}
 };
 
-}  // namespace codebase
 
-#endif  // YGG_DUMMY_BOX_OBJECT_H_
+}  // codebase
+
+#endif  // CODEBASE_OBJECT_H_

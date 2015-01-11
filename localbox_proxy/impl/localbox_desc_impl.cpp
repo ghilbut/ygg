@@ -1,43 +1,24 @@
 #include "localbox_desc.h"
 #include "impl/localbox_desc_impl.h"
+
+#include "codebase/scoped_ptr.h"
 #include <json/json.h>
 #include <cassert>
 
 
 LocalBoxDesc::LocalBoxDesc(const std::string& json)
-	: impl_(Impl::New(json)) {
+	: Object(Impl::New(json)) {
 	// nothing
-}
-
-LocalBoxDesc::LocalBoxDesc(const LocalBoxDesc& other)
-    : impl_(other.impl_) {
-	
-}
-
-LocalBoxDesc& LocalBoxDesc::operator= (const LocalBoxDesc& other) {
-    impl_ = other.impl_;
-	return *this;
-}
-
-bool LocalBoxDesc::operator== (const LocalBoxDesc& other) const {
-	return (impl_ == other.impl_);
-}
-
-bool LocalBoxDesc::operator!= (const LocalBoxDesc& other) const {
-	return (impl_ != other.impl_);
-}
-
-bool LocalBoxDesc::IsNull() const {
-	return (impl_ == nullptr);
 }
 
 const char* LocalBoxDesc::id() const {
 	assert(impl_ != nullptr);
-	return impl_->id();
+	return static_cast<Impl*>(impl_.get())->id();
 }
 
 
-LocalBoxDesc::Impl::Ptr LocalBoxDesc::Impl::New(const std::string& json) {
+
+LocalBoxDesc::Impl* LocalBoxDesc::Impl::New(const std::string& json) {
 
     Json::Value root;
     Json::Reader reader;
@@ -46,7 +27,8 @@ LocalBoxDesc::Impl::Ptr LocalBoxDesc::Impl::New(const std::string& json) {
         return nullptr;
     }
 
-    Ptr self(new Impl(), &Impl::Delete);
+
+	codebase::ScopedPtr<Impl> self(new Impl(), Impl::Delete);
 
     Json::Value v = root.get("id", Json::nullValue);
     if (!v.isString()) {
@@ -55,11 +37,11 @@ LocalBoxDesc::Impl::Ptr LocalBoxDesc::Impl::New(const std::string& json) {
     }
     self->id_ = v.asString();
 
-    return self;
+    return self.Detach();
 }
 
 void LocalBoxDesc::Impl::Delete(Impl* impl) {
-    delete impl;
+	delete impl;
 }
 
 const char* LocalBoxDesc::Impl::id() const {
