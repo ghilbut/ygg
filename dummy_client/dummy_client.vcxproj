@@ -86,11 +86,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\jsoncpp\jsoncpp.vcxproj">
-      <Project>{3048ec15-ad21-4316-93a7-0616330cf347}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
