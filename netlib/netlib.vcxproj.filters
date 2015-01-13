@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="network">
+      <UniqueIdentifier>{c0bf958b-0efc-45d1-b0ea-7d202296109e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network\src">
+      <UniqueIdentifier>{003a0fbb-a798-480f-886f-4ace95d5e9d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network\src\uri">
+      <UniqueIdentifier>{b9334914-e662-4f78-aa64-f11779ae7cd6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\third_party\cpp-netlib-0.11.1-final\libs\network\src\client.cpp">
+      <Filter>network\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\cpp-netlib-0.11.1-final\libs\network\src\server_request_parsers_impl.cpp">
+      <Filter>network\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\cpp-netlib-0.11.1-final\libs\network\src\uri\schemes.cpp">
+      <Filter>network\src\uri</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\cpp-netlib-0.11.1-final\libs\network\src\uri\uri.cpp">
+      <Filter>network\src\uri</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

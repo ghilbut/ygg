@@ -97,11 +97,18 @@ v8 = {
   'failed':  (lambda num, path: failed(num, path))
 }
 
+cpp_netlib = {
+  'url': 'http://storage.googleapis.com/cpp-netlib-downloads/0.11.1/cpp-netlib-0.11.1-final.zip',
+  'success': (lambda num, path: None),
+  'failed':  (lambda num, path: failed(num, path))
+}
+
 threads = [
   ArchiveReadyThread(1, gmock),
   ArchiveReadyThread(2, jsoncpp),
   ArchiveReadyThread(3, mongoose),
-  ArchiveReadyThread(4, v8)
+  ArchiveReadyThread(4, v8),
+  ArchiveReadyThread(5, cpp_netlib)
 ]
 
 for thread in threads:
