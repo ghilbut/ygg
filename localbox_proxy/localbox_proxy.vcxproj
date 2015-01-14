@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.11.1-final;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.10.1;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
@@ -108,7 +108,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.11.1-final;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.10.1;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
