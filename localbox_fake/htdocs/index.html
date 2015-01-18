@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="/static/third_party/jquery-ui-1.11.2.custom/jquery-ui.min.css" >
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="/static/third_party/jquery-ui-1.11.2.custom/jquery-ui.min.js"></script>
+
+  <style type="text/css">
+  #localbox {
+    width:640px;
+    height:640px;
+    border: 1px solid gray;
+    bkground-color: darkgray;
+  }
+
+  #setting-notify {
+    border: 2px solid dimgray;
+    margin: 0;
+    padding: 0;
+  }
+  .notify-text {
+    margin: 5px 20px;
+    padding: 0;
+  }
+  .notify-info  { background-color: green; }
+  .notify-warn  { background-color: yellow; }
+  .notify-error { background-color: red; }
+  </style>
+
+</head>
+<body>
+
+<!-- LocalBox Control Pannel -->
+<div id="localbox">
+</div>
+
+<!-- Setting Dialog -->
+<div id="setting-dialog" style="display:none;">
+  <ul>
+    <li>
+      <label>BOX-ID: </label>
+      <input class="box-id" type="text" value="BOX-ID-00">
+    </li>
+  </ul>
+
+  <div id="setting-notify" class="notify-info">
+    <p class="notify-text">Ready</p>
+  </div>
+</div>
+
+<script src="/static/js/index-api.js"></script>
+<script src="/static/js/index-ui-notify.js"></script>
+<script src="/static/js/index-ui-localbox.js"></script>
+<script src="/static/js/index-ui-setting-dialog.js"></script>
+<script type="text/javascript">
+
+
+var kNodes
+  , dialog
+  , localbox;
+
+nodes = {
+  LocalBox: document.getElementById('localbox'),
+  SettingDialog: document.getElementById('setting-dialog'),
+  SettingNotify: document.getElementById('setting-notify'),
+}
+
+dialog = {
+  Setting: SettingDialog(nodes.SettingDialog, nodes.LocalBox, nodes.SettingNotify)
+};
+
+localbox = LocalBox(document.getElementById('localbox'));
+
+
+
+
+dialog.Setting.onstart = function (options) {
+  alert('start');
+  return true;
+}
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
