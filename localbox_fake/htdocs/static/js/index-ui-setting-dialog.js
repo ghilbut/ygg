@@ -23,8 +23,8 @@ function SettingDialog(rootNode, parentNode, notifyNode) {
     resizable: false,
     title: 'Settings',
 
-    width: '80%',
-    height: 'auto',
+    //width: 'auto',
+    //height: 'auto',
     buttons: {
       'Start': start,
       'Reset': reset
