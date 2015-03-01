@@ -3,5 +3,34 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="empty.cpp" />
+    <ClCompile Include="..\codebase\net\http\http_server_test.cpp">
+      <Filter>codebase\net\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codebase\net\tcp\tcp_server_test.cpp">
+      <Filter>codebase\net\tcp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="codebase">
+      <UniqueIdentifier>{0543ec6f-9940-4361-8825-d39ba34b0a20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codebase\net">
+      <UniqueIdentifier>{dc9fc8cb-50c6-4fb6-8532-035599f1d20f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codebase\net\http">
+      <UniqueIdentifier>{7721c118-46e5-4960-b503-ab80658bf306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codebase\thread">
+      <UniqueIdentifier>{3eaa24e2-e7e3-4b3b-8ba6-47e63721b280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libbox">
+      <UniqueIdentifier>{7b84f0fd-31ce-44ef-a98f-2cee12b5df1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libuser">
+      <UniqueIdentifier>{e264e73a-be0c-4850-ba0e-399a450823ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codebase\net\tcp">
+      <UniqueIdentifier>{687c8279-9a64-4e4f-aa82-1f29951f52cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

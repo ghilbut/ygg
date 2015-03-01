@@ -13,7 +13,7 @@ LocalBoxDesc::LocalBoxDesc(const std::string& json)
 
 const char* LocalBoxDesc::id() const {
 	assert(impl_ != nullptr);
-	return static_cast<Impl*>(impl_.get())->id();
+	return static_cast<Impl*>(impl_)->id();
 }
 
 

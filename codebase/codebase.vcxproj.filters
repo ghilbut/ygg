@@ -26,6 +26,10 @@
     <ClInclude Include="impl\net\http\http_websocket_impl.h">
       <Filter>impl\net\http</Filter>
     </ClInclude>
+    <ClInclude Include="io_service.h" />
+    <ClInclude Include="net\http\http_server_null_delegate.h">
+      <Filter>net\http</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="net\util.cpp">
@@ -42,6 +46,10 @@
     </ClCompile>
     <ClCompile Include="impl\net\http\http_websocket_impl.cpp">
       <Filter>impl\net\http</Filter>
+    </ClCompile>
+    <ClCompile Include="io_service.cpp" />
+    <ClCompile Include="net\http\http_server_null_delegate.cpp">
+      <Filter>net\http</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

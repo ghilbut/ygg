@@ -10,42 +10,10 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="impl\localbox_desc_impl.cpp" />
-    <ClCompile Include="impl\localbox_impl.cpp" />
-    <ClCompile Include="localbox_manager.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="manager.cpp" />
-    <ClCompile Include="proxy.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="http_fwd.h" />
-    <ClInclude Include="impl\localbox_desc_impl.h" />
-    <ClInclude Include="impl\localbox_impl.h" />
-    <ClInclude Include="localbox.h" />
-    <ClInclude Include="localbox_desc.h" />
-    <ClInclude Include="localbox_manager.h" />
-    <ClInclude Include="manager.h" />
-    <ClInclude Include="proxy.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ygg_thirdparty\jsoncpp\jsoncpp.vcxproj">
-      <Project>{3048ec15-ad21-4316-93a7-0616330cf347}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ygg_thirdparty\mongoose\mongoose.vcxproj">
-      <Project>{44fa95a4-0cdf-44a0-87a1-05cbabc10e4e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ygg_thirdparty\netlib\netlib.vcxproj">
-      <Project>{f9bbc7b9-1608-4d77-a63b-2ca71e7a09e8}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\codebase\codebase.vcxproj">
-      <Project>{7958fc0e-6b1e-4e3d-830a-a7b6a75fac78}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8A6908CD-BEDA-41BF-96CC-EDB5A109106F}</ProjectGuid>
+    <ProjectGuid>{0FB156EE-E1CF-43B1-A040-24FE67C01DB1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>localbox_proxy</RootNamespace>
+    <RootNamespace>ygg_server</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -84,10 +52,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.4.4\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.10.1;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.10.1;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,9 +71,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.0.0\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.10.1;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\include\boost-1_57;$(ProjectDir)..\..\ygg_thirdparty\third_party\jsoncpp-1.4.4\include;$(ProjectDir)..\..\ygg_thirdparty\third_party\mongoose-5.5;$(ProjectDir)..\..\ygg_thirdparty\third_party\cpp-netlib-0.10.1;$(ProjectDir)..;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +82,46 @@
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\ygg_thirdparty\third_party\boost_1_57_0\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="codebase\server.cpp" />
+    <ClCompile Include="codebase\session.cpp" />
+    <ClCompile Include="impl\localbox_desc_impl.cpp" />
+    <ClCompile Include="impl\localbox_impl.cpp" />
+    <ClCompile Include="localbox_manager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="manager.cpp" />
+    <ClCompile Include="proxy.cpp" />
+    <ClCompile Include="ygg_server.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="codebase\server.h" />
+    <ClInclude Include="codebase\session.h" />
+    <ClInclude Include="http_fwd.h" />
+    <ClInclude Include="http_server.h" />
+    <ClInclude Include="http_server.cpp" />
+    <ClInclude Include="impl\localbox_desc_impl.h" />
+    <ClInclude Include="impl\localbox_impl.h" />
+    <ClInclude Include="localbox.h" />
+    <ClInclude Include="localbox_desc.h" />
+    <ClInclude Include="localbox_manager.h" />
+    <ClInclude Include="manager.h" />
+    <ClInclude Include="proxy.h" />
+    <ClInclude Include="ygg_server.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ygg_thirdparty\jsoncpp\jsoncpp.vcxproj">
+      <Project>{3048ec15-ad21-4316-93a7-0616330cf347}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ygg_thirdparty\mongoose\mongoose.vcxproj">
+      <Project>{44fa95a4-0cdf-44a0-87a1-05cbabc10e4e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ygg_thirdparty\netlib\netlib.vcxproj">
+      <Project>{f9bbc7b9-1608-4d77-a63b-2ca71e7a09e8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\codebase\codebase.vcxproj">
+      <Project>{7958fc0e-6b1e-4e3d-830a-a7b6a75fac78}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

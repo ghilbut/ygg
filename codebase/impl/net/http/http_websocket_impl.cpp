@@ -12,14 +12,14 @@ HttpWebsocket::HttpWebsocket(struct mg_connection* conn)
 }
 
 void HttpWebsocket::WriteText(const std::string& text) const {
-	Impl* pimpl = static_cast<Impl*>(impl_.get());
+	Impl* pimpl = static_cast<Impl*>(impl_);
     if (pimpl != nullptr) {
         pimpl->WriteText(text);
     }
 }
 
 void HttpWebsocket::Close() {
-	Impl* pimpl = static_cast<Impl*>(impl_.get());
+	Impl* pimpl = static_cast<Impl*>(impl_);
     if (pimpl != nullptr) {
         pimpl->Close();
     }

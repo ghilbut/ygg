@@ -1,8 +1,6 @@
 #ifndef CODEBASE_OBJECT_H_
 #define CODEBASE_OBJECT_H_
 
-#include <boost/shared_ptr.hpp>
-
 
 namespace codebase {
 
@@ -21,12 +19,12 @@ public:
 
 protected:
 	class Impl;
-	boost::shared_ptr<Impl> impl_;
+	Impl* impl_;
 
-	Object() {}
+	Object() : impl_(nullptr) {}
 	explicit Object(Impl* impl);
 	explicit Object(const Object& other);
-	virtual ~Object() {}
+	virtual ~Object();
 };
 
 

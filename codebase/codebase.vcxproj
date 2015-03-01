@@ -80,8 +80,10 @@
   <ItemGroup>
     <ClInclude Include="boost_fwd.h" />
     <ClInclude Include="impl\net\http\http_websocket_impl.h" />
+    <ClInclude Include="io_service.h" />
     <ClInclude Include="net\http\http_server.h" />
     <ClInclude Include="net\http\http_server_delegate.h" />
+    <ClInclude Include="net\http\http_server_null_delegate.h" />
     <ClInclude Include="net\http\http_websocket.h" />
     <ClInclude Include="net\tcp_client.h" />
     <ClInclude Include="net\tcp_client_impl.h" />
@@ -93,7 +95,9 @@
   <ItemGroup>
     <ClCompile Include="impl\net\http\http_websocket_impl.cpp" />
     <ClCompile Include="impl\object_impl.cpp" />
+    <ClCompile Include="io_service.cpp" />
     <ClCompile Include="net\http\http_server.cpp" />
+    <ClCompile Include="net\http\http_server_null_delegate.cpp" />
     <ClCompile Include="net\tcp_client_impl.cpp" />
     <ClCompile Include="net\util.cpp" />
   </ItemGroup>

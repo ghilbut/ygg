@@ -1,15 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "localbox", "..\localbox\localbox.vcxproj", "{F06DE8F8-2EC1-4682-B835-9358A6140F94}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "..\test\test.vcxproj", "{453FD771-9C85-4AC1-AAA8-877A8D0CD023}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client_proxy", "..\client_proxy\client_proxy.vcxproj", "{2EDE9475-97A2-43D6-B629-7DC8FCD47EA8}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "localbox_proxy", "..\localbox_proxy\localbox_proxy.vcxproj", "{8A6908CD-BEDA-41BF-96CC-EDB5A109106F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "third_party", "third_party", "{397F323B-C068-4276-B6BC-39E3793F664D}"
 EndProject
@@ -29,8 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(tools)", "(tools)", "{2DE5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(gyp)", "(gyp)", "{1A3E7631-2607-453C-BDE6-EFD59B72E6F2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_client", "..\dummy_client\dummy_client.vcxproj", "{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "codebase", "..\codebase\codebase.vcxproj", "{7958FC0E-6B1E-4E3D-830A-A7B6A75FAC78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netlib", "netlib", "{CD35B917-B9F1-465E-9FB1-699556EE65C5}"
@@ -42,6 +36,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mongoose", "..\..\ygg_thirdparty\mongoose\mongoose.vcxproj", "{44FA95A4-0CDF-44A0-87A1-05CBABC10E4E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "netlib", "..\..\ygg_thirdparty\netlib\netlib.vcxproj", "{F9BBC7B9-1608-4D77-A63B-2CA71E7A09E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ygg_server", "..\ygg_server\ygg_server.vcxproj", "{0FB156EE-E1CF-43B1-A040-24FE67C01DB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,18 +53,6 @@ Global
 		{453FD771-9C85-4AC1-AAA8-877A8D0CD023}.Debug|Win32.Build.0 = Debug|Win32
 		{453FD771-9C85-4AC1-AAA8-877A8D0CD023}.Release|Win32.ActiveCfg = Release|Win32
 		{453FD771-9C85-4AC1-AAA8-877A8D0CD023}.Release|Win32.Build.0 = Release|Win32
-		{2EDE9475-97A2-43D6-B629-7DC8FCD47EA8}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2EDE9475-97A2-43D6-B629-7DC8FCD47EA8}.Debug|Win32.Build.0 = Debug|Win32
-		{2EDE9475-97A2-43D6-B629-7DC8FCD47EA8}.Release|Win32.ActiveCfg = Release|Win32
-		{2EDE9475-97A2-43D6-B629-7DC8FCD47EA8}.Release|Win32.Build.0 = Release|Win32
-		{8A6908CD-BEDA-41BF-96CC-EDB5A109106F}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8A6908CD-BEDA-41BF-96CC-EDB5A109106F}.Debug|Win32.Build.0 = Debug|Win32
-		{8A6908CD-BEDA-41BF-96CC-EDB5A109106F}.Release|Win32.ActiveCfg = Release|Win32
-		{8A6908CD-BEDA-41BF-96CC-EDB5A109106F}.Release|Win32.Build.0 = Release|Win32
-		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Debug|Win32.Build.0 = Debug|Win32
-		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Release|Win32.ActiveCfg = Release|Win32
-		{7E3ABE07-5012-4E58-8115-0EF7DC6D09EF}.Release|Win32.Build.0 = Release|Win32
 		{7958FC0E-6B1E-4E3D-830A-A7B6A75FAC78}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7958FC0E-6B1E-4E3D-830A-A7B6A75FAC78}.Debug|Win32.Build.0 = Debug|Win32
 		{7958FC0E-6B1E-4E3D-830A-A7B6A75FAC78}.Release|Win32.ActiveCfg = Release|Win32
@@ -89,6 +73,10 @@ Global
 		{F9BBC7B9-1608-4D77-A63B-2CA71E7A09E8}.Debug|Win32.Build.0 = Debug|Win32
 		{F9BBC7B9-1608-4D77-A63B-2CA71E7A09E8}.Release|Win32.ActiveCfg = Release|Win32
 		{F9BBC7B9-1608-4D77-A63B-2CA71E7A09E8}.Release|Win32.Build.0 = Release|Win32
+		{0FB156EE-E1CF-43B1-A040-24FE67C01DB1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0FB156EE-E1CF-43B1-A040-24FE67C01DB1}.Debug|Win32.Build.0 = Debug|Win32
+		{0FB156EE-E1CF-43B1-A040-24FE67C01DB1}.Release|Win32.ActiveCfg = Release|Win32
+		{0FB156EE-E1CF-43B1-A040-24FE67C01DB1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
