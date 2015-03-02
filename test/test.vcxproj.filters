@@ -9,6 +9,9 @@
     <ClCompile Include="..\codebase\net\tcp\tcp_server_test.cpp">
       <Filter>codebase\net\tcp</Filter>
     </ClCompile>
+    <ClCompile Include="..\codebase\net\http\http_websocket_client_test.cpp">
+      <Filter>codebase\net\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="codebase">
