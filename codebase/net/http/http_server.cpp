@@ -69,6 +69,7 @@ void HttpServer::Stop() {
 
 	is_stopping_ = true;
 	thread_.join();
+	mg_destroy_server(&server_);
 	is_stopping_ = false;
 	is_stopped_ = true;
 }
