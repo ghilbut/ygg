@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
 
-TEST(EmptyTest, Empty) {
+TEST(EmptyTest, DISABLED_Empty) {
     EXPECT_TRUE(true);
 }

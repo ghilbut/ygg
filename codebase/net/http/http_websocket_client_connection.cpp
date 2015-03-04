@@ -1,4 +1,5 @@
 #include "http_websocket_client_connection.h"
+#include "http_websocket_client_delegate.h"
 
 
 void intrusive_ptr_add_ref(codebase::net::http::websocket::client::Connection *conn) {
@@ -19,18 +20,27 @@ namespace websocket {
 namespace client {
 
 
-Connection::Ptr Connection::New(const std::string& url, Delegate* delegate) {
-
-
-	return Ptr(new Connection(url, delegate));
+Connection::Ptr Connection::New(boost::asio::io_service &io_service, const std::string& url, Delegate* delegate) {
+	return Ptr(new Connection(io_service, url, delegate));
 }
 
 void Connection::Send(const Message *msg) {
+
+	if (readyState_ != OPEN) {
+		return;
+	}
 	
 }
 
 void Connection::Close() {
 
+	if (readyState_ == CLOSING || readyState_ == CLOSED) {
+		return;
+	}
+	readyState_ = CLOSING;
+
+	const boost::system::error_code err;
+	io_service_.post(boost::bind(&Connection::handle_close, this, err));
 }
 
 const std::string& Connection::url() const {
@@ -41,13 +51,13 @@ Connection::ReadyState Connection::readyState() const {
 	return readyState_;
 }
 
-Connection::Connection(const std::string& url, Delegate* delegate)
+Connection::Connection(boost::asio::io_service &io_service, const std::string& url, Delegate* delegate)
 	: url_(url)
-	, readyState_(CLOSED)
+	, readyState_(CONNECTING)
 	, delegate_(delegate)
-	, resolver_(io_service_)
-	, socket_(io_service_)
-	, thread_(boost::bind(&boost::asio::io_service::run, &io_service_)) {
+	, io_service_(io_service)
+	, resolver_(io_service)
+	, socket_(io_service) {
 	
 
 
@@ -129,6 +139,9 @@ void Connection::handle_read_status_line(const boost::system::error_code& err)
 {
 	if (!err)
 	{
+		readyState_ = OPEN;
+		io_service_.dispatch(boost::bind(&Delegate::OnOpen, delegate_));
+
 		// Check that response is OK.
 		std::istream response_stream(&response_);
 		std::string http_version;
@@ -142,7 +155,7 @@ void Connection::handle_read_status_line(const boost::system::error_code& err)
 			std::cout << "Invalid response\n";
 			return;
 		}
-		if (status_code != 200)
+		if (status_code != 101)
 		{
 			std::cout << "Response returned with status code ";
 			std::cout << status_code << "\n";
@@ -204,6 +217,16 @@ void Connection::handle_read_content(const boost::system::error_code& err)
 	{
 		std::cout << "Error: " << err << "\n";
 	}
+}
+
+void Connection::handle_close(const boost::system::error_code& err) {
+
+	if (err) {
+		delegate_->OnError();
+	}
+	readyState_ = CLOSED;
+	socket_.close();
+	delegate_->OnClose();
 }
 
 

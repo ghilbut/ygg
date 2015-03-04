@@ -17,6 +17,9 @@ class mongoose_delegate {
 public:
 	int ev_handler(struct mg_connection *conn, enum mg_event ev)  {
 
+		if (ev == MG_AUTH) {
+			return MG_TRUE;
+		}
 		if (ev == MG_REQUEST) {
 			if (conn->is_websocket) {
 				OnMessage(1);
@@ -231,17 +234,68 @@ TEST_F(codebase_http_client_test, DISABLED_websocket_raw_connection_with_tcp_soc
 	socket.close();
 }
 
+
+
+typedef codebase::net::http::websocket::client::Connection WebSocket;
+typedef codebase::net::http::websocket::client::Message    Message;
+typedef codebase::net::http::websocket::client::Delegate   WebSocketDelegate;
+
+class MockWebSocketDelegate : public WebSocketDelegate {
+public:
+	MOCK_METHOD0(OnOpen, void());
+	MOCK_METHOD1(OnMessage, void(const Message *msg));
+	MOCK_METHOD0(OnClose, void());
+	MOCK_METHOD0(OnError, void());
+};
+
+
+ACTION_P(Resume, cv) {
+	cv->notify_one();
+}
+
 TEST_F(codebase_http_client_test, websocket_client_connection) {
 
 	mongoose_delegate mock;
 	BindDelegate(&mock);
 
 	EXPECT_CALL(mock, OnConnect());
-	EXPECT_CALL(mock, OnMessage(_));
+	//EXPECT_CALL(mock, OnMessage(_));
 	EXPECT_CALL(mock, OnClose(_));
 
 
 
+	boost::asio::io_service io_service;
+	MockWebSocketDelegate websocket_delegate;
+
+	std::mutex mutex;
+	std::condition_variable cv;
+
+	EXPECT_CALL(websocket_delegate, OnOpen()).WillOnce(Resume(&cv));
+	EXPECT_CALL(websocket_delegate, OnClose()).WillOnce(Resume(&cv));
+
 	typedef codebase::net::http::websocket::client::Connection WebSocket;
-	auto ptr(WebSocket::New("", nullptr));
+	auto websocket(WebSocket::New(io_service, "", &websocket_delegate));
+
+	boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+
+	
+	std::cv_status status;
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+		status = cv.wait_for(lock, std::chrono::seconds(10));
+	}
+	ASSERT_EQ(std::cv_status::no_timeout, status);
+	ASSERT_EQ(WebSocket::OPEN, websocket->readyState());
+
+	websocket->Close();
+	ASSERT_EQ(WebSocket::CLOSING, websocket->readyState());
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+		status = cv.wait_for(lock, std::chrono::seconds(10));
+	}
+	ASSERT_EQ(std::cv_status::no_timeout, status);
+	ASSERT_EQ(WebSocket::CLOSED, websocket->readyState());
+
+	io_service.stop();
+	thread.join();
 }

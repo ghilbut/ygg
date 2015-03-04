@@ -28,7 +28,7 @@ public:
 	} ReadyState;
 
 	typedef boost::intrusive_ptr<Connection> Ptr;
-	static Ptr New(const std::string& url, Delegate* delegate);
+	static Ptr New(boost::asio::io_service &io_service, const std::string& url, Delegate* delegate);
 
 	// method
 	void Send(const Message *msg);
@@ -39,7 +39,7 @@ public:
 	ReadyState readyState() const;
 
 private:
-	Connection(const std::string& url, Delegate* delegate);
+	Connection(boost::asio::io_service &io_service, const std::string& url, Delegate* delegate);
 	~Connection() {}
 
 	void handle_resolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
@@ -49,23 +49,23 @@ private:
 	void handle_read_headers(const boost::system::error_code& err);
 	void handle_read_content(const boost::system::error_code& err);
 
+	void handle_close(const boost::system::error_code& err);
+
 
 private:
 	const std::string url_;
-	ReadyState readyState_;
+	std::atomic<ReadyState> readyState_;
 	Delegate*  delegate_;
 
 
 
 	
-	boost::asio::io_service io_service_;
+	boost::asio::io_service &io_service_;
 	boost::asio::ip::tcp::resolver resolver_;
 	boost::asio::ip::tcp::socket socket_;
 
 	boost::asio::streambuf request_;
 	boost::asio::streambuf response_;
-
-	boost::thread thread_;
 };
 
 

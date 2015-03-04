@@ -74,7 +74,7 @@ TEST_F(codebase_http_server_test, global_server_is_running) {
 	ASSERT_TRUE(httpd_.IsRunning());
 }
 
-TEST_F(codebase_http_server_test, websocket_client_connect_and_close) {
+TEST_F(codebase_http_server_test, DISABLED_websocket_client_connect_and_close) {
 	ASSERT_TRUE(httpd_.IsRunning());
 
 	WebSocketClient c;

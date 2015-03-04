@@ -17,6 +17,6 @@ protected:
 
 
 
-TEST_F(codebase_tcp_server_test, running_status_validation_test) {
+TEST_F(codebase_tcp_server_test, DISABLED_running_status_validation_test) {
 	
 }
