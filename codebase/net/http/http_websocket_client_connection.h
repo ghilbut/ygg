@@ -32,7 +32,7 @@ public:
 
 	// method
 	void Send(const Message *msg);
-	void Close();
+	void Close(const boost::system::error_code& err = boost::system::error_code());
 
 	// property
 	const std::string& url() const;
@@ -44,10 +44,12 @@ private:
 
 	void handle_resolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 	void handle_connect(const boost::system::error_code& err);
-	void handle_write_request(const boost::system::error_code& err);
-	void handle_read_status_line(const boost::system::error_code& err);
-	void handle_read_headers(const boost::system::error_code& err);
-	void handle_read_content(const boost::system::error_code& err);
+	void handle_handshake_request(const boost::system::error_code& err);
+	void handle_handshake_response_status(const boost::system::error_code& err);
+	void handle_handshake_response_headers(const boost::system::error_code& err);
+	void handle_recv_message_headers(const boost::system::error_code& err);
+	void handle_recv_message_payload(const boost::system::error_code& err);
+	void handle_send_message(const boost::system::error_code& err);
 
 	void handle_close(const boost::system::error_code& err);
 

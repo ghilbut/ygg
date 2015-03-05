@@ -2,6 +2,7 @@
 #define YGG_CODEBASE_NET_HTTP_WEBSOCKET_CLIENT_DELEGATE_H_
 
 #include "codebase/object2.h"
+#include <boost/system/error_code.hpp>
 
 
 namespace codebase {
@@ -18,7 +19,7 @@ public:
 	virtual void OnOpen() = 0;
 	virtual void OnMessage(const Message *msg) = 0;
 	virtual void OnClose() = 0;
-	virtual void OnError() = 0;
+	virtual void OnError(const boost::system::error_code &err) = 0;
 
 
 protected:

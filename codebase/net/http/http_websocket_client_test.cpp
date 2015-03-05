@@ -13,7 +13,7 @@ using ::testing::_;
 using ::testing::Invoke;
 
 
-class mongoose_delegate {
+class MongooseDelegate {
 public:
 	int ev_handler(struct mg_connection *conn, enum mg_event ev)  {
 
@@ -44,7 +44,7 @@ public:
 
 class codebase_http_client_test : public ::testing::Test {
 public:
-	void BindDelegate(mongoose_delegate *delegate) {
+	void BindDelegate(MongooseDelegate *delegate) {
 		delegate_ = delegate;
 	}
 
@@ -88,7 +88,7 @@ private:
 	static int ev_handler(struct mg_connection *conn, enum mg_event ev) {
 
 		codebase_http_client_test *self = static_cast<codebase_http_client_test*>(conn->server_param);
-		mongoose_delegate *delegate = self->delegate_;
+		MongooseDelegate *delegate = self->delegate_;
 		return delegate->ev_handler(conn, ev);
 	}
 
@@ -97,7 +97,7 @@ protected:
 	static const char *const kPort_;
 	struct mg_server *server_;
 
-	mongoose_delegate *delegate_;
+	MongooseDelegate *delegate_;
 
 	std::mutex mutex_;
 	std::condition_variable cv_;
@@ -112,18 +112,12 @@ const char *const codebase_http_client_test::kPort_ = "80";
 
 TEST_F(codebase_http_client_test, DISABLED_websocket_raw_connection_with_tcp_socket) {
 	
-	mongoose_delegate mock;
-	BindDelegate(&mock);
+	MongooseDelegate mongoose_delegate;
+	BindDelegate(&mongoose_delegate);
 
-	EXPECT_CALL(mock, OnConnect());
-	EXPECT_CALL(mock, OnMessage(_));
-	EXPECT_CALL(mock, OnClose(_));
-
-	//mock.OnConnect();
-	//mock.OnMessage(1);
-	//mock.OnClose(1);
-
-
+	EXPECT_CALL(mongoose_delegate, OnConnect());
+	//EXPECT_CALL(mongoose_delegate, OnMessage(_));
+	EXPECT_CALL(mongoose_delegate, OnClose(_));
 
 
 
@@ -245,7 +239,7 @@ public:
 	MOCK_METHOD0(OnOpen, void());
 	MOCK_METHOD1(OnMessage, void(const Message *msg));
 	MOCK_METHOD0(OnClose, void());
-	MOCK_METHOD0(OnError, void());
+	MOCK_METHOD1(OnError, void(const boost::system::error_code&));
 };
 
 
@@ -255,31 +249,28 @@ ACTION_P(Resume, cv) {
 
 TEST_F(codebase_http_client_test, websocket_client_connection) {
 
-	mongoose_delegate mock;
-	BindDelegate(&mock);
+	MongooseDelegate mongoose_delegate;
+	BindDelegate(&mongoose_delegate);
 
-	EXPECT_CALL(mock, OnConnect());
-	//EXPECT_CALL(mock, OnMessage(_));
-	EXPECT_CALL(mock, OnClose(_));
+	EXPECT_CALL(mongoose_delegate, OnConnect());
+	EXPECT_CALL(mongoose_delegate, OnClose(_));
 
 
+	typedef codebase::net::http::websocket::client::Connection WebSocket;
 
 	boost::asio::io_service io_service;
 	MockWebSocketDelegate websocket_delegate;
-
-	std::mutex mutex;
-	std::condition_variable cv;
-
-	EXPECT_CALL(websocket_delegate, OnOpen()).WillOnce(Resume(&cv));
-	EXPECT_CALL(websocket_delegate, OnClose()).WillOnce(Resume(&cv));
-
-	typedef codebase::net::http::websocket::client::Connection WebSocket;
 	auto websocket(WebSocket::New(io_service, "", &websocket_delegate));
 
 	boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
-	
+	std::mutex mutex;
+	std::condition_variable cv;
+
 	std::cv_status status;
+
+	// check open event
+	EXPECT_CALL(websocket_delegate, OnOpen()).WillOnce(Resume(&cv));
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 		status = cv.wait_for(lock, std::chrono::seconds(10));
@@ -287,6 +278,8 @@ TEST_F(codebase_http_client_test, websocket_client_connection) {
 	ASSERT_EQ(std::cv_status::no_timeout, status);
 	ASSERT_EQ(WebSocket::OPEN, websocket->readyState());
 
+	// check close event
+	EXPECT_CALL(websocket_delegate, OnClose()).WillOnce(Resume(&cv));
 	websocket->Close();
 	ASSERT_EQ(WebSocket::CLOSING, websocket->readyState());
 	{
