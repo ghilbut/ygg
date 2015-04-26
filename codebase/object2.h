@@ -1,5 +1,5 @@
-#ifndef CODEBASE_Object2_H_
-#define CODEBASE_Object2_H_
+#ifndef CODEBASE_OBJECT2_H_
+#define CODEBASE_OBJECT2_H_
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
@@ -35,4 +35,4 @@ private:
 
 }  // codebase
 
-#endif  // CODEBASE_Object2_H_
+#endif  // CODEBASE_OBJECT2_H_

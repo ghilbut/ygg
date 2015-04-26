@@ -1,22 +1,47 @@
 import os
+
+# unix, linux, mac  : 'clear'
+# microsoft windows : 'CLS'
+os.system('clear' if os.name is 'posix' else 'CLS')
+
+
+
+# build all 3rd party libraries
 SConscript('../../ygg_thirdparty/SConstruct')
 
-sources = ['empty.cpp']
+
+
+kLibRoot = os.path.abspath('../../ygg_thirdparty')
+
+def get_libpath(subpath):
+  return os.path.join(kLibRoot, subpath)
+
+
 
 CPPPATH = [
-  '../../ygg_thirdparty/third_party/gmock-1.7.0/gtest/include',
-  '../../ygg_thirdparty/third_party/gmock-1.7.0/include']
+  get_libpath('third_party/boost_1_57_0/include'),
+  get_libpath('third_party/gmock-1.7.0/gtest/include'),
+  get_libpath('third_party/gmock-1.7.0/include')]
 
-env = Environment(CPPPATH=CPPPATH)
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
 
 if os.name == 'posix':
-# if not microsoft windows
   env.Append(LINKFLAGS=['-pthread'])
 
-test = env.Program(source=sources, target='test', LIBS=['gmock', 'jsoncpp'], LIBPATH=['../../ygg_thirdparty/gmock',
-'../../ygg_thirdparty/jsoncpp/'])
+
+
+sources = ['empty.cpp']
+sources += Glob('../codebase/*_test.c*')
+
+LIBS = ['gmock', 'jsoncpp']
+LIBPATH = [
+  get_libpath('gmock'),
+  get_libpath('jsoncpp')]
+
+test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 # run after build complete
-def run_unitest(env, target, source):
-   os.system(source[0].abspath)
-Command('unittest', test, run_unitest)
+Command(
+  'unittest', 
+  test, 
+  lambda env, target, source: os.system(source[0].abspath))
