@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
+#include <gmock/gmock.h>
 
-TEST(EmptyTest, DISABLED_Empty) {
-    EXPECT_TRUE(true);
+TEST(EmptyTest, empty) {
+    // nothing
 }

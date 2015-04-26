@@ -1,0 +1,22 @@
+import os
+SConscript('../../ygg_thirdparty/SConstruct')
+
+sources = ['empty.cpp']
+
+CPPPATH = [
+  '../../ygg_thirdparty/third_party/gmock-1.7.0/gtest/include',
+  '../../ygg_thirdparty/third_party/gmock-1.7.0/include']
+
+env = Environment(CPPPATH=CPPPATH)
+
+if os.name == 'posix':
+# if not microsoft windows
+  env.Append(LINKFLAGS=['-pthread'])
+
+test = env.Program(source=sources, target='test', LIBS=['gmock', 'jsoncpp'], LIBPATH=['../../ygg_thirdparty/gmock',
+'../../ygg_thirdparty/jsoncpp/'])
+
+# run after build complete
+def run_unitest(env, target, source):
+   os.system(source[0].abspath)
+Command('unittest', test, run_unitest)

@@ -256,3 +256,9 @@ pip-log.txt
 #############
 
 third_party/
+
+
+
+# scons
+.sconsign.dblite
+test/test
