@@ -10,9 +10,8 @@ public:
     MOCK_CONST_METHOD0(destructed, void());
 };
 
-class TestObject : public Object2 {
+class TestObject : public Object2<TestObject> {
 public:
-    typedef boost::intrusive_ptr<TestObject> Ptr;
     static Ptr New(const Mock &mock) {
         return Ptr(new TestObject(mock));
     }
@@ -30,15 +29,8 @@ private:
 private:
     const Mock &mock_;
 public:
-    Ptr ptr_;
+    Weak ptr_;
 };
-
-void intrusive_ptr_add_ref(TestObject *px) {
-    px->add_ref();
-}
-void intrusive_ptr_release(TestObject *px) {
-    px->release();
-}
 
 
 class ObjectTest : public ::testing::Test {
@@ -60,11 +52,11 @@ TEST_F(ObjectTest, test_circular) {
     EXPECT_CALL(mock, constructed()).Times(3);
     EXPECT_CALL(mock, destructed()).Times(3);
 
-    TestObject::Ptr obj0 = TestObject::New(mock);
-    TestObject::Ptr obj1 = TestObject::New(mock);
-    TestObject::Ptr obj2 = TestObject::New(mock);
+    TestObject::Ptr obj0(TestObject::New(mock));
+    TestObject::Ptr obj1(TestObject::New(mock));
+    TestObject::Ptr obj2(TestObject::New(mock));
 
-    obj0->ptr_ = obj1;
-    obj1->ptr_ = obj2;
-    obj2->ptr_ = obj0;
+    obj0->ptr_ = obj1.get();
+    obj1->ptr_ = obj2.get();
+    obj2->ptr_ = obj0.get();
 }
