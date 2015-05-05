@@ -1,7 +1,7 @@
 #ifndef CODEBASE_OBJECT2_H_
 #define CODEBASE_OBJECT2_H_
 
-#include "reference_ptr.h"
+#include "shared_ptr.h"
 #include <boost/noncopyable.hpp>
 #include <atomic>
 
@@ -12,8 +12,7 @@ namespace codebase {
 template<class T>
 class Object2 : public boost::noncopyable {
 public:
-    typedef reference_ptr<T> Ptr;
-    typedef reference_ptr<T, true> Weak;
+    typedef SharedPtr<T> Ptr;
 
 	inline void add_ref(bool is_weak = false) {
         if (is_weak) {
@@ -22,8 +21,6 @@ public:
         else {
 		    ++ref_count_;
         }
-
-printf("[add_ref] %s %d:%d - %x\n", is_weak ? "W" : "R", ref_count_.load(), weak_count_.load(), (void*)this);
 	}
 
 	inline void release(bool is_weak = false) {
@@ -37,12 +34,20 @@ printf("[add_ref] %s %d:%d - %x\n", is_weak ? "W" : "R", ref_count_.load(), weak
             }
         }
 
-printf("[release] %s %d:%d - %x\n", is_weak ? "W" : "R", ref_count_.load(), weak_count_.load(), (void*)this);
-
         if (weak_count_ == 0) {
             delete this;
         }
 	}
+
+    inline void MakeWeak() {
+        ++weak_count_;
+        --ref_count_;
+    }
+
+    inline void ClearWeak() {
+        ++ref_count_;
+        --weak_count_;
+    }
 
 protected:
 	Object2() : ref_count_({0}), weak_count_({1}) {}
@@ -55,17 +60,6 @@ private:
 
 
 }  // codebase
-
-
-template<typename T>
-void intrusive_ptr_add_ref(T *pt) {
-    pt->add_ref();
-}
-
-template<typename T>
-void intrusive_ptr_release(T *pt) {
-    pt->release();
-}
 
 
 #endif  // CODEBASE_OBJECT2_H_

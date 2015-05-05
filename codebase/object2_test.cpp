@@ -18,7 +18,8 @@ public:
 
 private:
     TestObject(const Mock &mock) 
-        : mock_(mock) {
+        : Object2()
+        , mock_(mock) {
         mock_.constructed();
     }
 
@@ -29,7 +30,7 @@ private:
 private:
     const Mock &mock_;
 public:
-    Weak ptr_;
+    Ptr ptr_;
 };
 
 
@@ -56,7 +57,11 @@ TEST_F(ObjectTest, test_circular) {
     TestObject::Ptr obj1(TestObject::New(mock));
     TestObject::Ptr obj2(TestObject::New(mock));
 
-    obj0->ptr_ = obj1.get();
-    obj1->ptr_ = obj2.get();
-    obj2->ptr_ = obj0.get();
+    obj0->ptr_ = obj1;
+    obj0->ptr_.MakeWeak();
+    obj1->ptr_ = obj2;
+    obj1->ptr_.MakeWeak();
+    obj2->ptr_ = obj0;
+    obj2->ptr_.MakeWeak();
+
 }

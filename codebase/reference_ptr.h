@@ -14,7 +14,7 @@ private:
 public:
     typedef T emelent_type;
 
-    reference_ptr(T *px = nullptr)
+    explicit reference_ptr(T *px = nullptr)
         : px_(px) {
 
         if (px_ != nullptr) {
@@ -22,7 +22,12 @@ public:
         }
     }
 
-    reference_ptr(reference_ptr const &rhs)
+    explicit reference_ptr(reference_ptr &&rhs)
+        : px_(rhs.px_) {
+        rhs.px_ = nullptr;
+    }
+
+    explicit reference_ptr(reference_ptr const &rhs)
         : px_(rhs.get()) {
 
         if (px_ != nullptr) {
@@ -39,6 +44,11 @@ public:
 
     reference_ptr & operator=(reference_ptr const &rhs) {
         this_type(rhs).swap(*this);
+        return *this;
+    }
+
+    reference_ptr & operator=(reference_ptr &&rhs) {
+        this_type(static_cast<reference_ptr &&>(rhs)).swap(*this);
         return *this;
     }
 
