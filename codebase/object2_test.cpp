@@ -47,7 +47,7 @@ TEST_F(ObjectTest, test_construction_and_destruction) {
     TestObject::Ptr object = TestObject::New(mock);
 }
 
-TEST_F(ObjectTest, test_circular) {
+TEST_F(ObjectTest, DISABLED_test_circular) {
 
     Mock mock;
     EXPECT_CALL(mock, constructed()).Times(3);

@@ -20,6 +20,7 @@ def get_libpath(subpath):
 
 CPPPATH = [
   get_libpath('third_party/boost_1_57_0/include'),
+  get_libpath('third_party/mongoose-5.5'),
   get_libpath('third_party/gmock-1.7.0/gtest/include'),
   get_libpath('third_party/gmock-1.7.0/include')]
 
@@ -32,11 +33,14 @@ if os.name == 'posix':
 
 sources = ['empty.cpp']
 sources += Glob('../codebase/*_test.c*')
+#sources += Glob('../net/*_test.c*')
+sources += Glob('../net/*.c*')
 
-LIBS = ['gmock', 'jsoncpp']
+LIBS = ['gmock', 'jsoncpp', 'mongoose']
 LIBPATH = [
   get_libpath('gmock'),
-  get_libpath('jsoncpp')]
+  get_libpath('jsoncpp'),
+  get_libpath('mongoose')]
 
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
