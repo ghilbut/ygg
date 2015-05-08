@@ -1,6 +1,6 @@
 #include "gmock/gmock.h"
-#include "codebase/net/http/http_websocket_client_connection.h"
-#include "codebase/net/http/http_websocket_client_delegate.h"
+#include "net/http_client_websocket_connection.h"
+#include "net/http_client_websocket_delegate.h"
 #include <mongoose.h>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -15,7 +15,7 @@ using ::testing::Invoke;
 
 class MongooseDelegate {
 public:
-	int ev_handler(struct mg_connection *conn, enum mg_event ev)  {
+	int ev_handler(struct mg_connection * conn, enum mg_event ev)  {
 
 		if (ev == MG_AUTH) {
 			return MG_TRUE;
@@ -42,9 +42,9 @@ public:
 	MOCK_METHOD1(OnClose,   void(int));
 };
 
-class codebase_http_client_test : public ::testing::Test {
+class HttpClientTest : public ::testing::Test {
 public:
-	void BindDelegate(MongooseDelegate *delegate) {
+	void BindDelegate(MongooseDelegate * delegate) {
 		delegate_ = delegate;
 	}
 
@@ -54,11 +54,14 @@ protected:
 		stop_ = false;
 		running_ = false;
 
-		server_ = mg_create_server(this, &codebase_http_client_test::ev_handler);
+		server_ = mg_create_server(this, &HttpClientTest::ev_handler);
 		mg_set_option(server_, "listening_port", kPort_);
-
-		thread_.swap(boost::thread([this]() {
-
+ 
+        // NOTE(ghilbut): OK on visual studio 2013.
+        //                But, compile error on g++ in Mac OS X
+        //
+		// thread_.swap(boost::thread([this]() {
+        boost::thread t([this] () {
 			{
 				std::lock_guard<std::mutex> lock(mutex_);
 				running_ = true;
@@ -71,7 +74,8 @@ protected:
 			mg_destroy_server(&server_);
 			running_ = false;
 
-		}));
+		});
+        thread_.swap(t);
 
 		std::unique_lock<std::mutex> lock(mutex_);
 		cv_.wait(lock, [this]() { return (bool)running_; });
@@ -85,10 +89,10 @@ protected:
 
 
 private:
-	static int ev_handler(struct mg_connection *conn, enum mg_event ev) {
+	static int ev_handler(struct mg_connection * conn, enum mg_event ev) {
 
-		codebase_http_client_test *self = static_cast<codebase_http_client_test*>(conn->server_param);
-		MongooseDelegate *delegate = self->delegate_;
+		HttpClientTest * self = static_cast<HttpClientTest *>(conn->server_param);
+		MongooseDelegate * delegate = self->delegate_;
 		return delegate->ev_handler(conn, ev);
 	}
 
@@ -106,11 +110,11 @@ protected:
 	boost::thread thread_;
 };
 
-const char *const codebase_http_client_test::kPort_ = "80";
+const char * const HttpClientTest::kPort_ = "80";
 
 
 
-TEST_F(codebase_http_client_test, DISABLED_websocket_raw_connection_with_tcp_socket) {
+TEST_F(HttpClientTest, DISABLED_websocket_raw_connection_with_tcp_socket) {
 	
 	MongooseDelegate mongoose_delegate;
 	BindDelegate(&mongoose_delegate);
@@ -230,9 +234,9 @@ TEST_F(codebase_http_client_test, DISABLED_websocket_raw_connection_with_tcp_soc
 
 
 
-typedef codebase::net::http::websocket::client::Connection WebSocket;
-typedef codebase::net::http::websocket::client::Message    Message;
-typedef codebase::net::http::websocket::client::Delegate   WebSocketDelegate;
+typedef net::http::client::websocket::Connection WebSocket;
+typedef net::http::client::websocket::Message    Message;
+typedef net::http::client::websocket::Delegate   WebSocketDelegate;
 
 class MockWebSocketDelegate : public WebSocketDelegate {
 public:
@@ -247,7 +251,7 @@ ACTION_P(Resume, cv) {
 	cv->notify_one();
 }
 
-TEST_F(codebase_http_client_test, websocket_client_connection) {
+TEST_F(HttpClientTest, websocket_client_connection) {
 
 	MongooseDelegate mongoose_delegate;
 	BindDelegate(&mongoose_delegate);
@@ -256,7 +260,7 @@ TEST_F(codebase_http_client_test, websocket_client_connection) {
 	EXPECT_CALL(mongoose_delegate, OnClose(_));
 
 
-	typedef codebase::net::http::websocket::client::Connection WebSocket;
+	typedef net::http::client::websocket::Connection WebSocket;
 
 	boost::asio::io_service io_service;
 	MockWebSocketDelegate websocket_delegate;

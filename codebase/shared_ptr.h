@@ -4,6 +4,7 @@
 // NOTE(ghilbut): this code came from boost::intrusive_ptr template.
 
 #include <atomic>
+#include <functional>
 #include <cassert>
 
 

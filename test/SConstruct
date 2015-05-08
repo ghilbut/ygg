@@ -40,8 +40,13 @@ sources += Glob('../codebase/*_test.c*')
 sources += Glob('../net/*.c*')
 sources += Glob('../libbox/*.c*')
 
-LIBS = ['gmock', 'jsoncpp', 'mongoose']
+LIBS = [
+  'libboost_system-mt-s',
+  'libboost_thread-mt-s',
+  'gmock', 'jsoncpp', 'mongoose']
+
 LIBPATH = [
+  get_libpath('third_party/boost_1_57_0/lib'),
   get_libpath('gmock'),
   get_libpath('jsoncpp'),
   get_libpath('mongoose')]

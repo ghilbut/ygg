@@ -1,26 +1,25 @@
-#include "http_websocket_client_connection.h"
-#include "http_websocket_client_delegate.h"
+#include "http_client_websocket_connection.h"
+#include "http_client_websocket_delegate.h"
 
 
-namespace codebase {
 namespace net {
 namespace http {
-namespace websocket {
 namespace client {
+namespace websocket {
 
 
-Connection::Ptr Connection::New(boost::asio::io_service &io_service, const std::string& url, Delegate* delegate) {
+Connection::Ptr Connection::New(boost::asio::io_service & io_service, const std::string & url, Delegate * delegate) {
 	return Ptr(new Connection(io_service, url, delegate));
 }
 
-void Connection::Send(const Message *msg) {
+void Connection::Send(const Message * msg) {
 
 	if (readyState_ != OPEN) {
 		return;
 	}	
 }
 
-void Connection::Close(const boost::system::error_code& err) {
+void Connection::Close(const boost::system::error_code & err) {
 
 	if (readyState_ == CLOSING || readyState_ == CLOSED) {
 		return;
@@ -29,7 +28,7 @@ void Connection::Close(const boost::system::error_code& err) {
 	io_service_.post(boost::bind(&Connection::handle_close, this, err));
 }
 
-const std::string& Connection::url() const {
+const std::string & Connection::url() const {
 	return url_;
 }
 
@@ -37,7 +36,7 @@ Connection::ReadyState Connection::readyState() const {
 	return readyState_;
 }
 
-Connection::Connection(boost::asio::io_service &io_service, const std::string& url, Delegate* delegate)
+Connection::Connection(boost::asio::io_service & io_service, const std::string & url, Delegate * delegate)
 	: url_(url)
 	, readyState_(CONNECTING)
 	, delegate_(delegate)
@@ -47,8 +46,8 @@ Connection::Connection(boost::asio::io_service &io_service, const std::string& u
 	
 
 
-	char *path = "box";
-	char *host = "localhost";
+	const char path[] = "box";
+	const char host[] = "localhost";
 
 
 
@@ -75,7 +74,7 @@ Connection::Connection(boost::asio::io_service &io_service, const std::string& u
 
 
 
-void Connection::handle_resolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) {
+void Connection::handle_resolve(const boost::system::error_code & err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) {
 
 	if (err) {
 		Close(err);
@@ -88,7 +87,7 @@ void Connection::handle_resolve(const boost::system::error_code& err, boost::asi
 		boost::asio::placeholders::error));
 }
 
-void Connection::handle_connect(const boost::system::error_code& err) {
+void Connection::handle_connect(const boost::system::error_code & err) {
 
 	if (err) {
 		Close(err);
@@ -99,7 +98,7 @@ void Connection::handle_connect(const boost::system::error_code& err) {
 		boost::asio::placeholders::error));
 }
 
-void Connection::handle_handshake_request(const boost::system::error_code& err) {
+void Connection::handle_handshake_request(const boost::system::error_code & err) {
 
 	if (err) {
 		Close(err);
@@ -113,7 +112,7 @@ void Connection::handle_handshake_request(const boost::system::error_code& err) 
 		boost::asio::placeholders::error));
 }
 
-void Connection::handle_handshake_response_status(const boost::system::error_code& err) {
+void Connection::handle_handshake_response_status(const boost::system::error_code & err) {
 
 	if (err) {
 		Close(err);
@@ -130,13 +129,11 @@ void Connection::handle_handshake_response_status(const boost::system::error_cod
 	response_stream >> status_code;
 	std::string status_message;
 	std::getline(response_stream, status_message);
-	if (!response_stream || http_version.substr(0, 5) != "HTTP/")
-	{
+	if (!response_stream || http_version.substr(0, 5) != "HTTP/") {
 		std::cout << "Invalid response\n";
 		return;
 	}
-	if (status_code != 101)
-	{
+	if (status_code != 101) {
 		std::cout << "Response returned with status code ";
 		std::cout << status_code << "\n";
 		return;
@@ -148,7 +145,7 @@ void Connection::handle_handshake_response_status(const boost::system::error_cod
 		boost::asio::placeholders::error));
 }
 
-void Connection::handle_handshake_response_headers(const boost::system::error_code& err) {
+void Connection::handle_handshake_response_headers(const boost::system::error_code & err) {
 
 	if (err) {
 		Close(err);
@@ -171,8 +168,9 @@ void Connection::handle_handshake_response_headers(const boost::system::error_co
 	std::cout << "\n";
 
 	// Write whatever content we already have to output.
-	if (response_.size() > 0)
+	if (response_.size() > 0) {
 		std::cout << &response_;
+    }
 
 	// Start reading remaining data until EOF.
 	boost::asio::async_read(socket_, response_,
@@ -202,7 +200,7 @@ void Connection::handle_handshake_response_headers(const boost::system::error_co
 // |                     Payload Data continued ...                |
 // +---------------------------------------------------------------+
 
-void Connection::handle_recv_message_headers(const boost::system::error_code& err)
+void Connection::handle_recv_message_headers(const boost::system::error_code & err)
 {
 	if (err) {
 		Close(err);
@@ -218,7 +216,7 @@ void Connection::handle_recv_message_headers(const boost::system::error_code& er
 		boost::asio::placeholders::error));
 }
 
-void Connection::handle_recv_message_payload(const boost::system::error_code& err)
+void Connection::handle_recv_message_payload(const boost::system::error_code & err)
 {
 	if (err) {
 		Close(err);
@@ -234,11 +232,11 @@ void Connection::handle_recv_message_payload(const boost::system::error_code& er
 		boost::asio::placeholders::error));
 }
 
-void Connection::handle_send_message(const boost::system::error_code& err) {
+void Connection::handle_send_message(const boost::system::error_code & err) {
 
 }
 
-void Connection::handle_close(const boost::system::error_code& err) {
+void Connection::handle_close(const boost::system::error_code & err) {
 
 	if (err) {
 		std::cout << "Error: " << err.message() << "\n";
@@ -251,17 +249,7 @@ void Connection::handle_close(const boost::system::error_code& err) {
 }
 
 
-}  // namespace client
 }  // namespace websocket
+}  // namespace client
 }  // namespace http
 }  // namespace net
-}  // namespace codebase
-
-
-void intrusive_ptr_add_ref(codebase::net::http::websocket::client::Connection *conn) {
-	conn->add_ref();
-}
-
-void intrusive_ptr_release(codebase::net::http::websocket::client::Connection *conn) {
-	conn->release();
-}
