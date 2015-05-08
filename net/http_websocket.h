@@ -34,6 +34,7 @@ public:
 
 private:
     Impl * pimpl_;
+    Delegate * delegate_;
 };
 
 

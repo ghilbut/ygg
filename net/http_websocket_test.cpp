@@ -14,8 +14,8 @@ class WebSocketTest : public ::testing::Test {
 
 class WebSocketDelegateMock : public WebSocket::Delegate {
 public:
-    MOCK_METHOD1(OnTextMessage, void(const std::string&));
-    MOCK_METHOD0(OnClosed, void());
+    MOCK_METHOD2(OnTextMessage, void(WebSocket*, const std::string&));
+    MOCK_METHOD1(OnClosed, void(WebSocket*));
 };
 
 
@@ -30,12 +30,12 @@ TEST_F(WebSocketTest, test_bind_delegate_and_fire_events) {
 
     const char * const expected = "second";
 
-    WebSocketDelegateMock mock;
-    EXPECT_CALL(mock, OnTextMessage(expected)).Times(2);
-    EXPECT_CALL(mock, OnClosed()).Times(2);
-
     WebSocket::Impl * pimpl = new FakeWebSocketImpl();
     WebSocket ws(pimpl);
+
+    WebSocketDelegateMock mock;
+    EXPECT_CALL(mock, OnTextMessage(&ws, expected)).Times(2);
+    EXPECT_CALL(mock, OnClosed(&ws)).Times(2);
 
     ws.FireOnTextMessageEvent("first");
     ws.FireOnClosedEvent();

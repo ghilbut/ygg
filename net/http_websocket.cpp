@@ -1,5 +1,6 @@
 #include "http_websocket.h"
 
+#include "http_websocket_delegate.h"
 #include "http_websocket_impl.h"
 #include <cassert>
 
@@ -9,8 +10,8 @@ namespace http {
 
 
 WebSocket::WebSocket(Impl * pimpl)
-    : pimpl_(pimpl) {
-    
+    : pimpl_(pimpl), delegate_(nullptr) {
+    assert(pimpl_ != nullptr);
 }
 
 WebSocket::WebSocket(mg_connection * conn)
@@ -31,19 +32,23 @@ size_t WebSocket::SendBinaryMessage(const uint8_t bytes[], size_t size) const {
 }
 
 void WebSocket::BindDelegate(Delegate * delegate) {
-    pimpl_->BindDelegate(delegate);
+    delegate_ = delegate;
 }
 
 void WebSocket::UnbindDelegate() {
-    pimpl_->UnbindDelegate();
+    delegate_ = nullptr;
 }
 
 void WebSocket::FireOnTextMessageEvent(const std::string & text) {
-    pimpl_->FireOnTextMessageEvent(text);
+    if (delegate_ != nullptr) {
+        delegate_->OnTextMessage(this, text);
+    }
 }
 
 void WebSocket::FireOnClosedEvent() {
-    pimpl_->FireOnClosedEvent();
+    if (delegate_ != nullptr) {
+        delegate_->OnClosed(this);
+    }
 }
 
 

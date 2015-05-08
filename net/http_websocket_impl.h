@@ -16,15 +16,9 @@ public:
     virtual size_t SendTextMessage(const std::string & text) const;
     virtual size_t SendBinaryMessage(const uint8_t bytes[], size_t size) const;
 
-    void BindDelegate(Delegate * delegate);
-    void UnbindDelegate();
-
-    void FireOnTextMessageEvent(const std::string & text);
-    void FireOnClosedEvent();
 
 private:
     mg_connection * conn_;
-    Delegate * delegate_;
 };
 
 

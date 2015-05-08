@@ -10,8 +10,8 @@ namespace http {
 
 class WebSocket::Delegate {
 public:
-    virtual void OnTextMessage(const std::string & text) = 0;
-    virtual void OnClosed() = 0;
+    virtual void OnTextMessage(WebSocket * ws, const std::string & text) = 0;
+    virtual void OnClosed(WebSocket * ws) = 0;
 
 protected:
     Delegate() {}

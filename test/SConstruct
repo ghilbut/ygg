@@ -22,7 +22,8 @@ CPPPATH = [
   get_libpath('third_party/boost_1_57_0/include'),
   get_libpath('third_party/mongoose-5.5'),
   get_libpath('third_party/gmock-1.7.0/gtest/include'),
-  get_libpath('third_party/gmock-1.7.0/include')]
+  get_libpath('third_party/gmock-1.7.0/include'),
+  '../']
 
 env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
 
@@ -31,10 +32,13 @@ if os.name == 'posix':
 
 
 
-sources = ['empty.cpp']
+sources = [
+  'empty.cpp',
+  'fake_websocket_impl.cpp']
 sources += Glob('../codebase/*_test.c*')
 #sources += Glob('../net/*_test.c*')
 sources += Glob('../net/*.c*')
+sources += Glob('../libbox/*.c*')
 
 LIBS = ['gmock', 'jsoncpp', 'mongoose']
 LIBPATH = [
