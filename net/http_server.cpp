@@ -9,7 +9,8 @@
 
 
 
-namespace codebase {
+namespace net {
+namespace http {
 
 
 HttpServer::NullDelegate * const HttpServer::kNullDelegate_ = HttpServer::NewNullDelegate();
@@ -25,7 +26,7 @@ void HttpServer::DelNullDelegate() {
 }
 
 
-HttpServer::HttpServer(HttpServerDelegate *delegate)
+HttpServer::HttpServer(ServerDelegate *delegate)
 	: server_(0)
 	, delegate_(delegate == nullptr ? kNullDelegate_ : delegate)
 	, is_running_(false)
@@ -102,7 +103,7 @@ void HttpServer::run() {
     is_running_ = false;
 }
 
-int HttpServer::ev_handler(struct mg_connection *conn, enum mg_event ev) {
+int HttpServer::ev_handler(mg_connection * conn, enum mg_event ev) {
 
     HttpServer *self = static_cast<HttpServer*>(conn->server_param);
 
@@ -126,17 +127,17 @@ int HttpServer::ev_handler(struct mg_connection *conn, enum mg_event ev) {
     return MG_FALSE;
 }
 
-int HttpServer::handle_auth(struct mg_connection *conn) {
+int HttpServer::handle_auth(mg_connection * conn) {
     return MG_TRUE;
 }
 
-int HttpServer::handle_request(struct mg_connection *conn) {
+int HttpServer::handle_request(mg_connection * conn) {
 
     delegate_->OnRequest();
     return MG_TRUE;
 }
 
-int HttpServer::handle_ws_request(struct mg_connection *conn) {
+int HttpServer::handle_ws_request(mg_connection * conn) {
 
     if (conn->content_len > 0) {
         if (conn->wsbits & WEBSOCKET_OPCODE_TEXT) {
@@ -151,7 +152,7 @@ int HttpServer::handle_ws_request(struct mg_connection *conn) {
     return MG_TRUE;
 }
 
-int HttpServer::handle_close(struct mg_connection *conn) {
+int HttpServer::handle_close(mg_connection * conn) {
 
     auto itr = ws_table_.find(conn);
     if (itr != ws_table_.end()) {
@@ -161,11 +162,13 @@ int HttpServer::handle_close(struct mg_connection *conn) {
     return MG_TRUE;
 }
 
-int HttpServer::handle_ws_connect(struct mg_connection *conn) {
+int HttpServer::handle_ws_connect(mg_connection * conn) {
     HttpWebsocket ws(conn);
     ws_table_[conn] = ws;
     delegate_->OnConnect(ws);
     return MG_FALSE;
 }
 
-}  // namespace codebase
+
+}  // namespace http
+}  // namespace net

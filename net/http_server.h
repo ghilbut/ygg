@@ -1,5 +1,5 @@
-#ifndef LOCALBOX_PROXY_HTTP_HTTP_SERVER_H_
-#define LOCALBOX_PROXY_HTTP_HTTP_SERVER_H_
+#ifndef YGG_NET_HTTP_SERVER_H_
+#define YGG_NET_HTTP_SERVER_H_
 
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
@@ -13,15 +13,16 @@ struct mg_connection;
 enum mg_event;
 
 
-namespace codebase {
+namespace net {
+namespace http {
 
 
-class HttpServerDelegate;
-class HttpWebsocket;
+class ServerDelegate;
+class Websocket;
 
 class HttpServer {
 public:
-	explicit HttpServer(HttpServerDelegate *delegate = nullptr);
+	explicit HttpServer(ServerDelegate *delegate = nullptr);
     ~HttpServer();
 
     void Start(int port);
@@ -35,12 +36,12 @@ public:
 private:
     void run();
 
-    static int ev_handler(struct mg_connection *conn, enum mg_event ev);
-    int handle_auth(struct mg_connection *conn);
-    int handle_request(struct mg_connection *conn);
-    int handle_ws_request(struct mg_connection *conn);
-    int handle_close(struct mg_connection *conn);
-    int handle_ws_connect(struct mg_connection *conn);
+    static int ev_handler(mg_connection * conn, enum mg_event ev);
+    int handle_auth(mg_connection * conn);
+    int handle_request(mg_connection * conn);
+    int handle_ws_request(mg_connection * conn);
+    int handle_close(mg_connection * conn);
+    int handle_ws_connect(mg_connection * conn);
     
 
 
@@ -51,7 +52,7 @@ private:
 	static void DelNullDelegate();
 
     struct mg_server *server_;
-    HttpServerDelegate *delegate_;
+    ServerDelegate *delegate_;
 
 	std::mutex mutex_;
 	std::condition_variable cv_;
@@ -60,11 +61,12 @@ private:
 	boost::atomic_bool is_stopped_;
     boost::thread thread_;
 
-    typedef std::map<struct mg_connection*, HttpWebsocket> WSTable;
+    typedef std::map<mg_connection*, Websocket> WSTable;
     WSTable ws_table_;
 };
 
 
-}  // namespace codebase
+}  // namespace http
+}  // namespace net
 
-#endif  // LOCALBOX_PROXY_HTTP_HTTP_SERVER_H_
+#endif  // YGG_NET_HTTP_SERVER_H_

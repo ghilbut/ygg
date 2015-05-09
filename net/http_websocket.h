@@ -1,5 +1,5 @@
-#ifndef YGG_NET_HTTP_WEBSOCKET_H_
-#define YGG_NET_HTTP_WEBSOCKET_H_
+#ifndef YGG_NET_HTTP_SERVER_WEBSOCKET_SESSION_H_
+#define YGG_NET_HTTP_SERVER_WEBSOCKET_SESSION_H_
 
 #include <string>
 #include <cstdint>
@@ -42,4 +42,4 @@ private:
 }  // namespace net
 
 
-#endif  // YGG_NET_HTTP_WEBSOCKET_H_
+#endif  // YGG_NET_HTTP_SERVER_WEBSOCKET_SESSION_H_
