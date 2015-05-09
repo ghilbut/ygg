@@ -8,14 +8,21 @@ namespace net {
 namespace http {
 
 
-typedef server::websocket::session WebSocket;
+namespace server {
+namespace websocket {
+    class Session;
+}  // namespce websocket
+}  // namespace server
+
+typedef server::websocket::Session WebSocket;
+
 
 class ServerDelegate {
 public:
-    virtual void OnRequest(void) = 0;
-    virtual void OnConnect(Websocket * ws) = 0;
-    virtual void OnTextMessage(Websocket * ws, const std::string & text) = 0;
-    virtual void OnClose(Websocket * ws) = 0;
+    virtual void OnRequest() = 0;
+    virtual void OnConnect(WebSocket * ws) = 0;
+    virtual void OnTextMessage(WebSocket * ws, const std::string & text) = 0;
+    virtual void OnClose(WebSocket * ws) = 0;
 
 protected:
     virtual ~ServerDelegate() {}

@@ -1,24 +1,27 @@
 #include "http_server_null_delegate.h"
-#include "http_websocket.h"
-
-namespace codebase {
+#include "http_server_websocket_session.h"
 
 
-void HttpServer::NullDelegate::OnRequest(void) {
+namespace net {
+namespace http {
+
+
+void HttpServer::NullDelegate::OnRequest() {
 	// TODO(ghilbut): null state handler
 };
 
-void HttpServer::NullDelegate::OnConnect(HttpWebsocket &ws) {
-	ws.Close();
+void HttpServer::NullDelegate::OnConnect(WebSocket * ws) {
+	ws->Close();
 }
 
-void HttpServer::NullDelegate::OnTextMessage(HttpWebsocket &ws, const std::string &text) {
-	ws.Close();
+void HttpServer::NullDelegate::OnTextMessage(WebSocket * ws, const std::string & text) {
+	ws->Close();
 }
 
-void HttpServer::NullDelegate::OnClose(HttpWebsocket &ws) {
+void HttpServer::NullDelegate::OnClose(WebSocket * ws) {
 	// nothing
 }
 
 
-}  // namespace codebase
+}  // namespace http
+}  // namespace net

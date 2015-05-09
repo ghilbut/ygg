@@ -1,17 +1,19 @@
 #ifndef YGG_NET_HTTP_WEBSOCKET_DELEGATE_H_
 #define YGG_NET_HTTP_WEBSOCKET_DELEGATE_H_
 
-#include "http_websocket.h"
+#include "http_server_websocket_session.h"
 
 
 namespace net {
 namespace http {
+namespace server {
+namespace websocket {
 
 
-class WebSocket::Delegate {
+class Session::Delegate {
 public:
-    virtual void OnTextMessage(WebSocket * ws, const std::string & text) = 0;
-    virtual void OnClosed(WebSocket * ws) = 0;
+    virtual void OnTextMessage(Session * ws, const std::string & text) = 0;
+    virtual void OnClosed(Session * ws) = 0;
 
 protected:
     Delegate() {}
@@ -19,6 +21,8 @@ protected:
 };
 
 
+}  // namespace websocket
+}  // namespace server
 }  // namespace http
 }  // namespace net
 

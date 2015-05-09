@@ -1,20 +1,23 @@
-#ifndef YGG_NET_HTTP_WEBSOCKET_IMPL_H_
-#define YGG_NET_HTTP_WEBSOCKET_IMPL_H_
+#ifndef YGG_HTTP_SERVER_WEBSOCKET_SESSION_IMPL_H_
+#define YGG_HTTP_SERVER_WEBSOCKET_SESSION_IMPL_H_
 
-#include "http_websocket.h"
+#include "http_server_websocket_session.h"
 
 
 namespace net {
 namespace http {
+namespace server {
+namespace websocket {
 
 
-class WebSocket::Impl {
+class Session::Impl {
 public:
-    explicit Impl(struct mg_connection * conn = nullptr);
+    explicit Impl(mg_connection * conn = nullptr);
     virtual ~Impl();
 
     virtual size_t SendTextMessage(const std::string & text) const;
     virtual size_t SendBinaryMessage(const uint8_t bytes[], size_t size) const;
+    virtual void Close();
 
 
 private:
@@ -22,8 +25,10 @@ private:
 };
 
 
-}  // namespace net
+}  // namespace websocket
+}  // namespace server
 }  // namespace http
+}  // namespace net
 
 
-#endif  // YGG_NET_HTTP_WEBSOCKET_IMPL_H_
+#endif  // YGG_HTTP_SERVER_WEBSOCKET_SESSION_IMPL_H_

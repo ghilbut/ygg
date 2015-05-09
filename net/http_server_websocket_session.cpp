@@ -1,56 +1,64 @@
-#include "http_websocket.h"
+#include "http_server_websocket_session.h"
 
-#include "http_websocket_delegate.h"
-#include "http_websocket_impl.h"
+#include "http_server_websocket_session_delegate.h"
+#include "http_server_websocket_session_impl.h"
 #include <cassert>
 
 
 namespace net {
 namespace http {
+namespace server {
+namespace websocket {
 
 
-WebSocket::WebSocket(Impl * pimpl)
+Session::Session(Impl * pimpl)
     : pimpl_(pimpl), delegate_(nullptr) {
     assert(pimpl_ != nullptr);
 }
 
-WebSocket::WebSocket(mg_connection * conn)
+Session::Session(mg_connection * conn)
     : pimpl_(new Impl(conn)) {
     assert(conn != nullptr);
 }
 
-WebSocket::~WebSocket() {
+Session::~Session() {
     delete pimpl_;
 }
 
-size_t WebSocket::SendTextMessage(const std::string & text) const {
+size_t Session::SendTextMessage(const std::string & text) const {
     return pimpl_->SendTextMessage(text);
 }
 
-size_t WebSocket::SendBinaryMessage(const uint8_t bytes[], size_t size) const {
+size_t Session::SendBinaryMessage(const uint8_t bytes[], size_t size) const {
     return pimpl_->SendBinaryMessage(bytes, size);
 }
 
-void WebSocket::BindDelegate(Delegate * delegate) {
+void Session::Close() {
+    pimpl_->Close();
+}
+
+void Session::BindDelegate(Delegate * delegate) {
     delegate_ = delegate;
 }
 
-void WebSocket::UnbindDelegate() {
+void Session::UnbindDelegate() {
     delegate_ = nullptr;
 }
 
-void WebSocket::FireOnTextMessageEvent(const std::string & text) {
+void Session::FireOnTextMessageEvent(const std::string & text) {
     if (delegate_ != nullptr) {
         delegate_->OnTextMessage(this, text);
     }
 }
 
-void WebSocket::FireOnClosedEvent() {
+void Session::FireOnClosedEvent() {
     if (delegate_ != nullptr) {
         delegate_->OnClosed(this);
     }
 }
 
 
+}  // namespace websocket
+}  // namespace server
 }  // namespace http
 }  // namespace net

@@ -1,11 +1,12 @@
 #ifndef YGG_LIBBOX_BOX_READY_H_
 #define YGG_LIBBOX_BOX_READY_H_
 
-#include "net/http_websocket_delegate.h"
+#include "net/http_server_websocket_session_delegate.h"
 #include <set>
 
 
-using namespace net::http;
+using namespace net::http::server::websocket;
+typedef Session WebSocket;
 
 
 namespace box {

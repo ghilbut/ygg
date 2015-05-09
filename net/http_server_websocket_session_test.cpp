@@ -1,39 +1,49 @@
 #include <gmock/gmock.h>
 
 //#include "http_websocket.h"
-#include "http_websocket_impl.h"
-#include "http_websocket_delegate.h"
+#include "http_server_websocket_session_impl.h"
+#include "http_server_websocket_session_delegate.h"
 
-using namespace net::http;
+using namespace net::http::server::websocket;
 using ::testing::_;
 
 
-class WebSocketTest : public ::testing::Test {
+class SessionTest : public ::testing::Test {
 };
 
 
-class WebSocketDelegateMock : public WebSocket::Delegate {
+class SessionDelegateMock : public Session::Delegate {
 public:
-    MOCK_METHOD2(OnTextMessage, void(WebSocket*, const std::string&));
-    MOCK_METHOD1(OnClosed, void(WebSocket*));
+    MOCK_METHOD2(OnTextMessage, void(Session*, const std::string&));
+    MOCK_METHOD1(OnClosed, void(Session*));
 };
 
 
-class FakeWebSocketImpl : public WebSocket::Impl {
+class FakeSessionImpl : public Session::Impl {
 public:
-    FakeWebSocketImpl() {}
-    ~FakeWebSocketImpl() {}
+    FakeSessionImpl() {}
+    ~FakeSessionImpl() {}
+
+    size_t SendTextMessage(const std::string & text) const {
+        return text.length();
+    }
+
+    size_t SendBinaryMessage(const uint8_t bytes[], size_t size) const {
+        return size;
+    }
+
+    void Close() {}
 };
 
 
-TEST_F(WebSocketTest, test_bind_delegate_and_fire_events) {
+TEST_F(SessionTest, test_bind_delegate_and_fire_events) {
 
     const char * const expected = "second";
 
-    WebSocket::Impl * pimpl = new FakeWebSocketImpl();
-    WebSocket ws(pimpl);
+    Session::Impl * pimpl = new FakeSessionImpl();
+    Session ws(pimpl);
 
-    WebSocketDelegateMock mock;
+    SessionDelegateMock mock;
     EXPECT_CALL(mock, OnTextMessage(&ws, expected)).Times(2);
     EXPECT_CALL(mock, OnClosed(&ws)).Times(2);
 
@@ -51,5 +61,5 @@ TEST_F(WebSocketTest, test_bind_delegate_and_fire_events) {
     ws.FireOnClosedEvent();
 }
 
-TEST_F(WebSocketTest, test_w) {
+TEST_F(SessionTest, test_w) {
 }

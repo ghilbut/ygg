@@ -1,8 +1,7 @@
 #include "http_server.h"
 #include "http_server_delegate.h"
 #include "http_server_null_delegate.h"
-#include "http_websocket.h"
-#include <mongoose.h>
+#include "http_server_websocket_session.h"
 #include <boost/bind.hpp>
 #include <cassert>
 #include <cstdio>
@@ -56,7 +55,8 @@ void HttpServer::Start(int port) {
     server_ = mg_create_server(this, &HttpServer::ev_handler);
     mg_set_option(server_, "listening_port", sport);
 
-    thread_.swap(boost::thread(boost::bind(&HttpServer::run, this)));
+    boost::thread t(boost::bind(&HttpServer::run, this));
+    thread_.swap(t);
 
 	std::unique_lock<std::mutex> lock(mutex_);
 	cv_.wait(lock, [this]() { return (bool) is_running_; });
@@ -141,7 +141,7 @@ int HttpServer::handle_ws_request(mg_connection * conn) {
 
     if (conn->content_len > 0) {
         if (conn->wsbits & WEBSOCKET_OPCODE_TEXT) {
-            HttpWebsocket &ws = ws_table_[conn];
+            WebSocket * ws = ws_table_[conn];
             const std::string text(conn->content, conn->content + conn->content_len);
             delegate_->OnTextMessage(ws, text);
         }
@@ -163,7 +163,7 @@ int HttpServer::handle_close(mg_connection * conn) {
 }
 
 int HttpServer::handle_ws_connect(mg_connection * conn) {
-    HttpWebsocket ws(conn);
+    WebSocket * ws = new WebSocket(conn);
     ws_table_[conn] = ws;
     delegate_->OnConnect(ws);
     return MG_FALSE;

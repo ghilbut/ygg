@@ -1,6 +1,7 @@
 #ifndef YGG_NET_HTTP_SERVER_H_
 #define YGG_NET_HTTP_SERVER_H_
 
+#include <mongoose.h>
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
 #include <condition_variable>
@@ -8,17 +9,21 @@
 #include <mutex>
 
 
-struct mg_server;
-struct mg_connection;
-enum mg_event;
-
-
 namespace net {
 namespace http {
 
 
 class ServerDelegate;
-class Websocket;
+
+
+namespace server {
+namespace websocket {
+    class Session;
+}  // namespace websocket
+}  // namespace server
+
+typedef server::websocket::Session WebSocket;
+
 
 class HttpServer {
 public:
@@ -61,7 +66,7 @@ private:
 	boost::atomic_bool is_stopped_;
     boost::thread thread_;
 
-    typedef std::map<mg_connection*, Websocket> WSTable;
+    typedef std::map<mg_connection*, WebSocket *> WSTable;
     WSTable ws_table_;
 };
 

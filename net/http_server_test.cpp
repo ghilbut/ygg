@@ -1,7 +1,10 @@
 #include "gmock/gmock.h"
-#include "codebase/net/http/http_server.h"
+#include "http_server.h"
 #include <websocketpp/client.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
+
+
+typedef net::http::HttpServer HttpServer;
 
 
 class codebase_http_server_test : public ::testing::Test {
@@ -16,7 +19,7 @@ protected:
 
 protected:
 	static const int kPort = 80;
-	codebase::HttpServer httpd_;
+	HttpServer httpd_;
 };
 
 
@@ -63,7 +66,7 @@ private:
 
 
 TEST_F(codebase_http_server_test, running_status_validation_test) {
-	codebase::HttpServer httpd;
+	HttpServer httpd;
 	httpd.Start(81);
 	ASSERT_TRUE(httpd.IsRunning());
 	httpd.Stop();

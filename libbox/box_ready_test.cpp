@@ -1,13 +1,11 @@
 #include <gmock/gmock.h>
 
-#include "test/fake_websocket_impl.h"
 #include "box_ready.h"
 #include "box_ready_delegate.h"
+#include "net/http_server_websocket_session_impl.h"
 
 
-using namespace net::http;
-using namespace box;
-//using namespace test::fake;
+namespace box {
 
 
 class BoxReadyTest : public ::testing::Test {
@@ -93,3 +91,4 @@ TEST_F(BoxReadyTest, test_remove_box_connection_when_disconnected) {
 }
 
 
+}  // namespace box

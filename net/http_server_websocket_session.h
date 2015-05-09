@@ -10,20 +10,23 @@ struct mg_connection;
 
 namespace net {
 namespace http {
+namespace server {
+namespace websocket {
 
 
-class WebSocket {
+class Session {
 public:
     class Impl;
     class Delegate;
 
 public:
-    explicit WebSocket(mg_connection * conn);
-    explicit WebSocket(Impl * pimpl);
-    ~WebSocket();
+    explicit Session(mg_connection * conn);
+    explicit Session(Impl * pimpl);
+    ~Session();
 
     size_t SendTextMessage(const std::string & text) const;
     size_t SendBinaryMessage(const uint8_t bytes[], size_t size) const;
+    void Close();
 
     void BindDelegate(Delegate * delegate);
     void UnbindDelegate();
@@ -38,6 +41,8 @@ private:
 };
 
 
+}  // namespace websocket
+}  // namespace server
 }  // namespace http
 }  // namespace net
 
