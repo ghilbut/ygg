@@ -41,9 +41,6 @@ public:
 TEST_F(SessionTest, test_bind_delegate_and_fire_events) {
 
     const char * const expected = "second";
-    
-    int cnt = 0;
-    printf("%03d\n", ++cnt);
 
     FakeSession session;
 

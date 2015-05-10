@@ -20,6 +20,7 @@ def get_libpath(subpath):
 
 CPPPATH = [
   get_libpath('third_party/boost_1_57_0/include'),
+  get_libpath('third_party/jsoncpp-1.4.4/include'),
   get_libpath('third_party/mongoose-5.5'),
   get_libpath('third_party/websocketpp-0.5.1'),
   get_libpath('third_party/gmock-1.7.0/gtest/include'),
