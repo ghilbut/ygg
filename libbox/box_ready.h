@@ -1,32 +1,32 @@
 #ifndef YGG_LIBBOX_BOX_READY_H_
 #define YGG_LIBBOX_BOX_READY_H_
 
-#include "net/http_server_websocket_session_delegate.h"
+#include "net/session_delegate.h"
 #include <set>
 
 
-using namespace net::http::server::websocket;
-typedef Session WebSocket;
+using namespace net;
 
 
 namespace box {
 
 
-class BoxReady : public WebSocket::Delegate {
+class BoxReady : public Session::Delegate {
 public:
     BoxReady() {}
     ~BoxReady() {}
 
-    void SetBoxConnection(WebSocket * ws);
-    bool HasBoxConnection(WebSocket * ws) const;
+    void SetBoxSession(Session * session);
+    bool HasBoxSession(Session * session) const;
 
     // WebSocket::Delegate
-    virtual void OnTextMessage(WebSocket * ws, const std::string & text);
-    virtual void OnClosed(WebSocket * ws);
+    virtual void OnText(Session * session, const std::string & text);
+    virtual void OnBinary(Session * session, const uint8_t bytes[], size_t size);
+    virtual void OnClosed(Session * session);
 
 
 private:
-    std::set<WebSocket*> readys_;
+    std::set<Session*> readys_;
 };
 
 

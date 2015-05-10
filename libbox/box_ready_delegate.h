@@ -10,10 +10,9 @@ class BoxProxy;
 
 class BoxReadyDelegate {
 public:
-    virtual void OnBoxReady(BoxProxy * proxy);
+    virtual void OnBoxReady(BoxProxy * proxy) = 0;
 
 protected:
-    BoxReadyDelegate() {}
     virtual ~BoxReadyDelegate() {}
 };
 

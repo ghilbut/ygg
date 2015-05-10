@@ -4,21 +4,25 @@
 namespace box {
 
 
-void BoxReady::SetBoxConnection(WebSocket * ws) {
-    readys_.insert(ws);
-    ws->BindDelegate(this);
+void BoxReady::SetBoxSession(Session * session) {
+    readys_.insert(session);
+    session->BindDelegate(this);
 }
 
-bool BoxReady::HasBoxConnection(WebSocket * ws) const {
-    return readys_.find(ws) != readys_.end();
+bool BoxReady::HasBoxSession(Session * session) const {
+    return readys_.find(session) != readys_.end();
 }
 
-void BoxReady::OnTextMessage(WebSocket * ws, const std::string & text) {
+void BoxReady::OnText(Session * session, const std::string & text) {
 
 }
 
-void BoxReady::OnClosed(WebSocket * ws) {
-    readys_.erase(ws);
+void BoxReady::OnBinary(Session * session, const uint8_t bytes[], size_t size) {
+
+}
+
+void BoxReady::OnClosed(Session * session) {
+    readys_.erase(session);
 }
 
 

@@ -13,8 +13,13 @@ public:
     void OnClosed(Session * session) {}
 };
 
-static NullDelegate g_null_delegate;
+static NullDelegate kNullDelegate;
 
+
+Session::Session()
+    : delegate_(&kNullDelegate) {
+    // nothing
+}
 
 void Session::FireOnTextEvent(const std::string & text) {
     delegate_->OnText(this, text);
@@ -34,7 +39,7 @@ void Session::BindDelegate(Delegate * delegate) {
 }
 
 void Session::UnbindDelegate() {
-    delegate_ = &g_null_delegate;
+    delegate_ = &kNullDelegate;
 }
 
 

@@ -2,7 +2,7 @@
 
 #include "box_ready.h"
 #include "box_ready_delegate.h"
-#include "net/http_server_websocket_session_impl.h"
+#include "net/session.h"
 
 
 namespace box {
@@ -12,34 +12,25 @@ class BoxReadyTest : public ::testing::Test {
 };
 
 
-namespace FakeWebSocket {
-
-class Mock {
+class FakeSession : public net::Session {
 public:
-    MOCK_CONST_METHOD0(constructed, void());
-    MOCK_CONST_METHOD0(destructed, void());
-};
+    FakeSession() {}
+    ~FakeSession() {}
 
-class Impl : public WebSocket::Impl {
-public:
-    explicit Impl(Mock * mock = nullptr) : mock_(mock) {
-        if (mock_ != nullptr) {
-            mock_->constructed();
-        }
+    virtual size_t SendText(const std::string & text) const {
+        return text.length();
     }
 
-    ~Impl() {
-        if (mock_ != nullptr) {
-            mock_->destructed();
-        }
+    virtual size_t SendBinary(const uint8_t bytes[], size_t size) const {
+        return size;
+    }
+
+    virtual void Close() {
+        // nothing
     }
 
 private:
-    Mock * mock_;
 };
-
-}  // namespace FakeWebSocket
-
 
 
 class BosProxy;
@@ -55,39 +46,24 @@ private:
 };
 
 
-
-TEST_F(BoxReadyTest, test_check_lifecycle_of_websocket_impl) {
-
-    // TODO(ghilbut): move to http_websocket_test.cpp
-
-    FakeWebSocket::Mock mock;
-    EXPECT_CALL(mock, constructed()).Times(1);
-    EXPECT_CALL(mock, destructed()).Times(1);
-
-    FakeWebSocket::Impl * pimpl = new FakeWebSocket::Impl(&mock);
-    WebSocket ws(pimpl);
-}
-
 TEST_F(BoxReadyTest, test_set_box_connection) {
 
-    FakeWebSocket::Impl * pimpl = new FakeWebSocket::Impl();
-    WebSocket ws(pimpl);
+    FakeSession session;
 
     box::BoxReady ready;
-    ready.SetBoxConnection(&ws);
-    ASSERT_TRUE(ready.HasBoxConnection(&ws));
+    ready.SetBoxSession(&session);
+    ASSERT_TRUE(ready.HasBoxSession(&session));
 }
 
 TEST_F(BoxReadyTest, test_remove_box_connection_when_disconnected) {
 
-    FakeWebSocket::Impl * pimpl = new FakeWebSocket::Impl();
-    WebSocket ws(pimpl);
+    FakeSession session;
 
     box::BoxReady ready;
-    ready.SetBoxConnection(&ws);
+    ready.SetBoxSession(&session);
 
-    ws.FireOnClosedEvent();
-    ASSERT_FALSE(ready.HasBoxConnection(&ws));
+    session.FireOnClosedEvent();
+    ASSERT_FALSE(ready.HasBoxSession(&session));
 }
 
 

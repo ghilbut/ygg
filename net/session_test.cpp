@@ -41,32 +41,34 @@ public:
 TEST_F(SessionTest, test_bind_delegate_and_fire_events) {
 
     const char * const expected = "second";
+    
+    int cnt = 0;
+    printf("%03d\n", ++cnt);
 
     FakeSession session;
 
-    SessionDelegateMock mock;
-    EXPECT_CALL(mock, OnText(&session, expected)).Times(2);
-    EXPECT_CALL(mock, OnBinary(&session, _, _).Times(2);
-    EXPECT_CALL(mock, OnClosed(&session)).Times(2);
-
     static const uint8_t buffer[10] = {0,};
 
+    SessionDelegateMock mock;
+    EXPECT_CALL(mock, OnText(&session, expected)).Times(2);
+    EXPECT_CALL(mock, OnBinary(&session, buffer, 10)).Times(2);
+    EXPECT_CALL(mock, OnClosed(&session)).Times(2);
+
     session.FireOnTextEvent("first");
-    session.FirOnBinaryEvent(buffer, 10);
-    session.FirOnBinaryEvent(buffer, 10);
+    session.FireOnBinaryEvent(buffer, 10);
     session.FireOnClosedEvent();
 
     session.BindDelegate(&mock);
     session.FireOnTextEvent(expected);
-    session.FirOnBinaryEvent(buffer, 10);
+    session.FireOnBinaryEvent(buffer, 10);
     session.FireOnClosedEvent();
     session.FireOnTextEvent(expected);
-    session.FirOnBinaryEvent(buffer, 10);
+    session.FireOnBinaryEvent(buffer, 10);
     session.FireOnClosedEvent();
     session.UnbindDelegate();
 
     session.FireOnTextEvent("third");
-    session.FirOnBinaryEvent(buffer, 10);
+    session.FireOnBinaryEvent(buffer, 10);
     session.FireOnClosedEvent();
 }
 

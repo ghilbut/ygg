@@ -24,7 +24,7 @@ public:
     void UnbindDelegate();
 
 protected:
-    Session() : delegate_(nullptr) {}
+    Session();
     virtual ~Session() {}
 
 private:
