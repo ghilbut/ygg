@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
 #include "user_ready.h"
-#include "user_ready_delegate.h"
+#include "ready_delegate.h"
 #include "net/session.h"
 
 
@@ -33,14 +33,14 @@ private:
 };
 
 
-class UserServerMock : public UserReadyDelegate {
+class UserServerMock : public Ready::Delegate {
 public:
-    UserServerMock(UserReady & user_ready) : user_ready_(user_ready) {}
+    UserServerMock(UserReady & ready) : ready_(ready) {}
 
-    MOCK_METHOD1(OnUserReady, void(UserProxy*));
+    MOCK_METHOD1(OnReady, void(Proxy*));
 
 private:
-    UserReady & user_ready_;
+    UserReady & ready_;
 };
 
 
@@ -49,8 +49,8 @@ TEST_F(UserReadyTest, test_set_user_session) {
     FakeSession session;
 
     box::UserReady ready;
-    ready.SetUserSession(&session);
-    ASSERT_TRUE(ready.HasUserSession(&session));
+    ready.SetSession(&session);
+    ASSERT_TRUE(ready.HasSession(&session));
 }
 
 TEST_F(UserReadyTest, test_remove_user_session_when_disconnected) {
@@ -58,10 +58,10 @@ TEST_F(UserReadyTest, test_remove_user_session_when_disconnected) {
     FakeSession session;
 
     box::UserReady ready;
-    ready.SetUserSession(&session);
+    ready.SetSession(&session);
 
     session.FireOnClosedEvent();
-    ASSERT_FALSE(ready.HasUserSession(&session));
+    ASSERT_FALSE(ready.HasSession(&session));
 }
 
 

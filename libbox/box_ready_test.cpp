@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
 #include "box_ready.h"
-#include "box_ready_delegate.h"
+#include "ready_delegate.h"
 #include "net/session.h"
 
 
@@ -33,35 +33,35 @@ private:
 };
 
 
-class BoxServerMock : public BoxReadyDelegate {
+class BoxServerMock : public Ready::Delegate {
 public:
-    BoxServerMock(BoxReady & box_ready) : box_ready_(box_ready) {}
+    BoxServerMock(BoxReady & ready) : ready_(ready) {}
 
-    MOCK_METHOD1(OnBoxReady, void(BoxProxy*));
+    MOCK_METHOD1(OnReady, void(Proxy*));
 
 private:
-    BoxReady & box_ready_;
+    BoxReady & ready_;
 };
 
 
-TEST_F(BoxReadyTest, test_set_box_connection) {
+TEST_F(BoxReadyTest, test_set_box_session) {
 
     FakeSession session;
 
     box::BoxReady ready;
-    ready.SetBoxSession(&session);
-    ASSERT_TRUE(ready.HasBoxSession(&session));
+    ready.SetSession(&session);
+    ASSERT_TRUE(ready.HasSession(&session));
 }
 
-TEST_F(BoxReadyTest, test_remove_box_connection_when_disconnected) {
+TEST_F(BoxReadyTest, test_remove_box_session_when_disconnected) {
 
     FakeSession session;
 
     box::BoxReady ready;
-    ready.SetBoxSession(&session);
+    ready.SetSession(&session);
 
     session.FireOnClosedEvent();
-    ASSERT_FALSE(ready.HasBoxSession(&session));
+    ASSERT_FALSE(ready.HasSession(&session));
 }
 
 
