@@ -1,5 +1,5 @@
-#ifndef YGG_LIBBOX_BOX_READY_H_
-#define YGG_LIBBOX_BOX_READY_H_
+#ifndef YGG_LIBBOX_USER_READY_H_
+#define YGG_LIBBOX_USER_READY_H_
 
 #include "net/session_delegate.h"
 #include <set>
@@ -11,13 +11,13 @@ using namespace net;
 namespace box {
 
 
-class BoxReady : public Session::Delegate {
+class UserReady : public Session::Delegate {
 public:
-    BoxReady() {}
-    ~BoxReady() {}
+    UserReady() {}
+    ~UserReady() {}
 
-    void SetBoxSession(Session * session);
-    bool HasBoxSession(Session * session) const;
+    void SetUserSession(Session * session);
+    bool HasUserSession(Session * session) const;
 
     // Session::Delegate
     virtual void OnText(Session * session, const std::string & text);
@@ -33,4 +33,4 @@ private:
 }  // namespace box
 
 
-#endif  // YGG_LIBBOX_BOX_READY_H_
+#endif  // YGG_LIBBOX_USER_READY_H_
