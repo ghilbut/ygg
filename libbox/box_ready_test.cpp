@@ -33,8 +33,6 @@ private:
 };
 
 
-class BosProxy;
-
 class BoxServerMock : public BoxReadyDelegate {
 public:
     BoxServerMock(BoxReady & box_ready) : box_ready_(box_ready) {}

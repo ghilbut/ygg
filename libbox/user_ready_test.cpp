@@ -33,8 +33,6 @@ private:
 };
 
 
-class UserProxy;
-
 class UserServerMock : public UserReadyDelegate {
 public:
     UserServerMock(UserReady & user_ready) : user_ready_(user_ready) {}
