@@ -1,7 +1,7 @@
 #include "ready.h"
 
 
-namespace box {
+namespace codebase {
 
 
 class Proxy;
@@ -29,4 +29,4 @@ void Ready::OnClosed(Session * session) {
 }
 
 
-}  // namespace box
+}  // namespace codebase

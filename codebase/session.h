@@ -1,11 +1,11 @@
-#ifndef YGG_NET_SESSION_H_
-#define YGG_NET_SESSION_H_
+#ifndef YGG_CODEBASE_SESSION_H_
+#define YGG_CODEBASE_SESSION_H_
 
 
 #include <string>
 
 
-namespace net {
+namespace codebase {
 
 
 class Session {
@@ -32,7 +32,7 @@ private:
 };
 
 
-}  // namespace net
+}  // namespace codebase
 
 
-#endif  // YGG_NET_SESSION_H_
+#endif  // YGG_CODEBASE_SESSION_H_

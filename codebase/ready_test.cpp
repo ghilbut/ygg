@@ -1,17 +1,17 @@
 #include <gmock/gmock.h>
 
 #include "ready_delegate.h"
-#include "net/session.h"
+#include "session.h"
 
 
-namespace box {
+namespace codebase {
 
 
 class ReadyTest : public ::testing::Test {
 };
 
 
-class FakeSession : public net::Session {
+class FakeSession : public Session {
 public:
     FakeSession() {}
     ~FakeSession() {}
@@ -47,7 +47,7 @@ TEST_F(ReadyTest, test_set_session) {
 
     FakeSession session;
 
-    box::Ready ready;
+    Ready ready;
     ready.SetSession(&session);
     ASSERT_TRUE(ready.HasSession(&session));
 }
@@ -56,7 +56,7 @@ TEST_F(ReadyTest, test_remove_session_when_disconnected) {
 
     FakeSession session;
 
-    box::Ready ready;
+    Ready ready;
     ready.SetSession(&session);
 
     session.FireOnClosedEvent();
@@ -64,4 +64,4 @@ TEST_F(ReadyTest, test_remove_session_when_disconnected) {
 }
 
 
-}  // namespace box
+}  // namespace codebase

@@ -3,7 +3,7 @@
 #include <cassert>
 
 
-namespace net {
+namespace codebase {
 
 
 class NullDelegate : public Session::Delegate {
@@ -43,4 +43,4 @@ void Session::UnbindDelegate() {
 }
 
 
-}  // namespace net
+}  // namespace codebase

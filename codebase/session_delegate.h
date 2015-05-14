@@ -1,11 +1,11 @@
-#ifndef YGG_NET_SESSION_DELEGATE_H_
-#define YGG_NET_SESSION_DELEGATE_H_
+#ifndef YGG_CODEBASE_SESSION_DELEGATE_H_
+#define YGG_CODEBASE_SESSION_DELEGATE_H_
 
 
 #include "session.h"
 
 
-namespace net {
+namespace codebase {
 
 
 class Session::Delegate {
@@ -19,7 +19,7 @@ protected:
 };
 
 
-}  // namespace net
+}  // namespace codebase
 
 
-#endif  // YGG_NET_SESSION_DELEGATE_H_
+#endif  // YGG_CODEBASE_SESSION_DELEGATE_H_

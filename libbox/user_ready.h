@@ -1,12 +1,12 @@
 #ifndef YGG_LIBBOX_USER_READY_H_
 #define YGG_LIBBOX_USER_READY_H_
 
-#include "ready.h"
-#include "net/session_delegate.h"
+#include "codebase/ready.h"
+#include "codebase/session_delegate.h"
 #include <set>
 
 
-using namespace net;
+using namespace codebase;
 
 
 namespace box {

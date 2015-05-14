@@ -1,14 +1,11 @@
-#ifndef YGG_LIBBOX_READY_H_
-#define YGG_LIBBOX_READY_H_
+#ifndef YGG_CODEBASE_READY_H_
+#define YGG_CODEBASE_READY_H_
 
-#include "net/session_delegate.h"
+#include "session_delegate.h"
 #include <set>
 
 
-using namespace net;
-
-
-namespace box {
+namespace codebase {
 
 
 class Ready : public Session::Delegate {
@@ -33,7 +30,7 @@ private:
 };
 
 
-}  // namespace box
+}  // namespace codebase
 
 
-#endif  // YGG_LIBBOX_READY_H_
+#endif  // YGG_CODEBASE_READY_H_

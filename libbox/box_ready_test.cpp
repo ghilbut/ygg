@@ -1,8 +1,11 @@
 #include <gmock/gmock.h>
 
 #include "box_ready.h"
-#include "ready_delegate.h"
-#include "net/session.h"
+#include "codebase/ready_delegate.h"
+#include "codebase/session.h"
+
+
+using namespace codebase;
 
 
 namespace box {
@@ -12,7 +15,7 @@ class BoxReadyTest : public ::testing::Test {
 };
 
 
-class FakeSession : public net::Session {
+class FakeSession : public Session {
 public:
     FakeSession() {}
     ~FakeSession() {}
@@ -48,7 +51,7 @@ TEST_F(BoxReadyTest, test_set_box_session) {
 
     FakeSession session;
 
-    box::BoxReady ready;
+    BoxReady ready;
     ready.SetSession(&session);
     ASSERT_TRUE(ready.HasSession(&session));
 }
@@ -57,7 +60,7 @@ TEST_F(BoxReadyTest, test_remove_box_session_when_disconnected) {
 
     FakeSession session;
 
-    box::BoxReady ready;
+    BoxReady ready;
     ready.SetSession(&session);
 
     session.FireOnClosedEvent();

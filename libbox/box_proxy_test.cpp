@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include "box_info.h"
 #include "box_proxy.h"
-#include "net/session.h"
+#include "codebase/session.h"
 
 
 namespace box {
@@ -11,7 +11,7 @@ class BoxProxyTest : public ::testing::Test {
 };
 
 
-class FakeSession : public net::Session {
+class FakeSession : public codebase::Session {
 public:
     virtual size_t SendText(const std::string & text) const {
         return text.length();

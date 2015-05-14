@@ -36,8 +36,8 @@ if os.name == 'posix':
 
 sources = [
   'empty.cpp']
-sources += Glob('../codebase/*_test.c*')
-#sources += Glob('../net/*_test.c*')
+#sources += Glob('../codebase/*_test.c*')
+sources += Glob('../codebase/*.c*')
 sources += Glob('../net/*.c*')
 sources += Glob('../libbox/*.c*')
 

@@ -1,10 +1,10 @@
 #ifndef YGG_LIBBOX_USER_PROXY_H_
 #define YGG_LIBBOX_USER_PROXY_H_
 
-#include "net/session_delegate.h"
+#include "codebase/session_delegate.h"
 
 
-using namespace net;
+using namespace codebase;
 
 
 namespace box {
@@ -13,7 +13,7 @@ namespace box {
 class UserInfo;
 
 
-class UserProxy : public net::Session::Delegate {
+class UserProxy : public Session::Delegate {
 public:
     static UserProxy * New(const std::string & json, Session * session);
     ~UserProxy();
@@ -30,7 +30,7 @@ private:
 
 private:
     const UserInfo * info_;
-    net::Session * session_;
+    Session * session_;
 };
 
 

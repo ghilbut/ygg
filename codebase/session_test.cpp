@@ -6,7 +6,7 @@
 using ::testing::_;
 
 
-namespace net {
+namespace codebase {
 
 
 class SessionTest : public ::testing::Test {
@@ -70,4 +70,4 @@ TEST_F(SessionTest, test_bind_delegate_and_fire_events) {
 }
 
 
-}  // namespace net
+}  // namespace codebase
