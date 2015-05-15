@@ -1,7 +1,6 @@
 #include <gmock/gmock.h>
 
-#include "ready_delegate.h"
-#include "session.h"
+#include "ready.h"
 
 
 namespace codebase {
@@ -32,14 +31,30 @@ private:
 };
 
 
-class ServerMock : public Ready::Delegate {
+class DummyProxy {
 public:
-    ServerMock(Ready & ready) : ready_(ready) {}
-
-    MOCK_METHOD1(OnReady, void(Proxy*));
+    static DummyProxy * New(const std::string & text, Session * session) {
+        return new DummyProxy(session);
+    }
 
 private:
-    Ready & ready_;
+    DummyProxy(Session * session) : session_(session) {}
+
+private:
+    Session * session_;
+};
+
+
+typedef Ready<DummyProxy> DummyReady;
+
+class ServerMock : public DummyReady::Delegate {
+public:
+    ServerMock(DummyReady & ready) : ready_(ready) {}
+
+    MOCK_METHOD1(OnReady, void(DummyProxy*));
+
+private:
+    DummyReady & ready_;
 };
 
 
@@ -47,7 +62,7 @@ TEST_F(ReadyTest, test_set_session) {
 
     FakeSession session;
 
-    Ready ready;
+    DummyReady ready;
     ready.SetSession(&session);
     ASSERT_TRUE(ready.HasSession(&session));
 }
@@ -56,7 +71,7 @@ TEST_F(ReadyTest, test_remove_session_when_disconnected) {
 
     FakeSession session;
 
-    Ready ready;
+    DummyReady ready;
     ready.SetSession(&session);
 
     session.FireOnClosedEvent();
