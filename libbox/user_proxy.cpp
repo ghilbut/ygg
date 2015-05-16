@@ -8,10 +8,11 @@ namespace box {
 
 
 UserProxy * UserProxy::New(const std::string & json, Session * session) {
+
     assert(!json.empty());
     assert(session != nullptr);
 
-    UserInfo * info = UserInfo::New(json);
+    UserInfo::Ptr info(UserInfo::New(json));
     if (info == nullptr) {
         return nullptr;
     }
@@ -23,7 +24,7 @@ UserProxy::~UserProxy() {
 }
 
 const UserInfo * UserProxy::info() const {
-    return info_;
+    return info_.get();
 }
 
 void UserProxy::OnText(Session * session, const std::string & text) {
@@ -35,9 +36,12 @@ void UserProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) 
 void UserProxy::OnClosed(Session * session) {
 }
 
-UserProxy::UserProxy(const UserInfo * info, Session * session)
+UserProxy::UserProxy(const UserInfo::Ptr & info, Session * session)
     : info_(info), session_(session) {
 
+    assert(info_.get() != nullptr);
+    assert(session_ != nullptr);
+    session_->BindDelegate(this);
 }
 
 

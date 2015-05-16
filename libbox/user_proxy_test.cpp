@@ -29,22 +29,22 @@ public:
 TEST_F(UserProxyTest, test_box_info_returns_null_with_invalid_json_format) {
 
     const std::string json = "012345678";
-    UserInfo * info = UserInfo::New(json);
+    UserInfo::Ptr info(UserInfo::New(json));
 
     ASSERT_TRUE(info == nullptr);
-
-    delete info;
 }
 
 TEST_F(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 
-    const std::string json = "{ \"user-id\": \"user00\" }";
-    UserInfo * info = UserInfo::New(json);
+    const std::string json = 
+        "{ \"user-id\": \"user00\""
+        ", \"box-id\": \"box00\" }";
+
+    UserInfo::Ptr info(UserInfo::New(json));
 
     ASSERT_TRUE(info != nullptr);
     ASSERT_STREQ("user00", info->id());
-
-    delete info;
+    ASSERT_STREQ("box00", info->box_id());
 }
 
 TEST_F(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {

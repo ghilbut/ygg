@@ -1,6 +1,7 @@
 #ifndef YGG_LIBBOX_USER_PROXY_H_
 #define YGG_LIBBOX_USER_PROXY_H_
 
+#include "user_info.h"
 #include "codebase/session_delegate.h"
 
 
@@ -8,9 +9,6 @@ using namespace codebase;
 
 
 namespace box {
-
-
-class UserInfo;
 
 
 class UserProxy : public Session::Delegate {
@@ -26,10 +24,10 @@ public:
     virtual void OnClosed(Session * session);
 
 private:
-    UserProxy(const UserInfo * info, Session * session);
+    UserProxy(const UserInfo::Ptr & info, Session * session);
 
 private:
-    const UserInfo * info_;
+    const UserInfo::Ptr info_;
     Session * session_;
 };
 
