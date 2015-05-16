@@ -9,7 +9,7 @@ namespace websocket {
 
 
 Connection::Ptr Connection::New(boost::asio::io_service & io_service, const std::string & url, Delegate * delegate) {
-	return Ptr(new Connection(io_service, url, delegate));
+	return new Connection(io_service, url, delegate);
 }
 
 void Connection::Send(const Message * msg) {

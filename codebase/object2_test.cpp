@@ -13,7 +13,7 @@ public:
 class TestObject : public Object2<TestObject> {
 public:
     static Ptr New(const Mock &mock) {
-        return Ptr(new TestObject(mock));
+        return new TestObject(mock);
     }
 
 private:
@@ -47,6 +47,7 @@ TEST_F(ObjectTest, test_construction_and_destruction) {
     TestObject::Ptr object = TestObject::New(mock);
 }
 
+/*
 TEST_F(ObjectTest, DISABLED_test_circular) {
 
     Mock mock;
@@ -65,3 +66,4 @@ TEST_F(ObjectTest, DISABLED_test_circular) {
     obj2->ptr_.MakeWeak();
 
 }
+*/

@@ -1,7 +1,7 @@
 #ifndef CODEBASE_OBJECT2_H_
 #define CODEBASE_OBJECT2_H_
 
-#include "shared_ptr.h"
+#include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <atomic>
 
@@ -10,9 +10,20 @@ namespace codebase {
 
 
 template<class T>
+void intrusive_ptr_add_ref(T * px) {
+    px->add_ref();
+}
+
+template<class T>
+void intrusive_ptr_release(T * px) {
+    px->release();
+}
+
+
+template<class T>
 class Object2 : public boost::noncopyable {
 public:
-    typedef SharedPtr<T> Ptr;
+    typedef boost::intrusive_ptr<T> Ptr;
 
 	inline void add_ref(bool is_weak = false) {
         if (is_weak) {
@@ -35,23 +46,19 @@ public:
         }
 
         if (weak_count_ == 0) {
-            delete this;
+            dispose();
         }
 	}
 
-    inline void MakeWeak() {
-        ++weak_count_;
-        --ref_count_;
+    virtual void dispose() {
+        delete this;
     }
 
-    inline void ClearWeak() {
-        ++ref_count_;
-        --weak_count_;
-    }
 
 protected:
 	Object2() : ref_count_({0}), weak_count_({1}) {}
 	virtual ~Object2() {}
+
 
 private:
 	std::atomic_int ref_count_;

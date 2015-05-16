@@ -75,4 +75,5 @@ private:
 }  // namespace net
 
 
+
 #endif  // YGG_NET_HTTP_CLIENT_WEBSOCKET_CONNECTION_H_
