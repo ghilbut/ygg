@@ -1,5 +1,11 @@
 #include <gmock/gmock.h>
+
 #include "object.h"
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+
 
 using namespace codebase;
 
@@ -12,43 +18,44 @@ public:
 
 class TestObject : public Object<TestObject> {
 public:
-    static Ptr New(const Mock &mock) {
+    static Ptr New(const Mock * mock = nullptr) {
         return new TestObject(mock);
     }
 
 private:
-    TestObject(const Mock &mock) 
+    TestObject(const Mock * mock) 
         : Object()
         , mock_(mock) {
-        mock_.constructed();
+
+        if (mock_ != nullptr) {
+            mock_->constructed();
+        }
     }
 
     ~TestObject() {
-        mock_.destructed();
+        if (mock_ != nullptr) {
+            mock_->destructed();
+        }
     }
 
 private:
-    const Mock &mock_;
+    const Mock * mock_;
 public:
     Ptr ptr_;
 };
 
 
-class ObjectTest : public ::testing::Test {
-};
-
-
-TEST_F(ObjectTest, test_construction_and_destruction) {
+TEST(ObjectTest, test_construction_and_destruction) {
 
     Mock mock;
     EXPECT_CALL(mock, constructed()).Times(1);
     EXPECT_CALL(mock, destructed()).Times(1);
 
-    TestObject::Ptr object = TestObject::New(mock);
+    TestObject::Ptr object = TestObject::New(&mock);
 }
 
 /*
-TEST_F(ObjectTest, DISABLED_test_circular) {
+TEST(ObjectTest, DISABLED_test_circular) {
 
     Mock mock;
     EXPECT_CALL(mock, constructed()).Times(3);
@@ -67,3 +74,45 @@ TEST_F(ObjectTest, DISABLED_test_circular) {
 
 }
 */
+
+
+class Hasher {
+public:
+    size_t operator() (const TestObject::Ptr & ptr) const {
+        return std::hash<const TestObject*>()(ptr.get());
+    }
+};
+
+
+TEST(ObjectTest, test_container_key_validation) {
+
+    TestObject::Ptr obj0(TestObject::New());
+    TestObject::Ptr obj1(obj0);
+    TestObject::Ptr obj2(obj1);
+
+    std::set<TestObject::Ptr> set;
+    set.insert(obj0);
+    EXPECT_NE(set.end(), set.find(obj1));
+    EXPECT_NE(set.end(), set.find(obj2));
+
+    std::unordered_set<TestObject::Ptr, Hasher> uset;
+    uset.insert(obj0);
+    EXPECT_NE(uset.end(), uset.find(obj1));
+    EXPECT_NE(uset.end(), uset.find(obj2));
+
+    std::map<TestObject::Ptr, int> map;
+    map[obj0] = 0;
+    map[obj1] = 1;
+    map[obj2] = 2;
+    EXPECT_EQ(2, map[obj0]);
+    EXPECT_EQ(2, map[obj1]);
+    EXPECT_EQ(2, map[obj2]);
+
+    std::unordered_map<TestObject::Ptr, int, Hasher> umap;
+    umap[obj0] = 0;
+    umap[obj1] = 1;
+    umap[obj2] = 2;
+    EXPECT_EQ(2, umap[obj0]);
+    EXPECT_EQ(2, umap[obj1]);
+    EXPECT_EQ(2, umap[obj2]);
+}
