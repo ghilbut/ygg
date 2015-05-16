@@ -1,5 +1,5 @@
-#ifndef CODEBASE_OBJECT2_H_
-#define CODEBASE_OBJECT2_H_
+#ifndef YGG_CODEBASE_OBJECT_H_
+#define YGG_CODEBASE_OBJECT_H_
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
@@ -21,7 +21,7 @@ void intrusive_ptr_release(T * px) {
 
 
 template<class T>
-class Object2 : public boost::noncopyable {
+class Object : public boost::noncopyable {
 public:
     typedef boost::intrusive_ptr<T> Ptr;
 
@@ -56,8 +56,8 @@ public:
 
 
 protected:
-	Object2() : ref_count_({0}), weak_count_({1}) {}
-	virtual ~Object2() {}
+	Object() : ref_count_({0}), weak_count_({1}) {}
+	virtual ~Object() {}
 
 
 private:
@@ -69,4 +69,4 @@ private:
 }  // codebase
 
 
-#endif  // CODEBASE_OBJECT2_H_
+#endif  // YGG_CODEBASE_OBJECT_H_

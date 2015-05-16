@@ -1,7 +1,7 @@
 #ifndef YGG_NET_HTTP_CLIENT_WEBSOCKET_CONNECTION_H_
 #define YGG_NET_HTTP_CLIENT_WEBSOCKET_CONNECTION_H_
 
-#include "codebase/object2.h"
+#include "codebase/object.h"
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <string>
@@ -17,7 +17,7 @@ class Delegate;
 class Message;
 
 
-class Connection : public codebase::Object2<Connection> {
+class Connection : public codebase::Object<Connection> {
 public:
 	typedef enum {
 		CONNECTING = 0,

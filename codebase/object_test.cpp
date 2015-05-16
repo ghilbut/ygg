@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "object2.h"
+#include "object.h"
 
 using namespace codebase;
 
@@ -10,7 +10,7 @@ public:
     MOCK_CONST_METHOD0(destructed, void());
 };
 
-class TestObject : public Object2<TestObject> {
+class TestObject : public Object<TestObject> {
 public:
     static Ptr New(const Mock &mock) {
         return new TestObject(mock);
@@ -18,7 +18,7 @@ public:
 
 private:
     TestObject(const Mock &mock) 
-        : Object2()
+        : Object()
         , mock_(mock) {
         mock_.constructed();
     }

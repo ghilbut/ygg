@@ -1,7 +1,6 @@
 #ifndef YGG_NET_HTTP_CLIENT_WEBSOCKET_DELEGATE_H_
 #define YGG_NET_HTTP_CLIENT_WEBSOCKET_DELEGATE_H_
 
-#include "codebase/object2.h"
 #include <boost/system/error_code.hpp>
 
 
