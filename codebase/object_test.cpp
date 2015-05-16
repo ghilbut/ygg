@@ -75,15 +75,6 @@ TEST(ObjectTest, DISABLED_test_circular) {
 }
 */
 
-
-class Hasher {
-public:
-    size_t operator() (const TestObject::Ptr & ptr) const {
-        return std::hash<const TestObject*>()(ptr.get());
-    }
-};
-
-
 TEST(ObjectTest, test_container_key_validation) {
 
     TestObject::Ptr obj0(TestObject::New());
@@ -95,7 +86,7 @@ TEST(ObjectTest, test_container_key_validation) {
     EXPECT_NE(set.end(), set.find(obj1));
     EXPECT_NE(set.end(), set.find(obj2));
 
-    std::unordered_set<TestObject::Ptr, Hasher> uset;
+    std::unordered_set<TestObject::Ptr, TestObject::Hash> uset;
     uset.insert(obj0);
     EXPECT_NE(uset.end(), uset.find(obj1));
     EXPECT_NE(uset.end(), uset.find(obj2));
@@ -108,7 +99,7 @@ TEST(ObjectTest, test_container_key_validation) {
     EXPECT_EQ(2, map[obj1]);
     EXPECT_EQ(2, map[obj2]);
 
-    std::unordered_map<TestObject::Ptr, int, Hasher> umap;
+    std::unordered_map<TestObject::Ptr, int, TestObject::Hash> umap;
     umap[obj0] = 0;
     umap[obj1] = 1;
     umap[obj2] = 2;

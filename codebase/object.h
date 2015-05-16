@@ -25,6 +25,16 @@ class Object : public boost::noncopyable {
 public:
     typedef boost::intrusive_ptr<T> Ptr;
 
+    // NOTE(ghilbut): hasher for unordered_set and unordered_map
+    // usage - std::unordered_set<T::Ptr, T::Hash> s;
+    //         std::unordered_map<T::Ptr, V, T::Hash> m;
+    class Hash {
+    public:
+        size_t operator() (const typename T::Ptr & p) const {
+            return std::hash<const T*>()(p.get());
+        }
+    };
+
 	inline void add_ref(bool is_weak = false) {
         if (is_weak) {
             ++weak_count_;
