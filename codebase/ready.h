@@ -8,20 +8,28 @@
 namespace codebase {
 
 
-template<class ProxtT>
+template<class ProxyT>
 class Ready : public Session::Delegate {
 public:
     class Delegate {
     public:
-        virtual void OnReady(ProxtT * proxy) = 0;
+        virtual void OnReady(typename ProxyT::Ptr & proxy) = 0;
     protected:
-        ~Delegate();
+        virtual ~Delegate() {}
     };
 
 
 public:
-    Ready() {}
+    Ready() : delegate_(nullptr) {}
     virtual ~Ready() {}
+
+    void BindDelegate(Delegate * delegate) {
+        delegate_ = delegate;
+    }
+
+    void UnbindDelegate() {
+        delegate_ = nullptr;
+    }
 
     void SetSession(Session::Ptr & session) {
         readys_.insert(session);
@@ -32,14 +40,28 @@ public:
         return (readys_.find(session) != readys_.end());
     }
 
+    virtual typename ProxyT::Ptr NewProxy(Session * session, const std::string & text) const {
+        Session::Ptr ptr(session);
+        return ProxyT::New(ptr, text);
+    }
+
     // Session::Delegate
     virtual void OnText(Session * session, const std::string & text) {
 
-        Session::Ptr ptr(session);
-        ProxtT * proxy = ProxtT::New(text, ptr);
-        if (proxy == nullptr) {
+        if (readys_.find(session) == readys_.end()) {
             session->Close();
             return;
+        }
+
+        readys_.erase(session);
+
+        if (delegate_ == nullptr) {
+            session->Close();
+        }
+
+        typename ProxyT::Ptr proxy(NewProxy(session, text));
+        if (proxy == nullptr) {
+            session->Close();
         }
 
         delegate_->OnReady(proxy);
