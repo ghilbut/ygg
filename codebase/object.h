@@ -35,16 +35,16 @@ public:
         }
     };
 
-	inline void add_ref(bool is_weak = false) {
+    inline void add_ref(bool is_weak = false) {
         if (is_weak) {
             ++weak_count_;
         }
         else {
 		    ++ref_count_;
         }
-	}
+    }
 
-	inline void release(bool is_weak = false) {
+    inline void release(bool is_weak = false) {
 
         if (is_weak) {
             --weak_count_;
@@ -58,7 +58,7 @@ public:
         if (weak_count_ == 0) {
             dispose();
         }
-	}
+    }
 
     virtual void dispose() {
         delete this;
