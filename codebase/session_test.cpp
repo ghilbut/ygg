@@ -23,7 +23,7 @@ public:
 
 class FakeSession : public Session {
 public:
-    FakeSession() {}
+    FakeSession() : Session() {}
     ~FakeSession() {}
 
     size_t SendText(const std::string & text) const {

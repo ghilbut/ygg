@@ -1,14 +1,14 @@
 #ifndef YGG_CODEBASE_SESSION_H_
 #define YGG_CODEBASE_SESSION_H_
 
-
+#include "object.h"
 #include <string>
 
 
 namespace codebase {
 
 
-class Session {
+class Session : public Object<Session> {
 public:
     class Delegate;
 
