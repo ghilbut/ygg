@@ -23,19 +23,20 @@ public:
     Ready() {}
     virtual ~Ready() {}
 
-    void SetSession(Session * session) {
+    void SetSession(Session::Ptr & session) {
         readys_.insert(session);
         session->BindDelegate(this);
     }
 
-    bool HasSession(Session * session) const {
+    bool HasSession(Session::Ptr & session) const {
         return (readys_.find(session) != readys_.end());
     }
 
     // Session::Delegate
     virtual void OnText(Session * session, const std::string & text) {
 
-        Proxy * proxy = Proxy::New(text, session);
+        Session::Ptr ptr(session);
+        Proxy * proxy = Proxy::New(text, ptr);
         if (proxy == nullptr) {
             session->Close();
             return;
@@ -54,7 +55,7 @@ public:
 
 
 private:
-    std::set<Session*> readys_;
+    std::set<Session::Ptr> readys_;
     Delegate * delegate_;
 };
 

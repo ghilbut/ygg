@@ -1,47 +1,24 @@
 #include <gmock/gmock.h>
 
 #include "ready.h"
+#include "test/test_fake.h"
+#include "test/test_mock.h"
 
 
 namespace codebase {
 
 
-class ReadyTest : public ::testing::Test {
-};
-
-
-class FakeSession : public Session {
-public:
-    FakeSession() {}
-    ~FakeSession() {}
-
-    virtual size_t SendText(const std::string & text) const {
-        return text.length();
-    }
-
-    virtual size_t SendBinary(const uint8_t bytes[], size_t size) const {
-        return size;
-    }
-
-    virtual void Close() {
-        // nothing
-    }
-
-private:
-};
-
-
 class DummyProxy {
 public:
-    static DummyProxy * New(const std::string & text, Session * session) {
+    static DummyProxy * New(const std::string & text, Session::Ptr & session) {
         return new DummyProxy(session);
     }
 
 private:
-    DummyProxy(Session * session) : session_(session) {}
+    explicit DummyProxy(Session::Ptr & session) : session_(session) {}
 
 private:
-    Session * session_;
+    Session::Ptr session_;
 };
 
 
@@ -58,24 +35,24 @@ private:
 };
 
 
-TEST_F(ReadyTest, test_set_session) {
+TEST(ReadyTest, test_set_session) {
 
-    FakeSession session;
+    Session::Ptr session(test::FakeSession::New());
 
     DummyReady ready;
-    ready.SetSession(&session);
-    ASSERT_TRUE(ready.HasSession(&session));
+    ready.SetSession(session);
+    ASSERT_TRUE(ready.HasSession(session));
 }
 
-TEST_F(ReadyTest, test_remove_session_when_disconnected) {
+TEST(ReadyTest, test_remove_session_when_disconnected) {
 
-    FakeSession session;
+    Session::Ptr session(test::FakeSession::New());
 
     DummyReady ready;
-    ready.SetSession(&session);
+    ready.SetSession(session);
 
-    session.FireOnClosedEvent();
-    ASSERT_FALSE(ready.HasSession(&session));
+    session->FireOnClosedEvent();
+    ASSERT_FALSE(ready.HasSession(session));
 }
 
 
