@@ -13,7 +13,7 @@ namespace box {
 
 class UserProxy : public Session::Delegate {
 public:
-    static UserProxy * New(const std::string & json, Session * session);
+    static UserProxy * New(Session * session, const std::string & json);
     ~UserProxy();
 
     const UserInfo * info() const;

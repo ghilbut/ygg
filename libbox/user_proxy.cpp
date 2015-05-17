@@ -8,10 +8,10 @@
 namespace box {
 
 
-UserProxy * UserProxy::New(const std::string & json, Session * session) {
+UserProxy * UserProxy::New(Session * session, const std::string & json) {
 
-    assert(!json.empty());
     assert(session != nullptr);
+    assert(!json.empty());
 
     Json::Value root;
     UserInfo::Ptr info(UserInfo::New(json, root));

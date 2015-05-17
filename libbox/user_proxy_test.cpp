@@ -50,7 +50,7 @@ TEST_F(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 TEST_F(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
     const std::string json = "012345678";
     FakeSession session;
-    UserProxy * proxy = UserProxy::New(json, &session);
+    UserProxy * proxy = UserProxy::New(&session, json);
 
     ASSERT_TRUE(proxy == nullptr);
 
