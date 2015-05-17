@@ -75,9 +75,13 @@ TEST(ObjectTest, DISABLED_test_circular) {
 }
 */
 
-TEST(ObjectTest, test_container_key_validation) {
+TEST(ObjectTest, test_object_ptr_validation_as_container_hash_key) {
 
-    TestObject::Ptr obj0(TestObject::New());
+    Mock mock;
+    EXPECT_CALL(mock, constructed()).Times(1);
+    EXPECT_CALL(mock, destructed()).Times(1);
+
+    TestObject::Ptr obj0(TestObject::New(&mock));
     TestObject::Ptr obj1(obj0);
     TestObject::Ptr obj2(obj1);
 
