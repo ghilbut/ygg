@@ -5,26 +5,29 @@
 #include <string>
 
 
+namespace Json {
+class Value;
+}  // namespace Json
+
+
 namespace box {
 
 
 class UserInfo : public codebase::Object<UserInfo> {
 public:
     static UserInfo::Ptr New(const std::string & json);
+    static UserInfo::Ptr New(const std::string & json, Json::Value & root);
     ~UserInfo() {}
 
     const char * id() const;
-    const char * box_id() const;
 
 private:
     UserInfo(const std::string & json
-            , const std::string & id
-            , const std::string & box_id);
+            , const std::string & id);
 
 private:
     const std::string json_;
     const std::string id_;
-    const std::string box_id_;
 };
 
 

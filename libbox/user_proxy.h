@@ -17,6 +17,7 @@ public:
     ~UserProxy();
 
     const UserInfo * info() const;
+    const char * box_id() const;
 
     // net::Session::Delegate
     virtual void OnText(Session * session, const std::string & text);
@@ -24,11 +25,15 @@ public:
     virtual void OnClosed(Session * session);
 
 private:
-    UserProxy(const UserInfo::Ptr & info, Session * session);
+    UserProxy(
+        Session * session
+        , const UserInfo::Ptr & info
+        , const std::string & box_id);
 
 private:
-    const UserInfo::Ptr info_;
     Session * session_;
+    const UserInfo::Ptr info_;
+    const std::string box_id_;
 };
 
 
