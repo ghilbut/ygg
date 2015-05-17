@@ -8,12 +8,12 @@
 namespace codebase {
 
 
-template<class Proxy>
+template<class ProxtT>
 class Ready : public Session::Delegate {
 public:
     class Delegate {
     public:
-        virtual void OnReady(Proxy * proxy) = 0;
+        virtual void OnReady(ProxtT * proxy) = 0;
     protected:
         ~Delegate();
     };
@@ -36,7 +36,7 @@ public:
     virtual void OnText(Session * session, const std::string & text) {
 
         Session::Ptr ptr(session);
-        Proxy * proxy = Proxy::New(text, ptr);
+        ProxtT * proxy = ProxtT::New(text, ptr);
         if (proxy == nullptr) {
             session->Close();
             return;
