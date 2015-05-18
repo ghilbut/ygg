@@ -1,7 +1,9 @@
 #include <gmock/gmock.h>
+
 #include "user_info.h"
 #include "user_proxy.h"
 #include "codebase/session.h"
+#include "test/test_fake.h"
 
 
 namespace box {
@@ -12,21 +14,6 @@ static const std::string kValidJson =
     ", \"box-id\": \"box00\" }";
 
 static const std::string kInvalidJson = "012345678";
-
-
-class FakeSession : public codebase::Session {
-public:
-    virtual size_t SendText(const std::string & text) const {
-        return text.length();
-    }
-
-    virtual size_t SendBinary(const uint8_t bytes[], size_t size) const {
-        return size;
-    }
-
-    virtual void Close() {
-    }
-};
 
 
 TEST(UserProxyTest, test_box_info_returns_null_with_invalid_json_format) {
@@ -45,8 +32,8 @@ TEST(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 }
 
 TEST(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
-    const std::string json = "012345678";
-    Session::Ptr session(new FakeSession());
+
+    Session::Ptr session(test::FakeSession::New());
     UserProxy * proxy = UserProxy::New(session, kInvalidJson);
 
     ASSERT_TRUE(proxy == nullptr);
