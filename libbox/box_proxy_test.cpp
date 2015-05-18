@@ -1,45 +1,31 @@
 #include <gmock/gmock.h>
+
 #include "box_info.h"
 #include "box_proxy.h"
 #include "codebase/session.h"
+#include "test/test_fake.h"
 
 
 namespace box {
 
 
-class BoxProxyTest : public ::testing::Test {
-};
+static const std::string kValidJson = "{ \"box-id\": \"box00\" }";
+
+static const std::string kInvalidJson = "012345678";
 
 
-class FakeSession : public codebase::Session {
-public:
-    virtual size_t SendText(const std::string & text) const {
-        return text.length();
-    }
+TEST(BoxProxyTest, test_box_info_returns_null_with_invalid_json_format) {
 
-    virtual size_t SendBinary(const uint8_t bytes[], size_t size) const {
-        return size;
-    }
-
-    virtual void Close() {
-    }
-};
-
-
-TEST_F(BoxProxyTest, test_box_info_returns_null_with_invalid_json_format) {
-
-    const std::string json = "012345678";
-    BoxInfo * info = BoxInfo::New(json);
+    BoxInfo * info = BoxInfo::New(kInvalidJson);
 
     ASSERT_TRUE(info == nullptr);
 
     delete info;
 }
 
-TEST_F(BoxProxyTest, test_box_info_return_object_with_valid_json_data) {
+TEST(BoxProxyTest, test_box_info_return_object_with_valid_json_data) {
 
-    const std::string json = "{ \"box-id\": \"box00\" }";
-    BoxInfo * info = BoxInfo::New(json);
+    BoxInfo * info = BoxInfo::New(kValidJson);
 
     ASSERT_TRUE(info != nullptr);
     ASSERT_STREQ("box00", info->id());
@@ -47,14 +33,12 @@ TEST_F(BoxProxyTest, test_box_info_return_object_with_valid_json_data) {
     delete info;
 }
 
-TEST_F(BoxProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
-    const std::string json = "012345678";
-    Session::Ptr session(new FakeSession());
-    BoxProxy * proxy = BoxProxy::New(session, json);
+TEST(BoxProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
+
+    Session::Ptr session(test::FakeSession::New());
+    BoxProxy * proxy = BoxProxy::New(session, kInvalidJson);
 
     ASSERT_TRUE(proxy == nullptr);
-
-    delete proxy;
 }
 
 
