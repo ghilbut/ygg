@@ -22,7 +22,7 @@ public:
     static BoxProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~BoxProxy();
 
-    const BoxInfo * info() const;
+    const BoxInfo & info() const;
 
     // net::Session::Delegate
     virtual void OnText(Session * session, const std::string & text);

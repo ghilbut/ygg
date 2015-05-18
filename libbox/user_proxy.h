@@ -19,7 +19,7 @@ public:
     static UserProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~UserProxy();
 
-    const UserInfo * info() const;
+    const UserInfo & info() const;
     const char * box_id() const;
 
     // net::Session::Delegate

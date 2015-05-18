@@ -25,8 +25,8 @@ BoxProxy::Ptr BoxProxy::New(Session::Ptr & session, const std::string & json) {
 BoxProxy::~BoxProxy() {
 }
 
-const BoxInfo * BoxProxy::info() const {
-    return info_.get();
+const BoxInfo & BoxProxy::info() const {
+    return *info_;
 }
 
 void BoxProxy::OnText(Session * session, const std::string & text) {

@@ -43,7 +43,7 @@ TEST(BoxProxyTest, test_new_box_proxy_returns_non_null_with_valid_json_format) {
     BoxProxy::Ptr proxy(BoxProxy::New(session, kValidJson));
 
     ASSERT_TRUE(proxy != nullptr);
-    ASSERT_STREQ("box00", proxy->info()->id());
+    ASSERT_STREQ("box00", proxy->info().id());
 }
 
 
