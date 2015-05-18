@@ -49,8 +49,8 @@ TEST_F(BoxProxyTest, test_box_info_return_object_with_valid_json_data) {
 
 TEST_F(BoxProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
     const std::string json = "012345678";
-    FakeSession session;
-    BoxProxy * proxy = BoxProxy::New(&session, json);
+    Session::Ptr session(new FakeSession());
+    BoxProxy * proxy = BoxProxy::New(session, json);
 
     ASSERT_TRUE(proxy == nullptr);
 

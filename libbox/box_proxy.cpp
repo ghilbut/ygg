@@ -4,12 +4,16 @@
 #include <cassert>
 
 
+using namespace codebase;
+
+
 namespace box {
 
 
-BoxProxy * BoxProxy::New(Session * session, const std::string & json) {
-    assert(!json.empty());
+BoxProxy * BoxProxy::New(Session::Ptr & session, const std::string & json) {
+
     assert(session != nullptr);
+    assert(!json.empty());
 
     BoxInfo * info = BoxInfo::New(json);
     if (info == nullptr) {
@@ -35,7 +39,7 @@ void BoxProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) {
 void BoxProxy::OnClosed(Session * session) {
 }
 
-BoxProxy::BoxProxy(Session * session, const BoxInfo * info)
+BoxProxy::BoxProxy(Session::Ptr & session, const BoxInfo * info)
     : session_(session), info_(info) {
 
 }
