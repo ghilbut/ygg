@@ -7,7 +7,7 @@
 namespace box {
 
 
-BoxProxy * BoxProxy::New(const std::string & json, Session * session) {
+BoxProxy * BoxProxy::New(Session * session, const std::string & json) {
     assert(!json.empty());
     assert(session != nullptr);
 
@@ -16,7 +16,7 @@ BoxProxy * BoxProxy::New(const std::string & json, Session * session) {
         return nullptr;
     }
 
-    return new BoxProxy(info, session);
+    return new BoxProxy(session, info);
 }
 
 BoxProxy::~BoxProxy() {
@@ -35,8 +35,8 @@ void BoxProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) {
 void BoxProxy::OnClosed(Session * session) {
 }
 
-BoxProxy::BoxProxy(const BoxInfo * info, Session * session)
-    : info_(info), session_(session) {
+BoxProxy::BoxProxy(Session * session, const BoxInfo * info)
+    : session_(session), info_(info) {
 
 }
 

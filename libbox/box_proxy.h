@@ -15,7 +15,7 @@ class BoxInfo;
 
 class BoxProxy : public Session::Delegate {
 public:
-    static BoxProxy * New(const std::string & json, Session * session);
+    static BoxProxy * New(Session * session, const std::string & json);
     ~BoxProxy();
 
     const BoxInfo * info() const;
@@ -26,11 +26,11 @@ public:
     virtual void OnClosed(Session * session);
 
 private:
-    BoxProxy(const BoxInfo * info, Session * session);
+    BoxProxy(Session * session, const BoxInfo * info);
 
 private:
-    const BoxInfo * info_;
     Session * session_;
+    const BoxInfo * info_;
 };
 
 
