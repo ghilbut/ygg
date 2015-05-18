@@ -7,8 +7,11 @@
 namespace box {
 
 
-class UserProxyTest : public ::testing::Test {
-};
+static const std::string kValidJson = 
+    "{ \"user-id\": \"user00\""
+    ", \"box-id\": \"box00\" }";
+
+static const std::string kInvalidJson = "012345678";
 
 
 class FakeSession : public codebase::Session {
@@ -26,31 +29,25 @@ public:
 };
 
 
-TEST_F(UserProxyTest, test_box_info_returns_null_with_invalid_json_format) {
+TEST(UserProxyTest, test_box_info_returns_null_with_invalid_json_format) {
 
-    const std::string json = "012345678";
-    UserInfo::Ptr info(UserInfo::New(json));
-
+    UserInfo::Ptr info(UserInfo::New(kInvalidJson));
     ASSERT_TRUE(info == nullptr);
 }
 
-TEST_F(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
+TEST(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 
-    const std::string json = 
-        "{ \"user-id\": \"user00\""
-        ", \"box-id\": \"box00\" }";
-
-    UserInfo::Ptr info(UserInfo::New(json));
+    UserInfo::Ptr info(UserInfo::New(kValidJson));
 
     ASSERT_TRUE(info != nullptr);
     ASSERT_STREQ("user00", info->id());
     //ASSERT_STREQ("box00", info->box_id());
 }
 
-TEST_F(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
+TEST(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
     const std::string json = "012345678";
-    FakeSession session;
-    UserProxy * proxy = UserProxy::New(&session, json);
+    Session::Ptr session(new FakeSession());
+    UserProxy * proxy = UserProxy::New(session, kInvalidJson);
 
     ASSERT_TRUE(proxy == nullptr);
 

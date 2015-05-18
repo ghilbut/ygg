@@ -8,7 +8,7 @@
 namespace box {
 
 
-UserProxy * UserProxy::New(Session * session, const std::string & json) {
+UserProxy * UserProxy::New(Session::Ptr &  session, const std::string & json) {
 
     assert(session != nullptr);
     assert(!json.empty());
@@ -48,7 +48,7 @@ void UserProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) 
 void UserProxy::OnClosed(Session * session) {
 }
 
-UserProxy::UserProxy(Session * session
+UserProxy::UserProxy(Session::Ptr & session
                      , const UserInfo::Ptr & info
                      , const std::string & box_id)
     : session_(session), info_(info), box_id_(box_id) {
