@@ -36,9 +36,18 @@ TEST(BoxProxyTest, test_box_info_return_object_with_valid_json_data) {
 TEST(BoxProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
 
     Session::Ptr session(test::FakeSession::New());
-    BoxProxy * proxy = BoxProxy::New(session, kInvalidJson);
+    BoxProxy::Ptr proxy(BoxProxy::New(session, kInvalidJson));
 
     ASSERT_TRUE(proxy == nullptr);
+}
+
+TEST(BoxProxyTest, test_new_box_proxy_returns_non_null_with_valid_json_format) {
+
+    Session::Ptr session(test::FakeSession::New());
+    BoxProxy::Ptr proxy(BoxProxy::New(session, kInvalidJson));
+
+    ASSERT_TRUE(proxy != nullptr);
+    ASSERT_STREQ("box00", proxy->info()->id());
 }
 
 

@@ -10,7 +10,7 @@ using namespace codebase;
 namespace box {
 
 
-BoxProxy * BoxProxy::New(Session::Ptr & session, const std::string & json) {
+BoxProxy::Ptr BoxProxy::New(Session::Ptr & session, const std::string & json) {
 
     assert(session != nullptr);
     assert(!json.empty());
@@ -40,7 +40,7 @@ void BoxProxy::OnClosed(Session * session) {
 }
 
 BoxProxy::BoxProxy(Session::Ptr & session, const BoxInfo * info)
-    : session_(session), info_(info) {
+    : Object(), session_(session), info_(info) {
 
 }
 

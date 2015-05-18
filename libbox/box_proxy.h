@@ -13,9 +13,12 @@ namespace box {
 class BoxInfo;
 
 
-class BoxProxy : public Session::Delegate {
+class BoxProxy : 
+    public Object<BoxProxy>
+    , public Session::Delegate {
+
 public:
-    static BoxProxy * New(Session::Ptr & session, const std::string & json);
+    static BoxProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~BoxProxy();
 
     const BoxInfo * info() const;
