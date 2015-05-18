@@ -51,7 +51,7 @@ void UserProxy::OnClosed(Session * session) {
 UserProxy::UserProxy(Session::Ptr & session
                      , const UserInfo::Ptr & info
                      , const std::string & box_id)
-    : session_(session), info_(info), box_id_(box_id) {
+    : Object(), session_(session), info_(info), box_id_(box_id) {
 
     assert(session_ != nullptr);
     assert(info_.get() != nullptr);

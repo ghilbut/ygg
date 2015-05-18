@@ -1,6 +1,5 @@
 #include "box_proxy.h"
 
-#include "box_info.h"
 #include <cassert>
 
 
@@ -15,7 +14,7 @@ BoxProxy::Ptr BoxProxy::New(Session::Ptr & session, const std::string & json) {
     assert(session != nullptr);
     assert(!json.empty());
 
-    BoxInfo * info = BoxInfo::New(json);
+    BoxInfo::Ptr info(BoxInfo::New(json));
     if (info == nullptr) {
         return nullptr;
     }
@@ -27,7 +26,7 @@ BoxProxy::~BoxProxy() {
 }
 
 const BoxInfo * BoxProxy::info() const {
-    return info_;
+    return info_.get();
 }
 
 void BoxProxy::OnText(Session * session, const std::string & text) {
@@ -39,7 +38,7 @@ void BoxProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) {
 void BoxProxy::OnClosed(Session * session) {
 }
 
-BoxProxy::BoxProxy(Session::Ptr & session, const BoxInfo * info)
+BoxProxy::BoxProxy(Session::Ptr & session, const BoxInfo::Ptr & info)
     : Object(), session_(session), info_(info) {
 
 }

@@ -2,6 +2,7 @@
 #define YGG_LIBBOX_BOX_PROXY_H_
 
 #include "codebase/session_delegate.h"
+#include "box_info.h"
 
 
 using namespace codebase;
@@ -29,11 +30,11 @@ public:
     virtual void OnClosed(Session * session);
 
 private:
-    BoxProxy(Session::Ptr & session, const BoxInfo * info);
+    BoxProxy(Session::Ptr & session, const BoxInfo::Ptr & info);
 
 private:
     Session::Ptr & session_;
-    const BoxInfo * info_;
+    const BoxInfo::Ptr info_;
 };
 
 

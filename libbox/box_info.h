@@ -1,16 +1,19 @@
 #ifndef YGG_LIBBOX_BOX_INFO_H_
 #define YGG_LIBBOX_BOX_INFO_H_
 
-
+#include "codebase/object.h"
 #include <string>
+
+
+using namespace codebase;
 
 
 namespace box {
 
 
-class BoxInfo {
+class BoxInfo : public Object<BoxInfo> {
 public:
-    static BoxInfo * New(const std::string & json);
+    static BoxInfo::Ptr New(const std::string & json);
     ~BoxInfo() {}
 
     const char * id() const;

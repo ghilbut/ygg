@@ -5,7 +5,7 @@
 namespace box {
 
 
-BoxInfo * BoxInfo::New(const std::string & json) {
+BoxInfo::Ptr BoxInfo::New(const std::string & json) {
 
     Json::Value root;
     Json::Reader reader;
@@ -35,7 +35,8 @@ const char * BoxInfo::id() const {
 
 BoxInfo::BoxInfo(const std::string & json
                  , const std::string & id)
-    : json_(json)
+    : Object()
+    , json_(json)
     , id_(id) {
     // nothing
 }
