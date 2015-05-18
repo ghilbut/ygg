@@ -8,7 +8,7 @@
 namespace box {
 
 
-UserProxy * UserProxy::New(Session::Ptr &  session, const std::string & json) {
+UserProxy::Ptr UserProxy::New(Session::Ptr &  session, const std::string & json) {
 
     assert(session != nullptr);
     assert(!json.empty());

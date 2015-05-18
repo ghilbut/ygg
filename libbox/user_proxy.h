@@ -11,9 +11,12 @@ using namespace codebase;
 namespace box {
 
 
-class UserProxy : public Session::Delegate {
+class UserProxy : 
+    public Object<UserProxy>
+    , public Session::Delegate {
+
 public:
-    static UserProxy * New(Session::Ptr & session, const std::string & json);
+    static UserProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~UserProxy();
 
     const UserInfo * info() const;
