@@ -16,8 +16,21 @@ class UserProxy :
     , public Session::Delegate {
 
 public:
+    class Delegate {
+    public:
+        virtual void OnText(UserProxy * user, const std::string & text) = 0;
+        virtual void OnBinary(UserProxy * user, const uint8_t bytes[], size_t size) = 0;
+        virtual void OnClosed(UserProxy * user) = 0;
+    protected:
+        virtual ~Delegate() {};
+    };
+
+public:
     static UserProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~UserProxy();
+
+    void BindDelegate(Delegate * delegate);
+    void UnbindDelegate();
 
     const UserInfo & info() const;
     const char * box_id() const;
@@ -34,6 +47,7 @@ private:
         , const std::string & box_id);
 
 private:
+    Delegate * delegate_;
     Session::Ptr session_;
     const UserInfo::Ptr info_;
     const std::string box_id_;
