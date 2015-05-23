@@ -21,8 +21,8 @@ public:
         return text.length();
     }
 
-    virtual size_t SendBinary(const uint8_t bytes[], size_t size) const {
-        return size;
+    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const {
+        return bytes.size();
     }
 
     virtual void Close() {

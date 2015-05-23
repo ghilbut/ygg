@@ -12,7 +12,7 @@ namespace box {
 class NullDelegate : public UserProxy::Delegate {
 public:
     virtual void OnText(UserProxy*, const std::string&) {}
-    virtual void OnBinary(UserProxy*, const uint8_t[], size_t) {}
+    virtual void OnBinary(UserProxy*, const std::vector<uint8_t>&) {}
     virtual void OnClosed(UserProxy*) {}
 };
 
@@ -63,8 +63,8 @@ void UserProxy::OnText(Session * session, const std::string & text) {
     delegate_->OnText(this, text);
 }
 
-void UserProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) {
-    delegate_->OnBinary(this, bytes, size);
+void UserProxy::OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
+    delegate_->OnBinary(this, bytes);
 }
 
 void UserProxy::OnClosed(Session * session) {

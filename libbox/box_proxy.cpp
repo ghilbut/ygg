@@ -32,7 +32,7 @@ const BoxInfo & BoxProxy::info() const {
 void BoxProxy::OnText(Session * session, const std::string & text) {
 }
 
-void BoxProxy::OnBinary(Session * session, const uint8_t bytes[], size_t size) {
+void BoxProxy::OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
 }
 
 void BoxProxy::OnClosed(Session * session) {

@@ -8,9 +8,9 @@ namespace codebase {
 
 class NullDelegate : public Session::Delegate {
 public:
-    void OnText(Session * session, const std::string & text) {}
-    void OnBinary(Session * session, const uint8_t bytes[], size_t size) {}
-    void OnClosed(Session * session) {}
+    void OnText(Session*, const std::string&) {}
+    void OnBinary(Session*, const std::vector<uint8_t>&) {}
+    void OnClosed(Session*) {}
 };
 
 static NullDelegate kNullDelegate;
@@ -25,8 +25,8 @@ void Session::FireOnTextEvent(const std::string & text) {
     delegate_->OnText(this, text);
 }
 
-void Session::FireOnBinaryEvent(const uint8_t bytes[], size_t size) {
-    delegate_->OnBinary(this, bytes, size);
+void Session::FireOnBinaryEvent(const std::vector<uint8_t> & bytes) {
+    delegate_->OnBinary(this, bytes);
 }
 
 void Session::FireOnClosedEvent() {

@@ -11,7 +11,7 @@ namespace codebase {
 class Session::Delegate {
 public:
     virtual void OnText(Session * session, const std::string & text) = 0;
-    virtual void OnBinary(Session * session, const uint8_t bytes[], size_t size) = 0;
+    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes) = 0;
     virtual void OnClosed(Session * session) = 0;
 
 protected:

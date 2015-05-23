@@ -67,7 +67,7 @@ public:
         delegate_->OnReady(proxy);
     }
 
-    virtual void OnBinary(Session * session, const uint8_t bytes[], size_t size) {
+    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
         // nothing
     }
 

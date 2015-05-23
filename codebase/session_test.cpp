@@ -5,6 +5,7 @@
 #include "test/fake.h"
 
 using ::testing::_;
+using ::testing::ElementsAreArray;
 
 
 namespace codebase {
@@ -16,41 +17,42 @@ class SessionTest : public ::testing::Test {
 
 class SessionDelegateMock : public Session::Delegate {
 public:
-    MOCK_METHOD2(OnText, void(Session *, const std::string &));
-    MOCK_METHOD3(OnBinary, void(Session *, const uint8_t[], size_t));
-    MOCK_METHOD1(OnClosed, void(Session *));
+    MOCK_METHOD2(OnText, void(Session*, const std::string&));
+    MOCK_METHOD2(OnBinary, void(Session*, const std::vector<uint8_t>&));
+    MOCK_METHOD1(OnClosed, void(Session*));
 };
 
 
 TEST_F(SessionTest, test_bind_delegate_and_fire_events) {
 
-    const char * const expected = "second";
+    static const uint8_t kExpectedBuffer[10] = {0,};
+
+    static const std::string kText = "second";
+    static const std::vector<uint8_t> kBuffer(kExpectedBuffer, kExpectedBuffer+10);
 
     Session::Ptr session_ptr(test::FakeSession::New());
     Session * session = session_ptr.get();
 
-    static const uint8_t buffer[10] = {0,};
-
     SessionDelegateMock mock;
-    EXPECT_CALL(mock, OnText(session, expected)).Times(2);
-    EXPECT_CALL(mock, OnBinary(session, buffer, 10)).Times(2);
+    EXPECT_CALL(mock, OnText(session, kText)).Times(2);
+    EXPECT_CALL(mock, OnBinary(session, ElementsAreArray(kExpectedBuffer, 10))).Times(2);
     EXPECT_CALL(mock, OnClosed(session)).Times(2);
 
     session->FireOnTextEvent("first");
-    session->FireOnBinaryEvent(buffer, 10);
+    session->FireOnBinaryEvent(kBuffer);
     session->FireOnClosedEvent();
 
     session->BindDelegate(&mock);
-    session->FireOnTextEvent(expected);
-    session->FireOnBinaryEvent(buffer, 10);
+    session->FireOnTextEvent(kText);
+    session->FireOnBinaryEvent(kBuffer);
     session->FireOnClosedEvent();
-    session->FireOnTextEvent(expected);
-    session->FireOnBinaryEvent(buffer, 10);
+    session->FireOnTextEvent(kText);
+    session->FireOnBinaryEvent(kBuffer);
     session->FireOnClosedEvent();
     session->UnbindDelegate();
 
     session->FireOnTextEvent("third");
-    session->FireOnBinaryEvent(buffer, 10);
+    session->FireOnBinaryEvent(kBuffer);
     session->FireOnClosedEvent();
 }
 

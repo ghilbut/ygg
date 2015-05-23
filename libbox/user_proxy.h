@@ -19,7 +19,7 @@ public:
     class Delegate {
     public:
         virtual void OnText(UserProxy * user, const std::string & text) = 0;
-        virtual void OnBinary(UserProxy * user, const uint8_t bytes[], size_t size) = 0;
+        virtual void OnBinary(UserProxy * user, const std::vector<uint8_t> & bytes) = 0;
         virtual void OnClosed(UserProxy * user) = 0;
     protected:
         virtual ~Delegate() {};
@@ -37,7 +37,7 @@ public:
 
     // net::Session::Delegate
     virtual void OnText(Session * session, const std::string & text);
-    virtual void OnBinary(Session * session, const uint8_t bytes[], size_t size);
+    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes);
     virtual void OnClosed(Session * session);
 
 private:

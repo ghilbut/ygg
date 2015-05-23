@@ -3,6 +3,7 @@
 
 #include "object.h"
 #include <string>
+#include <vector>
 
 
 namespace codebase {
@@ -13,11 +14,11 @@ public:
     class Delegate;
 
     virtual size_t SendText(const std::string & text) const = 0;
-    virtual size_t SendBinary(const uint8_t bytes[], size_t size) const = 0;
+    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const = 0;
     virtual void Close() = 0;
 
     void FireOnTextEvent(const std::string & text);
-    void FireOnBinaryEvent(const uint8_t bytes[], size_t size);
+    void FireOnBinaryEvent(const std::vector<uint8_t> & bytes);
     void FireOnClosedEvent();
 
     void BindDelegate(Delegate * delegate);

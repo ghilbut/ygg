@@ -26,7 +26,7 @@ public:
 
     // net::Session::Delegate
     virtual void OnText(Session * session, const std::string & text);
-    virtual void OnBinary(Session * session, const uint8_t bytes[], size_t size);
+    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes);
     virtual void OnClosed(Session * session);
 
 private:
