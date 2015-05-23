@@ -40,7 +40,7 @@ public:
             ++weak_count_;
         }
         else {
-		    ++ref_count_;
+            ++ref_count_;
         }
     }
 
@@ -66,12 +66,12 @@ public:
 
 
 protected:
-	Object() : ref_count_({0}), weak_count_({1}) {}
-	virtual ~Object() {}
+    Object() : ref_count_({0}), weak_count_({1}) {}
+    virtual ~Object() {}
 
 
 private:
-	std::atomic_int ref_count_;
+    std::atomic_int ref_count_;
     std::atomic_int weak_count_;
 };
 
