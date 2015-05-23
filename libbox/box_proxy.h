@@ -1,8 +1,8 @@
 #ifndef YGG_LIBBOX_BOX_PROXY_H_
 #define YGG_LIBBOX_BOX_PROXY_H_
 
-#include "codebase/session_delegate.h"
 #include "box_info.h"
+#include "codebase/session_delegate.h"
 
 
 using namespace codebase;
