@@ -1,7 +1,7 @@
 #ifndef YGG_TEST_TEST_FAKE_H_
 #define YGG_TEST_TEST_FAKE_H_
 
-#include "test_mock.h"
+#include "mock.h"
 #include "codebase/session.h"
 
 

@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 
 #include "ready.h"
-#include "test/test_fake.h"
-#include "test/test_mock.h"
+#include "test/fake.h"
+#include "test/mock.h"
 
 
 using ::testing::_;

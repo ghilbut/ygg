@@ -3,7 +3,7 @@
 #include "user_info.h"
 #include "user_proxy.h"
 #include "codebase/session.h"
-#include "test/test_fake.h"
+#include "test/fake.h"
 
 
 namespace box {

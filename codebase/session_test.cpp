@@ -2,7 +2,7 @@
 
 #include "session.h"
 #include "session_delegate.h"
-#include "test/test_fake.h"
+#include "test/fake.h"
 
 using ::testing::_;
 

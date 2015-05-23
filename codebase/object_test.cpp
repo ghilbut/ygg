@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
 #include "object.h"
-#include "test/test_mock.h"
+#include "test/mock.h"
 #include <map>
 #include <set>
 #include <unordered_map>
