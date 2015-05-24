@@ -1,6 +1,5 @@
 #include "user_proxy.h"
 
-#include "user_info.h"
 #include <json/json.h>
 #include <cassert>
 
@@ -60,14 +59,17 @@ const char * UserProxy::box_id() const {
 }
 
 void UserProxy::OnText(Session * session, const std::string & text) {
+    assert(session == session_);
     delegate_->OnText(this, text);
 }
 
 void UserProxy::OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
+    assert(session == session_);
     delegate_->OnBinary(this, bytes);
 }
 
 void UserProxy::OnClosed(Session * session) {
+    assert(session == session_);
     delegate_->OnClosed(this);
 }
 

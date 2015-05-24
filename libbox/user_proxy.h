@@ -21,8 +21,6 @@ public:
         virtual void OnText(UserProxy * user, const std::string & text) = 0;
         virtual void OnBinary(UserProxy * user, const std::vector<uint8_t> & bytes) = 0;
         virtual void OnClosed(UserProxy * user) = 0;
-    protected:
-        virtual ~Delegate() {};
     };
 
 public:

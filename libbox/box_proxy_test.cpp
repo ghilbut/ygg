@@ -6,6 +6,9 @@
 #include "test/fake.h"
 
 
+using ::testing::_;
+
+
 namespace box {
 
 
@@ -44,6 +47,36 @@ TEST(BoxProxyTest, test_new_box_proxy_returns_non_null_with_valid_json_format) {
 
     ASSERT_TRUE(proxy != nullptr);
     ASSERT_STREQ("box00", proxy->info().id());
+}
+
+class DelegateMock : public BoxProxy::Delegate {
+public:
+    MOCK_METHOD2(OnText, void(BoxProxy*, const std::string&));
+    MOCK_METHOD2(OnBinary, void(BoxProxy*, const std::vector<uint8_t>&));
+    MOCK_METHOD1(OnClosed, void(BoxProxy*));
+};
+
+TEST(BoxProxyTest, test_delegate) {
+
+    static const uint8_t kExpectedBytes[] = "binary";
+    static const size_t kExpectedBytesSize = sizeof(kExpectedBytes) / sizeof(uint8_t);
+
+    static const std::string kText("text");
+    static const std::vector<uint8_t> kBytes(kExpectedBytes, kExpectedBytes + kExpectedBytesSize);
+
+    Session::Ptr session(test::FakeSession::New());
+    BoxProxy::Ptr proxy(BoxProxy::New(session, kValidJson));
+
+    DelegateMock mock;
+    BoxProxy * p = proxy.get();
+    EXPECT_CALL(mock, OnText(p, _)).Times(1);
+    EXPECT_CALL(mock, OnBinary(p, _)).Times(1);
+    EXPECT_CALL(mock, OnClosed(p)).Times(1);
+
+    proxy->BindDelegate(&mock);
+    session->FireOnTextEvent(kText);
+    session->FireOnBinaryEvent(kBytes);
+    session->FireOnClosedEvent();
 }
 
 

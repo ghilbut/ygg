@@ -19,8 +19,19 @@ class BoxProxy :
     , public Session::Delegate {
 
 public:
+    class Delegate {
+    public:
+        virtual void OnText(BoxProxy * box, const std::string & text) = 0;
+        virtual void OnBinary(BoxProxy * box, const std::vector<uint8_t> & bytes) = 0;
+        virtual void OnClosed(BoxProxy * box) = 0;
+    };
+
+public:
     static BoxProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~BoxProxy();
+
+    void BindDelegate(Delegate * delegate);
+    void UnbindDelegate();
 
     const BoxInfo & info() const;
 
@@ -33,6 +44,7 @@ private:
     BoxProxy(Session::Ptr & session, const BoxInfo::Ptr & info);
 
 private:
+    Delegate * delegate_;
     Session::Ptr & session_;
     const BoxInfo::Ptr info_;
 };
