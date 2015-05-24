@@ -1,7 +1,8 @@
-#ifndef YGG_TEST_TEST_FAKE_H_
-#define YGG_TEST_TEST_FAKE_H_
+#ifndef YGG_TEST_FAKE_H_
+#define YGG_TEST_FAKE_H_
 
 #include "mock.h"
+#include "codebase/connection.h"
 #include "codebase/session.h"
 
 
@@ -31,7 +32,7 @@ public:
 
 private:
     FakeSession(LifeCycleMock * mock) 
-        : mock_(mock) {
+        : Session(), mock_(mock) {
 
         if (mock_ != nullptr) {
             mock_->constructed();
@@ -48,7 +49,49 @@ private:
 };
 
 
+class FakeConnection : public Connection {
+public:
+    static Connection::Ptr New(LifeCycleMock * mock = nullptr) {
+        return new FakeConnection(mock);
+    }
+
+    virtual bool Open() {
+        return true;
+    }
+
+    virtual size_t SendText(const std::string & text) const {
+        return text.length();
+    }
+
+    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const {
+        return bytes.size();
+    }
+
+    virtual void Close() {
+        // nothing
+    }
+
+private:
+    FakeConnection(LifeCycleMock * mock) 
+        : Connection(), mock_(mock) {
+
+        if (mock_ != nullptr) {
+            mock_->constructed();
+        }
+    }
+
+    ~FakeConnection() {
+        if (mock_ != nullptr) {
+            mock_->destructed();
+        }
+    }
+
+    LifeCycleMock * mock_;
+};
+
+
+
 }  // namespace test
 
 
-#endif  // YGG_TEST_TEST_FAKE_H_
+#endif  // YGG_TEST_FAKE_H_
