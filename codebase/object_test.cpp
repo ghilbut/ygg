@@ -52,7 +52,31 @@ TEST(ObjectTest, test_construction_and_destruction) {
     EXPECT_CALL(mock, constructed()).Times(1);
     EXPECT_CALL(mock, destructed()).Times(1);
 
-    TestObject::Ptr object = TestObject::New(&mock);
+    TestObject::Ptr obj(TestObject::New(&mock));
+}
+
+TEST(ObjectTest, test_construction_and_destruction_with_operator_equal) {
+
+    LifeCycleMock mock;
+    EXPECT_CALL(mock, constructed()).Times(1);
+    EXPECT_CALL(mock, destructed()).Times(1);
+
+    TestObject::Ptr obj;
+    obj = TestObject::New(&mock);
+}
+
+TEST(ObjectTest, test_replace_and_compare_operator) {
+
+    TestObject::Ptr obj(TestObject::New());
+    TestObject::Ptr obj0 = obj;
+    TestObject::Ptr obj1 = obj.get();
+
+    ASSERT_EQ(obj, obj0);
+    ASSERT_EQ(obj, obj1);
+    ASSERT_EQ(obj0, obj1);
+    ASSERT_TRUE(obj == obj0);
+    ASSERT_TRUE(obj == obj1);
+    ASSERT_TRUE(obj0 == obj1);
 }
 
 TEST(ObjectTest, test_object_ptr_validation_as_container_hash_key) {
@@ -167,6 +191,9 @@ TEST(ObjectTest, test_circular_with_object_weak) {
     obj0->set_other(obj1);
     obj1->set_other(obj0);
 }
+
+
+// TODO(ghilbut): how can I test CountHelper template life-cycle?
 
 
 }  // namespace codebase
