@@ -34,7 +34,7 @@ private:
         Session::Ptr & session
         , const std::string & text
         , test::LifeCycleMock * mock)
-        : Object(), session_(session), text_(text), mock_(mock) {
+        : Object(this), session_(session), text_(text), mock_(mock) {
 
         if (mock_ != nullptr) {
             mock_->constructed();

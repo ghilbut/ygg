@@ -64,7 +64,7 @@ void BoxProxy::OnClosed(Session * session) {
 }
 
 BoxProxy::BoxProxy(Session::Ptr & session, const BoxInfo::Ptr & info)
-    : Object()
+    : Object(this)
     , delegate_(&kNullDelegate)
     , session_(session)
     , info_(info) {

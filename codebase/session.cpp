@@ -17,7 +17,7 @@ static NullDelegate kNullDelegate;
 
 
 Session::Session()
-    : Object(), delegate_(&kNullDelegate) {
+    : Object(this), delegate_(&kNullDelegate) {
     // nothing
 }
 

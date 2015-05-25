@@ -41,7 +41,7 @@ void Connection::UnbindDelegate() {
 }
 
 Connection::Connection()
-    : Object(), delegate_(&kNullDelegate) {
+    : Object(this), delegate_(&kNullDelegate) {
     // nothing
 }
 

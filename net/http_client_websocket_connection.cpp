@@ -37,7 +37,8 @@ Connection::ReadyState Connection::readyState() const {
 }
 
 Connection::Connection(boost::asio::io_service & io_service, const std::string & url, Delegate * delegate)
-	: url_(url)
+	: Object(this)
+    , url_(url)
 	, readyState_(CONNECTING)
 	, delegate_(delegate)
 	, io_service_(io_service)

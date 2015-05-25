@@ -35,7 +35,7 @@ const char * BoxInfo::id() const {
 
 BoxInfo::BoxInfo(const std::string & json
                  , const std::string & id)
-    : Object()
+    : Object(this)
     , json_(json)
     , id_(id) {
     // nothing

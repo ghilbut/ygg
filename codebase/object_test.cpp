@@ -8,18 +8,25 @@
 #include <unordered_set>
 
 
+using namespace test;
+
+
 namespace codebase {
 
 
 class TestObject : public Object<TestObject> {
 public:
-    static Ptr New(const test::LifeCycleMock * mock = nullptr) {
+    static Ptr New(const LifeCycleMock * mock = nullptr) {
         return new TestObject(mock);
     }
 
+    void set_other(Ptr & other) {
+        other_ = other;
+    }
+
 private:
-    TestObject(const test::LifeCycleMock * mock) 
-        : Object()
+    TestObject(const LifeCycleMock * mock) 
+        : Object(this)
         , mock_(mock) {
 
         if (mock_ != nullptr) {
@@ -34,45 +41,23 @@ private:
     }
 
 private:
-    const test::LifeCycleMock * mock_;
-public:
-    Ptr ptr_;
+    const LifeCycleMock * mock_;
+    Weak other_;
 };
 
 
 TEST(ObjectTest, test_construction_and_destruction) {
 
-    test::LifeCycleMock mock;
+    LifeCycleMock mock;
     EXPECT_CALL(mock, constructed()).Times(1);
     EXPECT_CALL(mock, destructed()).Times(1);
 
     TestObject::Ptr object = TestObject::New(&mock);
 }
 
-/*
-TEST(ObjectTest, DISABLED_test_circular) {
-
-    Mock mock;
-    EXPECT_CALL(mock, constructed()).Times(3);
-    EXPECT_CALL(mock, destructed()).Times(3);
-
-    TestObject::Ptr obj0(TestObject::New(mock));
-    TestObject::Ptr obj1(TestObject::New(mock));
-    TestObject::Ptr obj2(TestObject::New(mock));
-
-    obj0->ptr_ = obj1;
-    obj0->ptr_.MakeWeak();
-    obj1->ptr_ = obj2;
-    obj1->ptr_.MakeWeak();
-    obj2->ptr_ = obj0;
-    obj2->ptr_.MakeWeak();
-
-}
-*/
-
 TEST(ObjectTest, test_object_ptr_validation_as_container_hash_key) {
 
-    test::LifeCycleMock mock;
+    LifeCycleMock mock;
     EXPECT_CALL(mock, constructed()).Times(1);
     EXPECT_CALL(mock, destructed()).Times(1);
 
@@ -147,6 +132,40 @@ TEST(ObjectTest, test_object_ptr_validation_as_container_hash_key) {
         EXPECT_EQ(3, umap[obj2]);
         EXPECT_EQ(3, umap[obj]);
     }
+}
+
+TEST(ObjectTest, test_lock_and_expired_of_object_weak) {
+
+    LifeCycleMock mock;
+    EXPECT_CALL(mock, constructed());
+    EXPECT_CALL(mock, destructed());
+
+    TestObject::Weak weak;
+
+    {
+        TestObject::Ptr obj(TestObject::New(&mock));
+        weak = obj;
+
+        ASSERT_EQ(obj, weak.Lock());
+        ASSERT_NE(nullptr, weak.Lock());
+        ASSERT_FALSE(weak.Expired());
+    }
+
+    ASSERT_EQ(nullptr, weak.Lock());
+    ASSERT_TRUE(weak.Expired());
+}
+
+TEST(ObjectTest, test_circular_with_object_weak) {
+
+    LifeCycleMock mock;
+    EXPECT_CALL(mock, constructed()).Times(2);
+    EXPECT_CALL(mock, destructed()).Times(2);
+
+    TestObject::Ptr obj0(TestObject::New(&mock));
+    TestObject::Ptr obj1(TestObject::New(&mock));
+
+    obj0->set_other(obj1);
+    obj1->set_other(obj0);
 }
 
 

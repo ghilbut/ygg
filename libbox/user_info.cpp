@@ -38,7 +38,7 @@ const char * UserInfo::id() const {
 
 UserInfo::UserInfo(const std::string & json
                  , const std::string & id)
-    : Object()
+    : Object(this)
     , json_(json)
     , id_(id) {
     // nothing

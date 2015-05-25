@@ -76,7 +76,7 @@ void UserProxy::OnClosed(Session * session) {
 UserProxy::UserProxy(Session::Ptr & session
                      , const UserInfo::Ptr & info
                      , const std::string & box_id)
-    : Object()
+    : Object(this)
     , delegate_(&kNullDelegate)
     , session_(session)
     , info_(info)
