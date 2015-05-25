@@ -1,5 +1,10 @@
 import os
 
+print '-----------------------------------------------------------------'
+print '[YGG]  build and run ygg test.'
+print '-----------------------------------------------------------------'
+
+
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
 os.system('clear' if os.name is 'posix' else 'CLS')
@@ -35,11 +40,15 @@ if os.name == 'posix':
 
 
 sources = [
-  'empty.cpp']
+  'empty.cpp',
+  'fake.cpp',
+  'fake_test.cpp',
+  'mock_test.cpp']
 #sources += Glob('../codebase/*_test.c*')
 sources += Glob('../codebase/*.c*')
 sources += Glob('../net/*.c*')
 sources += Glob('../libbox/*.c*')
+
 
 LIBS = [
   'libboost_system-mt-s',

@@ -30,7 +30,7 @@ TEST_F(ConnectionTest, test_bind_delegate_and_fire_events) {
     static const std::string kText = "second";
     static const std::vector<uint8_t> kBuffer(kExpectedBuffer, kExpectedBuffer+10);
 
-    Connection::Ptr conn(test::FakeConnection::New());
+    Connection::Ptr conn(new test::FakeConnection());
 
     ConnectionDelegateMock mock;
     Connection * p = conn.get();

@@ -1,7 +1,11 @@
 #ifndef YGG_TEST_MOCK_H_
 #define YGG_TEST_MOCK_H_
 
+#include "codebase/connection.h"
 #include <gmock/gmock.h>
+
+
+using namespace codebase;
 
 
 namespace test {
@@ -13,6 +17,14 @@ public:
     MOCK_CONST_METHOD0(destructed, void());
 
     ~LifeCycleMock() {}
+};
+
+class ConnectionDelegateMock : public Connection::Delegate {
+public:
+    MOCK_METHOD1(OnOpened, void(Connection*));
+    MOCK_METHOD2(OnText, void(Connection*, const std::string&));
+    MOCK_METHOD2(OnBinary, void(Connection*, const std::vector<uint8_t> bytes));
+    MOCK_METHOD1(OnClosed, void(Connection*));
 };
 
 

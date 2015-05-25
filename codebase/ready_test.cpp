@@ -8,6 +8,8 @@
 using ::testing::_;
 using ::testing::Invoke;
 
+using namespace test;
+
 
 namespace codebase {
 
@@ -17,7 +19,7 @@ public:
     static DummyProxy::Ptr New(
         Session::Ptr & session
         , const std::string & text
-        , test::LifeCycleMock * mock = nullptr) {
+        , LifeCycleMock * mock = nullptr) {
 
         if (text.empty()) {
             return nullptr;
@@ -33,7 +35,7 @@ private:
     DummyProxy(
         Session::Ptr & session
         , const std::string & text
-        , test::LifeCycleMock * mock)
+        , LifeCycleMock * mock)
         : Object(this), session_(session), text_(text), mock_(mock) {
 
         if (mock_ != nullptr) {
@@ -50,13 +52,13 @@ private:
 private:
     Session::Ptr session_;
     const std::string text_;
-    test::LifeCycleMock * mock_;
+    LifeCycleMock * mock_;
 };
 
 
 class DummyReady : public Ready<DummyProxy> {
 public:
-    explicit DummyReady(test::LifeCycleMock * mock = nullptr) 
+    explicit DummyReady(LifeCycleMock * mock = nullptr) 
         : mock_(mock) {}
 
     virtual DummyProxy::Ptr NewProxy(Session * session, const std::string & text) const {
@@ -65,7 +67,7 @@ public:
     }
 
 private:
-    test::LifeCycleMock * mock_;
+    LifeCycleMock * mock_;
 };
 
 
@@ -85,7 +87,7 @@ private:
 
 TEST(ReadyTest, test_set_session) {
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
 
     DummyReady ready;
     ready.SetSession(session);
@@ -95,11 +97,11 @@ TEST(ReadyTest, test_set_session) {
 
 TEST(ReadyTest, test_remove_session_when_disconnected) {
 
-    test::LifeCycleMock life_cycle_mock;
+    LifeCycleMock life_cycle_mock;
     EXPECT_CALL(life_cycle_mock, constructed()).Times(1);
     EXPECT_CALL(life_cycle_mock, destructed()).Times(1);
     
-    Session::Ptr session(test::FakeSession::New(&life_cycle_mock));
+    Session::Ptr session(new FakeSession(&life_cycle_mock));
 
     DummyReady ready;
     ready.SetSession(session);
@@ -110,7 +112,7 @@ TEST(ReadyTest, test_remove_session_when_disconnected) {
 
 TEST(ReadyTest, test_remove_session_when_invalid_text_received_from_session) {
 
-    test::LifeCycleMock life_cycle_mock;
+    LifeCycleMock life_cycle_mock;
     EXPECT_CALL(life_cycle_mock, constructed()).Times(1);
     EXPECT_CALL(life_cycle_mock, destructed()).Times(1);
 
@@ -118,7 +120,7 @@ TEST(ReadyTest, test_remove_session_when_invalid_text_received_from_session) {
     ServerMock server_mock(ready);
     EXPECT_CALL(server_mock, OnReady(_)).Times(1);
 
-    Session::Ptr session(test::FakeSession::New(&life_cycle_mock));
+    Session::Ptr session(new FakeSession(&life_cycle_mock));
 
     ready.SetSession(session);
     session->FireOnTextEvent("");
@@ -127,7 +129,7 @@ TEST(ReadyTest, test_remove_session_when_invalid_text_received_from_session) {
 
 TEST(ReadyTest, test_remove_session_when_valid_text_received_from_session) {
 
-    test::LifeCycleMock life_cycle_mock;
+    LifeCycleMock life_cycle_mock;
     EXPECT_CALL(life_cycle_mock, constructed()).Times(1);
     EXPECT_CALL(life_cycle_mock, destructed()).Times(1);
 
@@ -135,7 +137,7 @@ TEST(ReadyTest, test_remove_session_when_valid_text_received_from_session) {
     ServerMock server_mock(ready);
     EXPECT_CALL(server_mock, OnReady(_)).Times(1);
 
-    Session::Ptr session(test::FakeSession::New(&life_cycle_mock));
+    Session::Ptr session(new FakeSession(&life_cycle_mock));
 
     ready.SetSession(session);
     session->FireOnTextEvent("test");
@@ -155,7 +157,7 @@ TEST(ReadyTest, test_passing_null_proxy_to_delegate_when_invalid_text_received_f
         .Times(1)
         .WillOnce(Invoke(CheckNullProxy));
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
 
     ready.SetSession(session);
     session->FireOnTextEvent("");
@@ -163,7 +165,7 @@ TEST(ReadyTest, test_passing_null_proxy_to_delegate_when_invalid_text_received_f
 
 TEST(ReadyTest, test_check_proxy_life_cycle_when_invalid_text_received_from_session) {
 
-    test::LifeCycleMock life_cycle_mock;
+    LifeCycleMock life_cycle_mock;
     EXPECT_CALL(life_cycle_mock, constructed()).Times(0);
     EXPECT_CALL(life_cycle_mock, destructed()).Times(0);
 
@@ -171,7 +173,7 @@ TEST(ReadyTest, test_check_proxy_life_cycle_when_invalid_text_received_from_sess
     ServerMock server_mock(ready);
     EXPECT_CALL(server_mock, OnReady(_)).Times(1);
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
 
     ready.SetSession(session);
     session->FireOnTextEvent("");
@@ -206,7 +208,7 @@ TEST(ReadyTest, test_passing_non_null_proxy_to_delegate_when_valid_text_received
         .Times(1)
         .WillOnce(invoke);
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
 
     ready.SetSession(session);
     session->FireOnTextEvent(expected_text);
@@ -214,7 +216,7 @@ TEST(ReadyTest, test_passing_non_null_proxy_to_delegate_when_valid_text_received
 
 TEST(ReadyTest, test_check_proxy_life_cycle_when_valid_text_received_from_session) {
 
-    test::LifeCycleMock life_cycle_mock;
+    LifeCycleMock life_cycle_mock;
     EXPECT_CALL(life_cycle_mock, constructed()).Times(1);
     EXPECT_CALL(life_cycle_mock, destructed()).Times(1);
 
@@ -222,7 +224,7 @@ TEST(ReadyTest, test_check_proxy_life_cycle_when_valid_text_received_from_sessio
     ServerMock server_mock(ready);
     EXPECT_CALL(server_mock, OnReady(_)).Times(1);
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
 
     ready.SetSession(session);
     session->FireOnTextEvent("text");

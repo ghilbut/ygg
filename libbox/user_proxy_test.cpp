@@ -9,6 +9,8 @@
 using ::testing::_;
 using ::testing::ElementsAreArray;
 
+using namespace test;
+
 
 namespace box {
 
@@ -36,7 +38,7 @@ TEST(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 
 TEST(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
     UserProxy::Ptr proxy(UserProxy::New(session, kInvalidJson));
 
     ASSERT_TRUE(proxy == nullptr);
@@ -44,7 +46,7 @@ TEST(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
 
 TEST(UserProxyTest, test_new_box_proxy_returns_non_null_with_valid_json_format) {
 
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
     UserProxy::Ptr proxy(UserProxy::New(session, kValidJson));
 
     ASSERT_TRUE(proxy != nullptr);
@@ -73,7 +75,7 @@ TEST(UserProxyTest, test_delegate) {
     static const std::string kText("text");
     static const std::vector<uint8_t> kBytes(kExpectedBytes, kExpectedBytes + kExpectedBytesSize);
     
-    Session::Ptr session(test::FakeSession::New());
+    Session::Ptr session(new FakeSession());
     UserProxy::Ptr proxy(UserProxy::New(session, kValidJson));
 
     DelegateMock mock;

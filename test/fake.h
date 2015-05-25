@@ -12,83 +12,40 @@ using namespace codebase;
 namespace test {
 
 
-class FakeSession : public Session {
-public:
-    static Session::Ptr New(LifeCycleMock * mock = nullptr) {
-        return new FakeSession(mock);
-    }
-
-    virtual size_t SendText(const std::string & text) const {
-        return text.length();
-    }
-
-    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const {
-        return bytes.size();
-    }
-
-    virtual void Close() {
-        // nothing
-    }
-
-private:
-    FakeSession(LifeCycleMock * mock) 
-        : Session(), mock_(mock) {
-
-        if (mock_ != nullptr) {
-            mock_->constructed();
-        }
-    }
-
-    ~FakeSession() {
-        if (mock_ != nullptr) {
-            mock_->destructed();
-        }
-    }
-
-    LifeCycleMock * mock_;
-};
+class FakeConnection;
+class FakeSession;
 
 
 class FakeConnection : public Connection {
 public:
-    static Connection::Ptr New(LifeCycleMock * mock = nullptr) {
-        return new FakeConnection(mock);
-    }
+    FakeConnection(LifeCycleMock * mock = nullptr);
+    ~FakeConnection();
 
-    virtual bool Open() {
-        return true;
-    }
+    virtual bool Open();
+    virtual size_t SendText(const std::string & text) const;
+    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const;
+    virtual void Close();
 
-    virtual size_t SendText(const std::string & text) const {
-        return text.length();
-    }
-
-    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const {
-        return bytes.size();
-    }
-
-    virtual void Close() {
-        // nothing
-    }
+    Session * GetSession() const;
 
 private:
-    FakeConnection(LifeCycleMock * mock) 
-        : Connection(), mock_(mock) {
-
-        if (mock_ != nullptr) {
-            mock_->constructed();
-        }
-    }
-
-    ~FakeConnection() {
-        if (mock_ != nullptr) {
-            mock_->destructed();
-        }
-    }
-
     LifeCycleMock * mock_;
+    Session::Ptr session_;
 };
 
+
+class FakeSession : public Session {
+public:
+    FakeSession(LifeCycleMock * mock = nullptr);
+    ~FakeSession();
+
+    virtual size_t SendText(const std::string & text) const;
+    virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const;
+    virtual void Close();
+
+private:
+    LifeCycleMock * mock_;
+};
 
 
 }  // namespace test
