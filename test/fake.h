@@ -19,6 +19,7 @@ class FakeSession;
 class FakeConnection : public Connection {
 public:
     FakeConnection(LifeCycleMock * mock = nullptr);
+    FakeConnection(Session * session, LifeCycleMock * mock = nullptr);
     ~FakeConnection();
 
     virtual bool Open();
@@ -26,24 +27,28 @@ public:
     virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const;
     virtual void Close();
 
-    Session * GetSession() const;
+    Session::Ptr session() const;
 
 private:
+    Session::Weak session_;
     LifeCycleMock * mock_;
-    Session::Ptr session_;
 };
 
 
 class FakeSession : public Session {
 public:
     FakeSession(LifeCycleMock * mock = nullptr);
+    FakeSession(Connection * conn, LifeCycleMock * mock = nullptr);
     ~FakeSession();
 
     virtual size_t SendText(const std::string & text) const;
     virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const;
     virtual void Close();
 
+    Connection::Ptr conn() const;
+
 private:
+    Connection::Weak conn_;
     LifeCycleMock * mock_;
 };
 
