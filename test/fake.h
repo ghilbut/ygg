@@ -30,6 +30,7 @@ public:
     Session::Ptr session() const;
 
 private:
+    FakeSession * fake_;
     Session::Weak session_;
     LifeCycleMock * mock_;
 };
@@ -48,6 +49,7 @@ public:
     Connection::Ptr conn() const;
 
 private:
+    FakeConnection * fake_;
     Connection::Weak conn_;
     LifeCycleMock * mock_;
 };

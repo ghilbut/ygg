@@ -6,7 +6,12 @@ namespace test {
 
 
 FakeConnection::FakeConnection(LifeCycleMock * mock) 
-    : Connection(), session_(new FakeSession(this)), mock_(mock) {
+    : Connection()
+    , fake_(new FakeSession(this))
+    , session_(fake_)
+    , mock_(mock) {
+
+    fake_->AddRef();
 
     if (mock_ != nullptr) {
         mock_->constructed();
@@ -14,7 +19,7 @@ FakeConnection::FakeConnection(LifeCycleMock * mock)
 }
 
 FakeConnection::FakeConnection(Session * session, LifeCycleMock * mock) 
-    : Connection(), session_(session), mock_(mock) {
+    : Connection(), fake_(nullptr), session_(session), mock_(mock) {
 
     if (mock_ != nullptr) {
         mock_->constructed();
@@ -24,6 +29,9 @@ FakeConnection::FakeConnection(Session * session, LifeCycleMock * mock)
 FakeConnection::~FakeConnection() {
     if (mock_ != nullptr) {
         mock_->destructed();
+    }
+    if (fake_ != nullptr) {
+        fake_->Release();
     }
 }
 
@@ -62,7 +70,12 @@ Session::Ptr FakeConnection::session() const {
 
 
 FakeSession::FakeSession(LifeCycleMock * mock) 
-    : Session(), conn_(new FakeConnection(this)), mock_(mock) {
+    : Session()
+    , fake_(new FakeConnection(this))
+    , conn_(fake_)
+    , mock_(mock) {
+
+    fake_->AddRef();
 
     if (mock_ != nullptr) {
         mock_->constructed();
@@ -70,7 +83,7 @@ FakeSession::FakeSession(LifeCycleMock * mock)
 }
 
 FakeSession::FakeSession(Connection * conn, LifeCycleMock * mock) 
-    : Session(), conn_(conn), mock_(mock) {
+    : Session(), fake_(nullptr), conn_(conn), mock_(mock) {
 
     if (mock_ != nullptr) {
         mock_->constructed();
@@ -80,6 +93,9 @@ FakeSession::FakeSession(Connection * conn, LifeCycleMock * mock)
 FakeSession::~FakeSession() {
     if (mock_ != nullptr) {
         mock_->destructed();
+    }
+    if (fake_ != nullptr) {
+        fake_->Release();
     }
 }
 
