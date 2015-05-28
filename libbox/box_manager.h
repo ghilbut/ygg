@@ -1,5 +1,5 @@
-#ifndef YGG_LIBBOX_BOX_SERVER_H_
-#define YGG_LIBBOX_BOX_SERVER_H_
+#ifndef YGG_LIBBOX_BOX_MANAGER_H_
+#define YGG_LIBBOX_BOX_MANAGER_H_
 
 #include "box_proxy.h"
 #include "user_proxy.h"
@@ -19,13 +19,13 @@ typedef Ready<BoxProxy> BoxReady;
 typedef Ready<UserProxy> UserReady;
 
 
-class BoxServer : 
+class BoxManager : 
     public BoxReady::Delegate
     , public UserReady::Delegate {
 
 public:
-    BoxServer();
-    ~BoxServer() {}
+    BoxManager();
+    ~BoxManager() {}
 
     void BindBoxSession(Session::Ptr & session);
     void BindUserSession(Session::Ptr & session);
@@ -45,4 +45,4 @@ private:
 }  // namespace box
 
 
-#endif  // YGG_LIBBOX_BOX_SERVER_H_
+#endif  // YGG_LIBBOX_BOX_MANAGER_H_

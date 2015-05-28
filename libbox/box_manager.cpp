@@ -1,27 +1,27 @@
-#include "box_server.h"
+#include "box_manager.h"
 
 
 namespace box {
 
 
-BoxServer::BoxServer() {
+BoxManager::BoxManager() {
     box_ready_.BindDelegate(this);
     user_ready_.BindDelegate(this);
 }
 
-void BoxServer::BindBoxSession(Session::Ptr & session) {
+void BoxManager::BindBoxSession(Session::Ptr & session) {
     box_ready_.SetSession(session);
 }
 
-void BoxServer::BindUserSession(Session::Ptr & session) {
+void BoxManager::BindUserSession(Session::Ptr & session) {
     user_ready_.SetSession(session);
 }
 
-void BoxServer::OnReady(BoxProxy::Ptr box) {
+void BoxManager::OnReady(BoxProxy::Ptr box) {
     box_list_[box->info().id()] = box;
 }
 
-void BoxServer::OnReady(UserProxy::Ptr user) {
+void BoxManager::OnReady(UserProxy::Ptr user) {
 
     auto itr = box_list_.find(user->box_id());
     if (itr == box_list_.end()) {
