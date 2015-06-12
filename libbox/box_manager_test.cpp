@@ -53,9 +53,8 @@ private:
 
 TEST_F(BoxManagerTest, test_user_proxy_close_session_when_target_box_is_not_exists) {
 
-    FakeConnection * fake = new FakeConnection();
-    Connection::Ptr conn(fake);
-    Session::Ptr session(fake->session());
+    Connection::Ptr conn(FakeConnection::New());
+    Session::Ptr session(((FakeConnection*) conn.get())->session());
 
     ConnectionDelegateMock mock;
     EXPECT_CALL(mock, OnClosed(conn.get()));
@@ -72,9 +71,8 @@ TEST_F(BoxManagerTest, test_set_box_to_box_manager) {
     static const std::string box_text("box-text");
 
     // box connection and session
-    FakeConnection * fake_box = new FakeConnection();
-    Connection::Ptr box(fake_box);
-    Session::Ptr box_session(fake_box->session());
+    Connection::Ptr box(FakeConnection::New());
+    Session::Ptr box_session(((FakeConnection*) box.get())->session());
 
     ASSERT_EQ(box_session.get(), (FakeSession*)box_session.get());
 
@@ -97,9 +95,8 @@ TEST_F(BoxManagerTest, test_user_bind_to_box) {
     static const std::string user_text("user-text");
 
     // box connection and session
-    FakeConnection * fake_box = new FakeConnection();
-    Connection::Ptr box(fake_box);
-    Session::Ptr box_session(fake_box->session());
+    Connection::Ptr box(FakeConnection::New());
+    Session::Ptr box_session(((FakeConnection*) box.get())->session());
 
     ConnectionDelegateMock box_mock;
     EXPECT_CALL(box_mock, OnText(box.get(), user_text));
@@ -107,9 +104,8 @@ TEST_F(BoxManagerTest, test_user_bind_to_box) {
     box->BindDelegate(&box_mock);
 
     // user connection and session
-    FakeConnection * fake_user = new FakeConnection();
-    Connection::Ptr user(fake_user);
-    Session::Ptr user_session(fake_user->session());
+    Connection::Ptr user(FakeConnection::New());
+    Session::Ptr user_session(((FakeConnection*) user.get())->session());
 
     ConnectionDelegateMock user_mock;
     EXPECT_CALL(user_mock, OnText(user.get(), box_text));
@@ -123,7 +119,7 @@ TEST_F(BoxManagerTest, test_user_bind_to_box) {
 
     ASSERT_NE(nullptr, box.get());
     printf("1111\n");
-    fake_box->SendText(box_text);
+    box->SendText(box_text);
     //user->SendText(user_text);
     printf("2222\n");
 }

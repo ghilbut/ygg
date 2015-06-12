@@ -11,8 +11,8 @@ using namespace codebase;
 namespace box {
 
 
-class UserProxy : 
-    public Object<UserProxy>
+class UserProxy
+    : public Object<UserProxy>
     , public Session::Delegate {
 
 public:

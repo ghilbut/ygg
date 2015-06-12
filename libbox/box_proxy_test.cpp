@@ -36,7 +36,7 @@ TEST(BoxProxyTest, test_box_info_return_object_with_valid_json_data) {
 
 TEST(BoxProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
 
-    Session::Ptr session(new FakeSession());
+    Session::Ptr session(FakeSession::New());
     BoxProxy::Ptr proxy(BoxProxy::New(session, kInvalidJson));
 
     ASSERT_TRUE(proxy == nullptr);
@@ -44,7 +44,7 @@ TEST(BoxProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
 
 TEST(BoxProxyTest, test_new_box_proxy_returns_non_null_with_valid_json_format) {
 
-    Session::Ptr session(new FakeSession());
+    Session::Ptr session(FakeSession::New());
     BoxProxy::Ptr proxy(BoxProxy::New(session, kValidJson));
 
     ASSERT_TRUE(proxy != nullptr);
@@ -66,7 +66,7 @@ TEST(BoxProxyTest, test_delegate) {
     static const std::string kText("text");
     static const std::vector<uint8_t> kBytes(kExpectedBytes, kExpectedBytes + kExpectedBytesSize);
 
-    Session::Ptr session(new FakeSession());
+    Session::Ptr session(FakeSession::New());
     BoxProxy::Ptr proxy(BoxProxy::New(session, kValidJson));
 
     DelegateMock mock;

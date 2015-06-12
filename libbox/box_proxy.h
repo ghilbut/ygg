@@ -16,8 +16,8 @@ namespace box {
 class BoxInfo;
 
 
-class BoxProxy : 
-    public Object<BoxProxy>
+class BoxProxy
+    : public Object<BoxProxy>
     , public Session::Delegate {
 
 public:

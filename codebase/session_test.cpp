@@ -32,7 +32,7 @@ TEST_F(SessionTest, test_bind_delegate_and_fire_events) {
     static const std::string kText = "second";
     static const std::vector<uint8_t> kBuffer(kExpectedBuffer, kExpectedBuffer+10);
 
-    Session::Ptr session_ptr(new FakeSession());
+    Session::Ptr session_ptr(FakeSession::New());
     Session * session = session_ptr.get();
 
     SessionDelegateMock mock;

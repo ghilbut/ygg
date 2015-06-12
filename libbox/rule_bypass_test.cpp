@@ -45,48 +45,38 @@ TEST(RuleBypassTest, test_user_sessions_get_text_when_box_session_send_text) {
 
     const char * kBoxID = "box-00";
 
-    FakeConnection * fake_box(new FakeConnection());
-    FakeConnection * fake_user00(new FakeConnection());
-    FakeConnection * fake_user01(new FakeConnection());
-    FakeConnection * fake_user02(new FakeConnection());
-
-    fake_box->AddRef();
-    fake_user00->AddRef();
-    fake_user01->AddRef();
-    fake_user02->AddRef();
+    Connection::Ptr box_conn(FakeConnection::New());
+    Connection::Ptr user_conn_00(FakeConnection::New());
+    Connection::Ptr user_conn_01(FakeConnection::New());
+    Connection::Ptr user_conn_02(FakeConnection::New());
 
     Session::Ptr s;
     
-    s = fake_box->session();
+    s = ((FakeConnection*) box_conn.get())->session();
     const std::string kBoxJson(GetBoxJson(kBoxID));
     auto box(BoxProxy::New(s, kBoxJson));
 
-    fake_user00->BindDelegate(&mock);
-    s = fake_user00->session();
+    user_conn_00->BindDelegate(&mock);
+    s = ((FakeConnection*) user_conn_00.get())->session();
     auto user00(UserProxy::New(s, GetUserJson("user-00", kBoxID)));
 
-    fake_user01->BindDelegate(&mock);
-    s = fake_user01->session();
+    user_conn_01->BindDelegate(&mock);
+    s = ((FakeConnection*) user_conn_01.get())->session();
     auto user01(UserProxy::New(s, GetUserJson("user-01", kBoxID)));
 
-    fake_user02->BindDelegate(&mock);
-    s = fake_user02->session();
+    user_conn_02->BindDelegate(&mock);
+    s = ((FakeConnection*) user_conn_02.get())->session();
     auto user02(UserProxy::New(s, GetUserJson("user-02", kBoxID)));
 
     {
         DummyBypassDelegate d;
-        Bypass bypass(box, &d);
-        bypass.SetUser(user00);
-        bypass.SetUser(user01);
-        bypass.SetUser(user02);
+        Bypass::Ptr bypass(Bypass::New(box, &d));
+        bypass->SetUser(user00);
+        bypass->SetUser(user01);
+        bypass->SetUser(user02);
 
-        fake_box->SendText("AAA");
+        box_conn->SendText("AAA");
     }
-
-    delete fake_user02;
-    delete fake_user01;
-    delete fake_user00;
-    delete fake_box;
 }
 
 

@@ -3,7 +3,11 @@
 
 #include "box_proxy.h"
 #include "user_proxy.h"
+#include "codebase/object.h"
 #include <unordered_set>
+
+
+using namespace codebase;
 
 
 namespace box {
@@ -11,7 +15,8 @@ namespace rule {
 
 
 class Bypass
-    : public BoxProxy::Delegate 
+    : public Object<Bypass>
+    , public BoxProxy::Delegate 
     , public UserProxy::Delegate {
 public:
     class Delegate {
@@ -19,8 +24,7 @@ public:
         virtual void OnClosed(Bypass * rule) = 0;
     };
 
-    Bypass(BoxProxy::Ptr & box, Delegate * delegate);
-    ~Bypass();
+    static Bypass::Ptr New(BoxProxy::Ptr & box, Delegate * delegate);
 
     void SetUser(UserProxy::Ptr & user);
     void Close();
@@ -35,6 +39,9 @@ public:
     virtual void OnBinary(UserProxy * user, const std::vector<uint8_t> & bytes);
     virtual void OnClosed(UserProxy * user);
 
+private:
+    Bypass(BoxProxy::Ptr & box, Delegate * delegate);
+    ~Bypass();
 
 private:
     typedef std::unordered_set<UserProxy::Ptr, UserProxy::Hash> UserList;

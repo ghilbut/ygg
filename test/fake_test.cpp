@@ -53,49 +53,45 @@ TEST_F(FakeTest, test_life_cycle) {
     EXPECT_CALL(mock, destructed()).Times(6);
 
     {
-        Connection::Ptr conn(new FakeConnection(&mock));
-        Session::Ptr session(new FakeSession(&mock));
+        Connection::Ptr conn(FakeConnection::New(&mock));
+        Session::Ptr session(FakeSession::New(&mock));
     }
 
     {
-        Connection::Ptr conn(new FakeConnection(&mock));
-        Session::Ptr session(new FakeSession(conn.get(), &mock));
+        Connection::Ptr conn(FakeConnection::New(&mock));
+        Session::Ptr session(FakeSession::New(conn.get(), &mock));
     }
 
     {
-        Session::Ptr session(new FakeSession(&mock));
-        Connection::Ptr conn(new FakeConnection(session.get(), &mock));
+        Session::Ptr session(FakeSession::New(&mock));
+        Connection::Ptr conn(FakeConnection::New(session.get(), &mock));
     }
 }
 
 TEST_F(FakeTest, test_fake_connection_has_default_session) {
 
-    FakeConnection * fake = new FakeConnection();
-    ASSERT_NE(nullptr, fake->session());
-    delete fake;
+    Connection::Ptr conn(FakeConnection::New());
+    ASSERT_NE(nullptr, ((FakeConnection*) conn.get())->session());
 }
 
 TEST_F(FakeTest, test_fake_connection_can_bind_external_session) {
 
-    Session::Ptr session(new FakeSession());
-    FakeConnection * fake = new FakeConnection(session.get());
-    ASSERT_EQ(session, fake->session());
-    delete fake;
+    Session::Ptr session(FakeSession::New());
+    Connection::Ptr conn(FakeConnection::New(session.get()));
+    ASSERT_EQ(session, ((FakeConnection*) conn.get())->session());
 }
 
 TEST_F(FakeTest, test_fake_session_has_default_connection) {
 
-    FakeSession * fake = new FakeSession();
-    ASSERT_NE(nullptr, fake->conn());
-    delete fake;
+    Session::Ptr session(FakeSession::New());
+    ASSERT_NE(nullptr, ((FakeSession*) session.get())->conn());
 }
 
 TEST_F(FakeTest, test_fake_session_can_bind_external_connection) {
 
-    Connection::Ptr conn(new FakeConnection());
-    FakeSession * fake = new FakeSession(conn.get());
-    ASSERT_EQ(conn, fake->conn());
-    delete fake;
+    Connection::Ptr conn(FakeConnection::New());
+    Session::Ptr session(FakeSession::New(conn.get()));
+    ASSERT_EQ(conn, ((FakeSession*) session.get())->conn());
 }
 
 TEST_F(FakeTest, test_fake_connection_send_to_its_session) {
@@ -104,9 +100,8 @@ TEST_F(FakeTest, test_fake_connection_send_to_its_session) {
     const std::vector<uint8_t> kBytes(expected_bytes_);
     const auto check_bytes = ElementsAreArray(&expected_bytes_[0], expected_bytes_.size());
 
-    FakeConnection * fake = new FakeConnection();
-    Connection::Ptr conn(fake);
-    Session::Ptr session(fake->session());
+    Connection::Ptr conn(FakeConnection::New());
+    Session::Ptr session(((FakeConnection*) conn.get())->session());
 
     SessionDelegateMock mock;
     EXPECT_CALL(mock, OnText(session.get(), expected_text_));
@@ -127,9 +122,8 @@ TEST_F(FakeTest, test_fake_connection_receive_from_its_session) {
     const std::vector<uint8_t> kBytes(expected_bytes_);
     const auto check_bytes = ElementsAreArray(&expected_bytes_[0], expected_bytes_.size());
 
-    FakeConnection * fake = new FakeConnection();
-    Connection::Ptr conn(fake);
-    Session::Ptr session(fake->session());
+    Connection::Ptr conn(FakeConnection::New());
+    Session::Ptr session(((FakeConnection*) conn.get())->session());
 
     ConnectionDelegateMock mock;
     EXPECT_CALL(mock, OnOpened(conn.get()));
@@ -152,9 +146,8 @@ TEST_F(FakeTest, test_fake_session_send_to_its_connection) {
     const std::vector<uint8_t> kBytes(expected_bytes_);
     const auto check_bytes = ElementsAreArray(&expected_bytes_[0], expected_bytes_.size());
 
-    FakeSession * fake = new FakeSession();
-    Session::Ptr session(fake);
-    Connection::Ptr conn(fake->conn());
+    Session::Ptr session(FakeSession::New());
+    Connection::Ptr conn(((FakeSession*) session.get())->conn());
 
     ConnectionDelegateMock mock;
     EXPECT_CALL(mock, OnOpened(conn.get()));
@@ -177,9 +170,8 @@ TEST_F(FakeTest, test_fake_session_receive_from_its_connection) {
     const std::vector<uint8_t> kBytes(expected_bytes_);
     const auto check_bytes = ElementsAreArray(&expected_bytes_[0], expected_bytes_.size());
 
-    FakeSession * fake = new FakeSession();
-    Session::Ptr session(fake);
-    Connection::Ptr conn(fake->conn());
+    Session::Ptr session(FakeSession::New());
+    Connection::Ptr conn(((FakeSession*) session.get())->conn());
 
     SessionDelegateMock mock;
     EXPECT_CALL(mock, OnText(session.get(), expected_text_));

@@ -18,16 +18,21 @@ class FakeSession;
 
 class FakeConnection : public Connection {
 public:
-    FakeConnection(LifeCycleMock * mock = nullptr);
-    FakeConnection(Session * session, LifeCycleMock * mock = nullptr);
-    ~FakeConnection();
-
+    static Connection::Ptr New(LifeCycleMock * mock = nullptr);
+    static Connection::Ptr New(Session * session, LifeCycleMock * mock = nullptr);
+    
     virtual bool Open();
     virtual size_t SendText(const std::string & text) const;
     virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const;
     virtual void Close();
 
     Session::Ptr session() const;
+
+private:
+    friend FakeSession;
+    FakeConnection(LifeCycleMock * mock);
+    FakeConnection(Session * session, LifeCycleMock * mock = nullptr);
+    ~FakeConnection();
 
 private:
     FakeSession * fake_;
@@ -38,15 +43,20 @@ private:
 
 class FakeSession : public Session {
 public:
-    FakeSession(LifeCycleMock * mock = nullptr);
-    FakeSession(Connection * conn, LifeCycleMock * mock = nullptr);
-    ~FakeSession();
+    static Session::Ptr New(LifeCycleMock * mock = nullptr);
+    static Session::Ptr New(Connection * conn, LifeCycleMock * mock = nullptr);
 
     virtual size_t SendText(const std::string & text) const;
     virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const;
     virtual void Close();
 
     Connection::Ptr conn() const;
+
+private:
+    friend FakeConnection;
+    FakeSession(LifeCycleMock * mock);
+    FakeSession(Connection * conn, LifeCycleMock * mock = nullptr);
+    ~FakeSession();
 
 private:
     FakeConnection * fake_;

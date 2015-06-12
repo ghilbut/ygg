@@ -42,7 +42,6 @@ UserProxy::~UserProxy() {
 }
 
 size_t UserProxy::SendText(const std::string & text) const {
-    printf("UserProxy::SendText\n");
     return session_->SendText(text);
 }
 
