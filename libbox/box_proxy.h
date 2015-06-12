@@ -2,7 +2,9 @@
 #define YGG_LIBBOX_BOX_PROXY_H_
 
 #include "box_info.h"
+#include "user_proxy.h"
 #include "codebase/session_delegate.h"
+#include <unordered_set>
 
 
 using namespace codebase;
@@ -35,6 +37,12 @@ public:
 
     const BoxInfo & info() const;
 
+    void SetUser(UserProxy::Ptr & user);
+
+    size_t SendText(const std::string & text) const;
+    size_t SendBinary(const std::vector<uint8_t> & bytes) const;
+    void Close();
+
     // net::Session::Delegate
     virtual void OnText(Session * session, const std::string & text);
     virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes);
@@ -45,7 +53,7 @@ private:
 
 private:
     Delegate * delegate_;
-    Session::Ptr & session_;
+    Session::Ptr session_;
     const BoxInfo::Ptr info_;
 };
 

@@ -118,7 +118,7 @@ TEST(ReadyTest, test_remove_session_when_invalid_text_received_from_session) {
 
     DummyReady ready;
     ServerMock server_mock(ready);
-    EXPECT_CALL(server_mock, OnReady(_)).Times(1);
+    EXPECT_CALL(server_mock, OnReady(_)).Times(0);
 
     Session::Ptr session(new FakeSession(&life_cycle_mock));
 
@@ -142,41 +142,6 @@ TEST(ReadyTest, test_remove_session_when_valid_text_received_from_session) {
     ready.SetSession(session);
     session->FireOnTextEvent("test");
     ASSERT_FALSE(ready.HasSession(session));
-}
-
-
-void CheckNullProxy(DummyProxy::Ptr & proxy) {
-    ASSERT_TRUE(proxy == nullptr);
-}
-
-TEST(ReadyTest, test_passing_null_proxy_to_delegate_when_invalid_text_received_from_session) {
-
-    DummyReady ready;
-    ServerMock server_mock(ready);
-    EXPECT_CALL(server_mock, OnReady(_))
-        .Times(1)
-        .WillOnce(Invoke(CheckNullProxy));
-
-    Session::Ptr session(new FakeSession());
-
-    ready.SetSession(session);
-    session->FireOnTextEvent("");
-}
-
-TEST(ReadyTest, test_check_proxy_life_cycle_when_invalid_text_received_from_session) {
-
-    LifeCycleMock life_cycle_mock;
-    EXPECT_CALL(life_cycle_mock, constructed()).Times(0);
-    EXPECT_CALL(life_cycle_mock, destructed()).Times(0);
-
-    DummyReady ready(&life_cycle_mock);
-    ServerMock server_mock(ready);
-    EXPECT_CALL(server_mock, OnReady(_)).Times(1);
-
-    Session::Ptr session(new FakeSession());
-
-    ready.SetSession(session);
-    session->FireOnTextEvent("");
 }
 
 

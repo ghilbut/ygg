@@ -48,6 +48,21 @@ const BoxInfo & BoxProxy::info() const {
     return *info_;
 }
 
+size_t BoxProxy::SendText(const std::string & text) const {
+    assert(session_ != nullptr);
+    return session_->SendText(text);
+}
+
+size_t BoxProxy::SendBinary(const std::vector<uint8_t> & bytes) const {
+    assert(session_ != nullptr);
+    return session_->SendBinary(bytes);
+}
+
+void BoxProxy::Close() {
+    assert(session_ != nullptr);
+    session_->Close();
+}
+
 void BoxProxy::OnText(Session * session, const std::string & text) {
     assert(session == session_);
     delegate_->OnText(this, text);

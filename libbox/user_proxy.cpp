@@ -7,7 +7,6 @@
 namespace box {
 
 
-
 class NullDelegate : public UserProxy::Delegate {
 public:
     virtual void OnText(UserProxy*, const std::string&) {}
@@ -39,6 +38,22 @@ UserProxy::Ptr UserProxy::New(Session::Ptr &  session, const std::string & json)
 }
 
 UserProxy::~UserProxy() {
+    Close();
+}
+
+size_t UserProxy::SendText(const std::string & text) const {
+    printf("UserProxy::SendText\n");
+    return session_->SendText(text);
+}
+
+size_t UserProxy::SendBinary(const std::vector<uint8_t> & bytes) const {
+    return SendBinary(bytes);
+}
+
+void UserProxy::Close() {
+    if (session_ != nullptr) {
+        session_->Close();
+    }
 }
 
 void UserProxy::BindDelegate(Delegate * delegate) {
@@ -59,17 +74,23 @@ const char * UserProxy::box_id() const {
 }
 
 void UserProxy::OnText(Session * session, const std::string & text) {
+    assert(session != nullptr);
     assert(session == session_);
     delegate_->OnText(this, text);
 }
 
 void UserProxy::OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
+    assert(session != nullptr);
     assert(session == session_);
     delegate_->OnBinary(this, bytes);
 }
 
 void UserProxy::OnClosed(Session * session) {
+    assert(session != nullptr);
     assert(session == session_);
+
+    session_->UnbindDelegate();
+    session_ = nullptr;
     delegate_->OnClosed(this);
 }
 

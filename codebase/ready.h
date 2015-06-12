@@ -62,6 +62,7 @@ public:
         typename ProxyT::Ptr proxy(NewProxy(session, text));
         if (proxy == nullptr) {
             session->Close();
+            return;
         }
 
         delegate_->OnReady(proxy);

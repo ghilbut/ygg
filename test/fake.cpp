@@ -100,8 +100,10 @@ FakeSession::~FakeSession() {
 }
 
 size_t FakeSession::SendText(const std::string & text) const {
+    printf("FakeSession::SendText\n");
     Connection::Ptr conn(conn_.Lock());
     if (conn != nullptr) {
+        printf("FakeSession:: conn->FireTextEvent\n");
         conn->FireOnTextEvent(text);
     }
     return text.length();

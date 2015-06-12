@@ -17,18 +17,20 @@ void BoxManager::BindUserSession(Session::Ptr & session) {
     user_ready_.SetSession(session);
 }
 
-void BoxManager::OnReady(BoxProxy::Ptr box) {
+void BoxManager::OnReady(BoxProxy::Ptr & box) {
     box_list_[box->info().id()] = box;
 }
 
-void BoxManager::OnReady(UserProxy::Ptr user) {
+void BoxManager::OnReady(UserProxy::Ptr & user) {
 
     auto itr = box_list_.find(user->box_id());
     if (itr == box_list_.end()) {
         // TODO(ghilbut): dissconnect user
+        user->Close();
         return;
     }
 
+    BoxProxy::Ptr box(itr->second);
     // TODO(ghilbut): bind to box
 }
 

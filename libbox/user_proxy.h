@@ -27,6 +27,10 @@ public:
     static UserProxy::Ptr New(Session::Ptr & session, const std::string & json);
     ~UserProxy();
 
+    size_t SendText(const std::string & text) const;
+    size_t SendBinary(const std::vector<uint8_t> & bytes) const;
+    void Close();
+
     void BindDelegate(Delegate * delegate);
     void UnbindDelegate();
 

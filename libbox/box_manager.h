@@ -31,8 +31,8 @@ public:
     void BindUserSession(Session::Ptr & session);
 
     // Ready<T>::Delegate
-    virtual void OnReady(BoxProxy::Ptr box);
-    virtual void OnReady(UserProxy::Ptr user);
+    virtual void OnReady(BoxProxy::Ptr & box);
+    virtual void OnReady(UserProxy::Ptr & user);
 
 
 private:
