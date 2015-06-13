@@ -44,7 +44,7 @@ private:
     ~Bypass();
 
 private:
-    typedef std::unordered_set<UserProxy::Ptr, UserProxy::Hash> UserList;
+    typedef std::unordered_set<UserProxy::Ptr> UserList;
 
     BoxProxy::Ptr box_;
     UserList user_list_;

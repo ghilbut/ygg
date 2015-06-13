@@ -6,6 +6,16 @@
 #include <atomic>
 
 
+// NOTE(ghilbut): hasher for unordered_set and unordered_map
+template<class T>
+class std::hash<boost::intrusive_ptr<T>> {
+public:
+    size_t operator() (const typename T::Ptr & p) const {
+        return std::hash<const T*>()(p.get());
+    }
+};
+  
+
 namespace codebase {
 
 
@@ -34,16 +44,6 @@ public:
     typedef boost::intrusive_ptr<T> Ptr;
     typedef WeakPtr<T> Weak;
 
-    // NOTE(ghilbut): hasher for unordered_set and unordered_map
-    // usage - std::unordered_set<T::Ptr, T::Hash> s;
-    //         std::unordered_map<T::Ptr, V, T::Hash> m;
-    class Hash {
-    public:
-        size_t operator() (const typename T::Ptr & p) const {
-            return std::hash<const T*>()(p.get());
-        }
-    };
-    
     inline void AddRef() {
         counter_->AddRef();
     }
@@ -151,12 +151,12 @@ private:
 template<class T>
 class CountHelper : public boost::noncopyable {
 public:
-    CountHelper(T * px) : use_count_({0}), weak_counpx_({1}), px_(px) {}
+    CountHelper(T * px) : use_count_({0}), weak_count_({1}), px_(px) {}
     ~CountHelper() {}
       
     inline void AddRef(bool is_weak = false) {
         if (is_weak) {
-            ++weak_counpx_;
+            ++weak_count_;
         }
         else {
             ++use_count_;
@@ -165,16 +165,16 @@ public:
 
     inline void Release(bool is_weak = false) {
         if (is_weak) {
-            --weak_counpx_;
+            --weak_count_;
         }
         else {
             if (--use_count_ == 0) {
                 px_->Dispose();
-                --weak_counpx_;
+                --weak_count_;
             }
         }
 
-        if (weak_counpx_ == 0) {
+        if (weak_count_ == 0) {
             delete this;
         }
     }
@@ -189,7 +189,7 @@ public:
 
 private:
     std::atomic_int use_count_;
-    std::atomic_int weak_counpx_;
+    std::atomic_int weak_count_;
     T * px_;
 };
 

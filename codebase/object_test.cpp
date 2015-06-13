@@ -55,7 +55,7 @@ TEST(ObjectTest, test_construction_and_destruction) {
     TestObject::Ptr obj(TestObject::New(&mock));
 }
 
-TEST(ObjectTest, test_construction_and_destruction_with_operator_equal) {
+TEST(ObjectTest, test_construction_and_destruction_with_operator_assignment) {
 
     LifeCycleMock mock;
     EXPECT_CALL(mock, constructed()).Times(1);
@@ -101,7 +101,7 @@ TEST(ObjectTest, test_object_ptr_validation_as_container_hash_key) {
     }
 
     {
-        std::unordered_set<TestObject::Ptr, TestObject::Hash> uset;
+        std::unordered_set<TestObject::Ptr> uset;
         uset.insert(obj0);
         EXPECT_NE(uset.end(), uset.find(obj0));
         EXPECT_NE(uset.end(), uset.find(obj1));
@@ -134,7 +134,7 @@ TEST(ObjectTest, test_object_ptr_validation_as_container_hash_key) {
     }
 
     {
-        std::unordered_map<TestObject::Ptr, int, TestObject::Hash> umap;
+        std::unordered_map<TestObject::Ptr, int> umap;
         umap[obj0] = 0;
         EXPECT_EQ(0, umap[obj0]);
         EXPECT_EQ(0, umap[obj1]);
