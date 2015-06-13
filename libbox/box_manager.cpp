@@ -18,7 +18,8 @@ void BoxManager::BindUserSession(Session::Ptr & session) {
 }
 
 void BoxManager::OnReady(BoxProxy::Ptr & box) {
-    box_list_[box->info().id()] = box;
+    auto rule = rule::Bypass::New(box, this);
+    box_list_[box->info().id()] = rule;
 }
 
 void BoxManager::OnReady(UserProxy::Ptr & user) {
@@ -30,8 +31,12 @@ void BoxManager::OnReady(UserProxy::Ptr & user) {
         return;
     }
 
-    BoxProxy::Ptr box(itr->second);
-    // TODO(ghilbut): bind to box
+    rule::Bypass::Ptr rule(itr->second);
+    rule->SetUser(user);
+}
+
+void BoxManager::OnClosed(rule::Bypass * rule) {
+
 }
 
 

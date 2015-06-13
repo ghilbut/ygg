@@ -66,30 +66,7 @@ TEST_F(BoxManagerTest, test_user_proxy_close_session_when_target_box_is_not_exis
     conn->SendText(valid_user_json());
 }
 
-TEST_F(BoxManagerTest, test_set_box_to_box_manager) {
-
-    static const std::string box_text("box-text");
-
-    // box connection and session
-    Connection::Ptr box(FakeConnection::New());
-    Session::Ptr box_session(((FakeConnection*) box.get())->session());
-
-    ASSERT_EQ(box_session.get(), (FakeSession*)box_session.get());
-
-    ConnectionDelegateMock box_mock;
-    EXPECT_CALL(box_mock, OnText(box.get(), box_text));
-    box->BindDelegate(&box_mock);
-
-    // bind each other by manager
-    BoxManager manager;
-    manager.BindBoxSession(box_session);
-
-    ASSERT_NE(nullptr, box);
-    box->SendText(valid_box_json());
-    box->SendText(box_text);
-}
-
-TEST_F(BoxManagerTest, test_user_bind_to_box) {
+TEST_F(BoxManagerTest, test_bind_user_and_box) {
 
     static const std::string box_text("box-text");
     static const std::string user_text("user-text");
@@ -117,11 +94,11 @@ TEST_F(BoxManagerTest, test_user_bind_to_box) {
     manager.BindBoxSession(box_session);
     manager.BindUserSession(user_session);
 
-    ASSERT_NE(nullptr, box.get());
-    printf("1111\n");
+    box->SendText(valid_box_json());
+    user->SendText(valid_user_json());
+
     box->SendText(box_text);
-    //user->SendText(user_text);
-    printf("2222\n");
+    user->SendText(user_text);
 }
 
 

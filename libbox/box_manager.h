@@ -3,9 +3,9 @@
 
 #include "box_proxy.h"
 #include "user_proxy.h"
+#include "rule_bypass.h"
 #include "codebase/ready.h"
-#include <map>
-#include <set>
+#include <unordered_map>
 #include <string>
 
 
@@ -19,9 +19,10 @@ typedef Ready<BoxProxy> BoxReady;
 typedef Ready<UserProxy> UserReady;
 
 
-class BoxManager : 
-    public BoxReady::Delegate
-    , public UserReady::Delegate {
+class BoxManager
+    : public BoxReady::Delegate
+    , public UserReady::Delegate
+    , public rule::Bypass::Delegate {
 
 public:
     BoxManager();
@@ -34,11 +35,13 @@ public:
     virtual void OnReady(BoxProxy::Ptr & box);
     virtual void OnReady(UserProxy::Ptr & user);
 
+    // rule::Bypass::Delegate
+    virtual void OnClosed(rule::Bypass * rule);
 
 private:
     Ready<BoxProxy> box_ready_;
     Ready<UserProxy> user_ready_;
-    std::map<std::string, BoxProxy::Ptr> box_list_;
+    std::unordered_map<std::string, rule::Bypass::Ptr> box_list_;
 };
 
 
