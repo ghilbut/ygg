@@ -1,13 +1,13 @@
 import os
 
-print '-----------------------------------------------------------------'
-print '[YGG]  build and run ygg test.'
-print '-----------------------------------------------------------------'
-
-
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
 os.system('clear' if os.name is 'posix' else 'CLS')
+
+
+print '-----------------------------------------------------------------'
+print '[YGG]  build and run ygg test.'
+print '-----------------------------------------------------------------'
 
 
 
@@ -47,7 +47,27 @@ sources = [
 #sources += Glob('../codebase/*_test.c*')
 sources += Glob('../codebase/*.c*')
 sources += Glob('../net/*.c*')
-sources += Glob('../libbox/*.c*')
+
+# libbox
+#sources += Glob('../libbox/*.c*')
+sources += [
+  '../libbox/box_info.cpp',
+  '../libbox/box_proxy.cpp',
+  '../libbox/box_manager.cpp',
+  '../libbox/rule_bypass.cpp',
+  '../libbox/user_info.cpp',
+  '../libbox/user_proxy.cpp']
+sources += [
+  '../libbox/box_proxy_test.cpp',
+  '../libbox/box_manager_test.cpp',
+  '../libbox/rule_bypass_test.cpp',
+  '../libbox/user_proxy_test.cpp']
+
+# libuser
+sources += [
+  ]
+sources += [
+  ]
 
 
 LIBS = [
