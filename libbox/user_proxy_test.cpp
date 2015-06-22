@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 
-#include "user_info.h"
 #include "user_proxy.h"
 #include "codebase/session.h"
+#include "codebase/user_desc.h"
 #include "test/fake.h"
 
 
@@ -24,13 +24,13 @@ static const std::string kInvalidJson = "012345678";
 
 TEST(UserProxyTest, test_box_info_returns_null_with_invalid_json_format) {
 
-    UserInfo::Ptr info(UserInfo::New(kInvalidJson));
+    UserDesc::Ptr info(UserDesc::New(kInvalidJson));
     ASSERT_TRUE(info == nullptr);
 }
 
 TEST(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 
-    UserInfo::Ptr info(UserInfo::New(kValidJson));
+    UserDesc::Ptr info(UserDesc::New(kValidJson));
 
     ASSERT_TRUE(info != nullptr);
     ASSERT_STREQ("user00", info->id());

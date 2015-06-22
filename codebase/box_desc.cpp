@@ -1,11 +1,11 @@
-#include "box_info.h"
+#include "box_desc.h"
 #include <json/json.h>
 
 
-namespace box {
+namespace codebase {
 
 
-BoxInfo::Ptr BoxInfo::New(const std::string & json) {
+BoxDesc::Ptr BoxDesc::New(const std::string & json) {
 
     Json::Value root;
     Json::Reader reader;
@@ -26,14 +26,14 @@ BoxInfo::Ptr BoxInfo::New(const std::string & json) {
     const std::string id(value.asString());
     
 
-    return new BoxInfo(json, id);
+    return new BoxDesc(json, id);
 }
 
-const char * BoxInfo::id() const {
+const char * BoxDesc::id() const {
     return id_.c_str();
 }
 
-BoxInfo::BoxInfo(const std::string & json
+BoxDesc::BoxDesc(const std::string & json
                  , const std::string & id)
     : Object(this)
     , json_(json)
@@ -41,4 +41,4 @@ BoxInfo::BoxInfo(const std::string & json
     // nothing
 }
 
-}  // namespace box
+}  // namespace codebase

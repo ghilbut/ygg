@@ -1,16 +1,16 @@
-#include "user_info.h"
+#include "user_desc.h"
 #include <json/json.h>
 
 
-namespace box {
+namespace codebase {
 
 
-UserInfo::Ptr UserInfo::New(const std::string & json) {
+UserDesc::Ptr UserDesc::New(const std::string & json) {
     Json::Value root;
     return New(json, root);
 }
 
-UserInfo::Ptr UserInfo::New(const std::string & json, Json::Value & root) {
+UserDesc::Ptr UserDesc::New(const std::string & json, Json::Value & root) {
 
     Json::Reader reader;
     if (!reader.parse(json, root, false)) {
@@ -29,14 +29,14 @@ UserInfo::Ptr UserInfo::New(const std::string & json, Json::Value & root) {
     }
     const std::string id(value.asString());
 
-    return new UserInfo(json, id);
+    return new UserDesc(json, id);
 }
 
-const char * UserInfo::id() const {
+const char * UserDesc::id() const {
     return id_.c_str();
 }
 
-UserInfo::UserInfo(const std::string & json
+UserDesc::UserDesc(const std::string & json
                  , const std::string & id)
     : Object(this)
     , json_(json)
@@ -45,4 +45,4 @@ UserInfo::UserInfo(const std::string & json
 }
 
 
-}  // namespace box
+}  // namespace codebase

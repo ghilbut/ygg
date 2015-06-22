@@ -23,7 +23,7 @@ UserProxy::Ptr UserProxy::New(Session::Ptr &  session, const std::string & json)
     assert(!json.empty());
 
     Json::Value root;
-    UserInfo::Ptr info(UserInfo::New(json, root));
+    UserDesc::Ptr info(UserDesc::New(json, root));
     if (info == nullptr) {
         return nullptr;
     }
@@ -64,7 +64,7 @@ void UserProxy::UnbindDelegate() {
     delegate_ = &kNullDelegate;
 }
 
-const UserInfo & UserProxy::info() const {
+const UserDesc & UserProxy::info() const {
     return *info_;
 }
 
@@ -94,7 +94,7 @@ void UserProxy::OnClosed(Session * session) {
 }
 
 UserProxy::UserProxy(Session::Ptr & session
-                     , const UserInfo::Ptr & info
+                     , const UserDesc::Ptr & info
                      , const std::string & box_id)
     : Object(this)
     , delegate_(&kNullDelegate)

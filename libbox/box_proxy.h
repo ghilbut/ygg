@@ -1,8 +1,8 @@
 #ifndef YGG_LIBBOX_BOX_PROXY_H_
 #define YGG_LIBBOX_BOX_PROXY_H_
 
-#include "box_info.h"
 #include "user_proxy.h"
+#include "codebase/box_desc.h"
 #include "codebase/session_delegate.h"
 #include <unordered_set>
 
@@ -11,9 +11,6 @@ using namespace codebase;
 
 
 namespace box {
-
-
-class BoxInfo;
 
 
 class BoxProxy
@@ -35,7 +32,7 @@ public:
     void BindDelegate(Delegate * delegate);
     void UnbindDelegate();
 
-    const BoxInfo & info() const;
+    const BoxDesc & info() const;
 
     void SetUser(UserProxy::Ptr & user);
 
@@ -49,12 +46,12 @@ public:
     virtual void OnClosed(Session * session);
 
 private:
-    BoxProxy(Session::Ptr & session, const BoxInfo::Ptr & info);
+    BoxProxy(Session::Ptr & session, const BoxDesc::Ptr & info);
 
 private:
     Delegate * delegate_;
     Session::Ptr session_;
-    const BoxInfo::Ptr info_;
+    const BoxDesc::Ptr info_;
 };
 
 

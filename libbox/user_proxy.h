@@ -1,8 +1,8 @@
 #ifndef YGG_LIBBOX_USER_PROXY_H_
 #define YGG_LIBBOX_USER_PROXY_H_
 
-#include "user_info.h"
 #include "codebase/session_delegate.h"
+#include "codebase/user_desc.h"
 
 
 using namespace codebase;
@@ -34,7 +34,7 @@ public:
     void BindDelegate(Delegate * delegate);
     void UnbindDelegate();
 
-    const UserInfo & info() const;
+    const UserDesc & info() const;
     const char * box_id() const;
 
     // net::Session::Delegate
@@ -45,13 +45,13 @@ public:
 private:
     UserProxy(
         Session::Ptr & session
-        , const UserInfo::Ptr & info
+        , const UserDesc::Ptr & info
         , const std::string & box_id);
 
 private:
     Delegate * delegate_;
     Session::Ptr session_;
-    const UserInfo::Ptr info_;
+    const UserDesc::Ptr info_;
     const std::string box_id_;
 };
 

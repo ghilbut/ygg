@@ -3,9 +3,6 @@
 #include <cassert>
 
 
-using namespace codebase;
-
-
 namespace box {
 
 
@@ -24,7 +21,7 @@ BoxProxy::Ptr BoxProxy::New(Session::Ptr & session, const std::string & json) {
     assert(session != nullptr);
     assert(!json.empty());
 
-    BoxInfo::Ptr info(BoxInfo::New(json));
+    BoxDesc::Ptr info(BoxDesc::New(json));
     if (info == nullptr) {
         return nullptr;
     }
@@ -44,7 +41,7 @@ void BoxProxy::UnbindDelegate() {
     delegate_ = &kNullDelegate;
 }
 
-const BoxInfo & BoxProxy::info() const {
+const BoxDesc & BoxProxy::info() const {
     return *info_;
 }
 
@@ -78,7 +75,7 @@ void BoxProxy::OnClosed(Session * session) {
     delegate_->OnClosed(this);
 }
 
-BoxProxy::BoxProxy(Session::Ptr & session, const BoxInfo::Ptr & info)
+BoxProxy::BoxProxy(Session::Ptr & session, const BoxDesc::Ptr & info)
     : Object(this)
     , delegate_(&kNullDelegate)
     , session_(session)
