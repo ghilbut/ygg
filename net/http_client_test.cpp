@@ -251,7 +251,7 @@ ACTION_P(Resume, cv) {
 	cv->notify_one();
 }
 
-TEST_F(HttpClientTest, websocket_client_connection) {
+TEST_F(HttpClientTest, DISABLED_websocket_client_connection) {
 
 	MongooseDelegate mongoose_delegate;
 	BindDelegate(&mongoose_delegate);
