@@ -1,7 +1,7 @@
 #ifndef YGG_CODEBASE_READY_H_
 #define YGG_CODEBASE_READY_H_
 
-#include "session_delegate.h"
+#include "connection.h"
 #include <set>
 
 
@@ -9,7 +9,7 @@ namespace codebase {
 
 
 template<class ProxyT>
-class Ready : public Session::Delegate {
+class Ready : public Connection::Delegate {
 public:
     class Delegate {
     public:
@@ -31,54 +31,54 @@ public:
         delegate_ = nullptr;
     }
 
-    void SetSession(Session::Ptr & session) {
-        readys_.insert(session);
-        session->BindDelegate(this);
+    void SetConnection(Connection::Ptr & conn) {
+        readys_.insert(conn);
+        conn->BindDelegate(this);
     }
 
-    bool HasSession(Session::Ptr & session) const {
-        return (readys_.find(session) != readys_.end());
+    bool HasConnection(Connection::Ptr & conn) const {
+        return (readys_.find(conn) != readys_.end());
     }
 
-    virtual typename ProxyT::Ptr NewProxy(Session * session, const std::string & text) const {
-        Session::Ptr ptr(session);
+    virtual typename ProxyT::Ptr NewProxy(Connection * conn, const std::string & text) const {
+        Connection::Ptr ptr(conn);
         return ProxyT::New(ptr, text);
     }
 
-    // Session::Delegate
-    virtual void OnText(Session * session, const std::string & text) {
+    // Connection::Delegate
+    virtual void OnText(Connection * conn, const std::string & text) {
 
-        if (readys_.find(session) == readys_.end()) {
-            session->Close();
+        if (readys_.find(conn) == readys_.end()) {
+            conn->Close();
             return;
         }
 
-        readys_.erase(session);
+        readys_.erase(conn);
 
         if (delegate_ == nullptr) {
-            session->Close();
+            conn->Close();
         }
 
-        typename ProxyT::Ptr proxy(NewProxy(session, text));
+        typename ProxyT::Ptr proxy(NewProxy(conn, text));
         if (proxy == nullptr) {
-            session->Close();
+            conn->Close();
             return;
         }
 
         delegate_->OnReady(proxy);
     }
 
-    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
+    virtual void OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) {
         // nothing
     }
 
-    virtual void OnClosed(Session * session) {
-        readys_.erase(session);
+    virtual void OnClosed(Connection * conn) {
+        readys_.erase(conn);
     }
 
 
 private:
-    std::set<Session::Ptr> readys_;
+    std::set<Connection::Ptr> readys_;
     Delegate * delegate_;
 };
 

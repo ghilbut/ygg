@@ -1,7 +1,7 @@
 #ifndef YGG_LIBBOX_USER_PROXY_H_
 #define YGG_LIBBOX_USER_PROXY_H_
 
-#include "codebase/session_delegate.h"
+#include "codebase/connection.h"
 #include "codebase/user_desc.h"
 
 
@@ -13,7 +13,7 @@ namespace box {
 
 class UserProxy
     : public Object<UserProxy>
-    , public Session::Delegate {
+    , public Connection::Delegate {
 
 public:
     class Delegate {
@@ -24,7 +24,7 @@ public:
     };
 
 public:
-    static UserProxy::Ptr New(Session::Ptr & session, const std::string & json);
+    static UserProxy::Ptr New(Connection::Ptr & conn, const std::string & json);
     ~UserProxy();
 
     size_t SendText(const std::string & text) const;
@@ -37,20 +37,20 @@ public:
     const UserDesc & info() const;
     const char * box_id() const;
 
-    // net::Session::Delegate
-    virtual void OnText(Session * session, const std::string & text);
-    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes);
-    virtual void OnClosed(Session * session);
+    // codebase::Connection::Delegate
+    virtual void OnText(Connection * conn, const std::string & text);
+    virtual void OnBinary(Connection * conn, const std::vector<uint8_t> & bytes);
+    virtual void OnClosed(Connection * conn);
 
 private:
     UserProxy(
-        Session::Ptr & session
+        Connection::Ptr & conn
         , const UserDesc::Ptr & info
         , const std::string & box_id);
 
 private:
     Delegate * delegate_;
-    Session::Ptr session_;
+    Connection::Ptr conn_;
     const UserDesc::Ptr info_;
     const std::string box_id_;
 };

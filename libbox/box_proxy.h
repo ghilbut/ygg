@@ -3,7 +3,7 @@
 
 #include "user_proxy.h"
 #include "codebase/box_desc.h"
-#include "codebase/session_delegate.h"
+#include "codebase/connection.h"
 #include <unordered_set>
 
 
@@ -15,7 +15,7 @@ namespace box {
 
 class BoxProxy
     : public Object<BoxProxy>
-    , public Session::Delegate {
+    , public Connection::Delegate {
 
 public:
     class Delegate {
@@ -26,7 +26,7 @@ public:
     };
 
 public:
-    static BoxProxy::Ptr New(Session::Ptr & session, const std::string & json);
+    static BoxProxy::Ptr New(Connection::Ptr & conn, const std::string & json);
     ~BoxProxy();
 
     void BindDelegate(Delegate * delegate);
@@ -40,17 +40,17 @@ public:
     size_t SendBinary(const std::vector<uint8_t> & bytes) const;
     void Close();
 
-    // net::Session::Delegate
-    virtual void OnText(Session * session, const std::string & text);
-    virtual void OnBinary(Session * session, const std::vector<uint8_t> & bytes);
-    virtual void OnClosed(Session * session);
+    // codebase::Connection::Delegate
+    virtual void OnText(Connection * conn, const std::string & text);
+    virtual void OnBinary(Connection * conn, const std::vector<uint8_t> & bytes);
+    virtual void OnClosed(Connection * conn);
 
 private:
-    BoxProxy(Session::Ptr & session, const BoxDesc::Ptr & info);
+    BoxProxy(Connection::Ptr & conn, const BoxDesc::Ptr & info);
 
 private:
     Delegate * delegate_;
-    Session::Ptr session_;
+    Connection::Ptr conn_;
     const BoxDesc::Ptr info_;
 };
 

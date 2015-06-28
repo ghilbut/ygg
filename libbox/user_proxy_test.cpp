@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
 #include "user_proxy.h"
-#include "codebase/session.h"
+#include "codebase/connection.h"
 #include "codebase/user_desc.h"
 #include "test/fake.h"
 
@@ -38,16 +38,16 @@ TEST(UserProxyTest, test_box_info_return_object_with_valid_json_data) {
 
 TEST(UserProxyTest, test_new_box_proxy_returns_null_with_invalid_json_format) {
 
-    Session::Ptr session(FakeSession::New());
-    UserProxy::Ptr proxy(UserProxy::New(session, kInvalidJson));
+    Connection::Ptr conn(FakeConnection::New());
+    UserProxy::Ptr proxy(UserProxy::New(conn, kInvalidJson));
 
     ASSERT_TRUE(proxy == nullptr);
 }
 
 TEST(UserProxyTest, test_new_box_proxy_returns_non_null_with_valid_json_format) {
 
-    Session::Ptr session(FakeSession::New());
-    UserProxy::Ptr proxy(UserProxy::New(session, kValidJson));
+    Connection::Ptr conn(FakeConnection::New());
+    UserProxy::Ptr proxy(UserProxy::New(conn, kValidJson));
 
     ASSERT_TRUE(proxy != nullptr);
     ASSERT_STREQ("user00", proxy->info().id());
@@ -75,8 +75,8 @@ TEST(UserProxyTest, test_delegate) {
     static const std::string kText("text");
     static const std::vector<uint8_t> kBytes(kExpectedBytes, kExpectedBytes + kExpectedBytesSize);
     
-    Session::Ptr session(FakeSession::New());
-    UserProxy::Ptr proxy(UserProxy::New(session, kValidJson));
+    Connection::Ptr conn(FakeConnection::New());
+    UserProxy::Ptr proxy(UserProxy::New(conn, kValidJson));
 
     DelegateMock mock;
     EXPECT_CALL(mock, OnText(proxy.get(), kText)).Times(1);
@@ -84,9 +84,9 @@ TEST(UserProxyTest, test_delegate) {
     EXPECT_CALL(mock, OnClosed(proxy.get())).Times(1);
 
     proxy->BindDelegate(&mock);
-    session->FireOnTextEvent(kText);
-    session->FireOnBinaryEvent(kBytes);
-    session->FireOnClosedEvent();
+    conn->FireOnTextEvent(kText);
+    conn->FireOnBinaryEvent(kBytes);
+    conn->FireOnClosedEvent();
 }
 
 

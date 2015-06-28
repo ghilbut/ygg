@@ -6,7 +6,6 @@ namespace codebase {
 
 class NullDelegate : public Connection::Delegate {
 public:
-    virtual void OnOpened(Connection*) {}
     virtual void OnText(Connection*, const std::string&) {}
     virtual void OnBinary(Connection*, const std::vector<uint8_t>&) {}
     virtual void OnClosed(Connection*) {}
@@ -14,10 +13,6 @@ public:
 
 static NullDelegate kNullDelegate;
 
-
-void Connection::FireOnOpenedEvent() {
-    delegate_->OnOpened(this);
-}
 
 void Connection::FireOnTextEvent(const std::string & text) {
     delegate_->OnText(this, text);

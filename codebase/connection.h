@@ -14,19 +14,16 @@ class Connection : public Object<Connection> {
 public:
     class Delegate {
     public:
-        virtual void OnOpened(Connection * conn) = 0;
         virtual void OnText(Connection * conn, const std::string & text) = 0;
         virtual void OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) = 0;
         virtual void OnClosed(Connection * conn) = 0;
     };
 
 public:
-    virtual bool Open() = 0;
     virtual size_t SendText(const std::string & text) const = 0;
     virtual size_t SendBinary(const std::vector<uint8_t> & bytes) const = 0;
     virtual void Close() = 0;
 
-    void FireOnOpenedEvent();
     void FireOnTextEvent(const std::string & text);
     void FireOnBinaryEvent(const std::vector<uint8_t> & bytes);
     void FireOnClosedEvent();

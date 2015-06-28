@@ -9,12 +9,12 @@ BoxManager::BoxManager() {
     user_ready_.BindDelegate(this);
 }
 
-void BoxManager::BindBoxSession(Session::Ptr & session) {
-    box_ready_.SetSession(session);
+void BoxManager::BindBoxConnection(Connection::Ptr & conn) {
+    box_ready_.SetConnection(conn);
 }
 
-void BoxManager::BindUserSession(Session::Ptr & session) {
-    user_ready_.SetSession(session);
+void BoxManager::BindUserConnection(Connection::Ptr & conn) {
+    user_ready_.SetConnection(conn);
 }
 
 void BoxManager::OnReady(BoxProxy::Ptr & box) {

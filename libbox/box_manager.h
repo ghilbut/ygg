@@ -28,8 +28,8 @@ public:
     BoxManager();
     ~BoxManager() {}
 
-    void BindBoxSession(Session::Ptr & session);
-    void BindUserSession(Session::Ptr & session);
+    void BindBoxConnection(Connection::Ptr & conn);
+    void BindUserConnection(Connection::Ptr & conn);
 
     // Ready<T>::Delegate
     virtual void OnReady(BoxProxy::Ptr & box);

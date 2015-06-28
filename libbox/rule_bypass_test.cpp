@@ -38,7 +38,7 @@ public:
     virtual void OnClosed(Bypass *) {}
 };
 
-TEST(RuleBypassTest, test_user_sessions_get_text_when_box_session_send_text) {
+TEST(RuleBypassTest, test_user_conns_get_text_when_box_conn_send_text) {
 
     ConnectionDelegateMock mock;
     EXPECT_CALL(mock, OnText(_, "AAA")).Times(3);
@@ -50,23 +50,23 @@ TEST(RuleBypassTest, test_user_sessions_get_text_when_box_session_send_text) {
     Connection::Ptr user_conn_01(FakeConnection::New());
     Connection::Ptr user_conn_02(FakeConnection::New());
 
-    Session::Ptr s;
-    
-    s = ((FakeConnection*) box_conn.get())->session();
+    Connection::Ptr c;
+
     const std::string kBoxJson(GetBoxJson(kBoxID));
-    auto box(BoxProxy::New(s, kBoxJson));
+    c = ((FakeConnection*) box_conn.get())->conn();
+    auto box(BoxProxy::New(c, kBoxJson));
 
     user_conn_00->BindDelegate(&mock);
-    s = ((FakeConnection*) user_conn_00.get())->session();
-    auto user00(UserProxy::New(s, GetUserJson("user-00", kBoxID)));
+    c = ((FakeConnection*) user_conn_00.get())->conn();
+    auto user00(UserProxy::New(c, GetUserJson("user-00", kBoxID)));
 
     user_conn_01->BindDelegate(&mock);
-    s = ((FakeConnection*) user_conn_01.get())->session();
-    auto user01(UserProxy::New(s, GetUserJson("user-01", kBoxID)));
+    c = ((FakeConnection*) user_conn_01.get())->conn();
+    auto user01(UserProxy::New(c, GetUserJson("user-01", kBoxID)));
 
     user_conn_02->BindDelegate(&mock);
-    s = ((FakeConnection*) user_conn_02.get())->session();
-    auto user02(UserProxy::New(s, GetUserJson("user-02", kBoxID)));
+    c = ((FakeConnection*) user_conn_02.get())->conn();
+    auto user02(UserProxy::New(c, GetUserJson("user-02", kBoxID)));
 
     {
         DummyBypassDelegate d;

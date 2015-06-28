@@ -16,9 +16,9 @@ public:
 static NullDelegate kNullDelegate;
 
 
-BoxProxy::Ptr BoxProxy::New(Session::Ptr & session, const std::string & json) {
+BoxProxy::Ptr BoxProxy::New(Connection::Ptr & conn, const std::string & json) {
 
-    assert(session != nullptr);
+    assert(conn != nullptr);
     assert(!json.empty());
 
     BoxDesc::Ptr info(BoxDesc::New(json));
@@ -26,7 +26,7 @@ BoxProxy::Ptr BoxProxy::New(Session::Ptr & session, const std::string & json) {
         return nullptr;
     }
 
-    return new BoxProxy(session, info);
+    return new BoxProxy(conn, info);
 }
 
 BoxProxy::~BoxProxy() {
@@ -46,45 +46,45 @@ const BoxDesc & BoxProxy::info() const {
 }
 
 size_t BoxProxy::SendText(const std::string & text) const {
-    assert(session_ != nullptr);
-    return session_->SendText(text);
+    assert(conn_ != nullptr);
+    return conn_->SendText(text);
 }
 
 size_t BoxProxy::SendBinary(const std::vector<uint8_t> & bytes) const {
-    assert(session_ != nullptr);
-    return session_->SendBinary(bytes);
+    assert(conn_ != nullptr);
+    return conn_->SendBinary(bytes);
 }
 
 void BoxProxy::Close() {
-    assert(session_ != nullptr);
-    session_->Close();
+    assert(conn_ != nullptr);
+    conn_->Close();
 }
 
-void BoxProxy::OnText(Session * session, const std::string & text) {
-    assert(session == session_);
+void BoxProxy::OnText(Connection * conn, const std::string & text) {
+    assert(conn == conn_);
     delegate_->OnText(this, text);
 }
 
-void BoxProxy::OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
-    assert(session == session_);
+void BoxProxy::OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) {
+    assert(conn == conn_);
     delegate_->OnBinary(this, bytes);
 }
 
-void BoxProxy::OnClosed(Session * session) {
-    assert(session == session_);
+void BoxProxy::OnClosed(Connection * conn) {
+    assert(conn == conn_);
     delegate_->OnClosed(this);
 }
 
-BoxProxy::BoxProxy(Session::Ptr & session, const BoxDesc::Ptr & info)
+BoxProxy::BoxProxy(Connection::Ptr & conn, const BoxDesc::Ptr & info)
     : Object(this)
     , delegate_(&kNullDelegate)
-    , session_(session)
+    , conn_(conn)
     , info_(info) {
 
-    assert(session_ != nullptr);
+    assert(conn_ != nullptr);
     assert(info_ != nullptr);
 
-    session_->BindDelegate(this);
+    conn_->BindDelegate(this);
 }
 
 

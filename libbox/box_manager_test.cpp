@@ -51,19 +51,19 @@ private:
 };
 
 
-TEST_F(BoxManagerTest, test_user_proxy_close_session_when_target_box_is_not_exists) {
+TEST_F(BoxManagerTest, test_user_proxy_close_conn_when_target_box_is_not_exists) {
 
-    Connection::Ptr conn(FakeConnection::New());
-    Session::Ptr session(((FakeConnection*) conn.get())->session());
+    Connection::Ptr client(FakeConnection::New());
+    Connection::Ptr server(((FakeConnection*) client.get())->conn());
 
     ConnectionDelegateMock mock;
-    EXPECT_CALL(mock, OnClosed(conn.get()));
-    conn->BindDelegate(&mock);
+    EXPECT_CALL(mock, OnClosed(client.get()));
+    client->BindDelegate(&mock);
 
     BoxManager manager;
-    manager.BindUserSession(session);
+    manager.BindUserConnection(server);
 
-    conn->SendText(valid_user_json());
+    client->SendText(valid_user_json());
 }
 
 TEST_F(BoxManagerTest, test_bind_user_and_box) {
@@ -71,18 +71,18 @@ TEST_F(BoxManagerTest, test_bind_user_and_box) {
     static const std::string box_text("box-text");
     static const std::string user_text("user-text");
 
-    // box connection and session
+    // box connection and conn
     Connection::Ptr box(FakeConnection::New());
-    Session::Ptr box_session(((FakeConnection*) box.get())->session());
+    Connection::Ptr box_conn(((FakeConnection*) box.get())->conn());
 
     ConnectionDelegateMock box_mock;
     EXPECT_CALL(box_mock, OnText(box.get(), user_text));
     EXPECT_CALL(box_mock, OnClosed(box.get()));
     box->BindDelegate(&box_mock);
 
-    // user connection and session
+    // user connection and conn
     Connection::Ptr user(FakeConnection::New());
-    Session::Ptr user_session(((FakeConnection*) user.get())->session());
+    Connection::Ptr user_conn(((FakeConnection*) user.get())->conn());
 
     ConnectionDelegateMock user_mock;
     EXPECT_CALL(user_mock, OnText(user.get(), box_text));
@@ -91,8 +91,8 @@ TEST_F(BoxManagerTest, test_bind_user_and_box) {
 
     // bind each other by manager
     BoxManager manager;
-    manager.BindBoxSession(box_session);
-    manager.BindUserSession(user_session);
+    manager.BindBoxConnection(box_conn);
+    manager.BindUserConnection(user_conn);
 
     box->SendText(valid_box_json());
     user->SendText(valid_user_json());

@@ -17,9 +17,9 @@ public:
 static NullDelegate kNullDelegate;
 
 
-UserProxy::Ptr UserProxy::New(Session::Ptr &  session, const std::string & json) {
+UserProxy::Ptr UserProxy::New(Connection::Ptr &  conn, const std::string & json) {
 
-    assert(session != nullptr);
+    assert(conn != nullptr);
     assert(!json.empty());
 
     Json::Value root;
@@ -34,7 +34,7 @@ UserProxy::Ptr UserProxy::New(Session::Ptr &  session, const std::string & json)
     }
     const std::string box_id(tmp.asString());
 
-    return new UserProxy(session, info, box_id);
+    return new UserProxy(conn, info, box_id);
 }
 
 UserProxy::~UserProxy() {
@@ -42,7 +42,7 @@ UserProxy::~UserProxy() {
 }
 
 size_t UserProxy::SendText(const std::string & text) const {
-    return session_->SendText(text);
+    return conn_->SendText(text);
 }
 
 size_t UserProxy::SendBinary(const std::vector<uint8_t> & bytes) const {
@@ -50,8 +50,8 @@ size_t UserProxy::SendBinary(const std::vector<uint8_t> & bytes) const {
 }
 
 void UserProxy::Close() {
-    if (session_ != nullptr) {
-        session_->Close();
+    if (conn_ != nullptr) {
+        conn_->Close();
     }
 }
 
@@ -72,40 +72,40 @@ const char * UserProxy::box_id() const {
     return box_id_.c_str();
 }
 
-void UserProxy::OnText(Session * session, const std::string & text) {
-    assert(session != nullptr);
-    assert(session == session_);
+void UserProxy::OnText(Connection * conn, const std::string & text) {
+    assert(conn != nullptr);
+    assert(conn == conn_);
     delegate_->OnText(this, text);
 }
 
-void UserProxy::OnBinary(Session * session, const std::vector<uint8_t> & bytes) {
-    assert(session != nullptr);
-    assert(session == session_);
+void UserProxy::OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) {
+    assert(conn != nullptr);
+    assert(conn == conn_);
     delegate_->OnBinary(this, bytes);
 }
 
-void UserProxy::OnClosed(Session * session) {
-    assert(session != nullptr);
-    assert(session == session_);
+void UserProxy::OnClosed(Connection * conn) {
+    assert(conn != nullptr);
+    assert(conn == conn_);
 
-    session_->UnbindDelegate();
-    session_ = nullptr;
+    conn_->UnbindDelegate();
+    conn_ = nullptr;
     delegate_->OnClosed(this);
 }
 
-UserProxy::UserProxy(Session::Ptr & session
+UserProxy::UserProxy(Connection::Ptr & conn
                      , const UserDesc::Ptr & info
                      , const std::string & box_id)
     : Object(this)
     , delegate_(&kNullDelegate)
-    , session_(session)
+    , conn_(conn)
     , info_(info)
     , box_id_(box_id) {
 
-    assert(session_ != nullptr);
+    assert(conn_ != nullptr);
     assert(info_.get() != nullptr);
 
-    session_->BindDelegate(this);
+    conn_->BindDelegate(this);
 }
 
 
