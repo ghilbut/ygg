@@ -3,7 +3,7 @@
 #include <cassert>
 
 
-namespace box {
+namespace codebase {
 
 
 class NullDelegate : public BoxProxy::Delegate {
@@ -88,4 +88,4 @@ BoxProxy::BoxProxy(Connection::Ptr & conn, const BoxDesc::Ptr & info)
 }
 
 
-}  // namespace box
+}  // namespace codebase

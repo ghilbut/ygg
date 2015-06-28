@@ -1,8 +1,6 @@
 #include <gmock/gmock.h>
 
 #include "box_proxy.h"
-#include "codebase/box_desc.h"
-#include "codebase/connection.h"
 #include "test/fake.h"
 
 
@@ -11,7 +9,7 @@ using ::testing::_;
 using namespace test;
 
 
-namespace box {
+namespace codebase {
 
 
 static const std::string kValidJson = "{ \"box-id\": \"box00\" }";
@@ -82,4 +80,4 @@ TEST(BoxProxyTest, test_delegate) {
 }
 
 
-}  // namespace box
+}  // namespace codebase

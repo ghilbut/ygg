@@ -1,7 +1,7 @@
 #ifndef YGG_LIBBOX_RULE_BYPASS_H_
 #define YGG_LIBBOX_RULE_BYPASS_H_
 
-#include "box_proxy.h"
+#include "codebase/box_proxy.h"
 #include "codebase/user_proxy.h"
 #include <unordered_set>
 

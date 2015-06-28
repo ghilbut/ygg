@@ -1,15 +1,11 @@
-#ifndef YGG_LIBBOX_BOX_PROXY_H_
-#define YGG_LIBBOX_BOX_PROXY_H_
+#ifndef YGG_CODEBASE_BOX_PROXY_H_
+#define YGG_CODEBASE_BOX_PROXY_H_
 
-#include "codebase/box_desc.h"
-#include "codebase/connection.h"
-#include <unordered_set>
-
-
-using namespace codebase;
+#include "box_desc.h"
+#include "connection.h"
 
 
-namespace box {
+namespace codebase {
 
 
 class BoxProxy
@@ -52,7 +48,7 @@ private:
 };
 
 
-}  // namespace box
+}  // namespace codebase
 
 
-#endif  // YGG_LIBBOX_BOX_PROXY_H_
+#endif  // YGG_CODEBASE_BOX_PROXY_H_
