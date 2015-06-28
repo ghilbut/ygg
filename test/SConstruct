@@ -44,8 +44,22 @@ sources = [
   'fake.cpp',
   'fake_test.cpp',
   'mock_test.cpp']
-#sources += Glob('../codebase/*_test.c*')
-sources += Glob('../codebase/*.c*')
+
+# codebase
+#sources += Glob('../codebase/*.c*')
+sources += [
+  '../codebase/box_desc.cpp',
+  '../codebase/box_proxy.cpp',
+  '../codebase/connection.cpp',
+  '../codebase/user_desc.cpp',
+  '../codebase/user_proxy.cpp']
+sources += [
+  '../codebase/box_proxy_test.cpp',
+  '../codebase/connection_test.cpp',
+  '../codebase/object_test.cpp',
+  '../codebase/ready_test.cpp',
+  '../codebase/user_proxy_test.cpp']
+
 sources += Glob('../net/*.c*')
 
 # libbox
