@@ -39,8 +39,8 @@ public:
     virtual void OnClosed(rule::Bypass * rule);
 
 private:
-    Ready<BoxProxy> box_ready_;
-    Ready<UserProxy> user_ready_;
+    BoxReady box_ready_;
+    UserReady user_ready_;
     std::unordered_map<std::string, rule::Bypass::Ptr> box_list_;
 };
 
