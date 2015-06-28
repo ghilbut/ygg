@@ -1,7 +1,6 @@
 #ifndef YGG_LIBBOX_BOX_PROXY_H_
 #define YGG_LIBBOX_BOX_PROXY_H_
 
-#include "user_proxy.h"
 #include "codebase/box_desc.h"
 #include "codebase/connection.h"
 #include <unordered_set>
@@ -33,8 +32,6 @@ public:
     void UnbindDelegate();
 
     const BoxDesc & info() const;
-
-    void SetUser(UserProxy::Ptr & user);
 
     size_t SendText(const std::string & text) const;
     size_t SendBinary(const std::vector<uint8_t> & bytes) const;

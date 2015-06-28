@@ -2,8 +2,7 @@
 #define YGG_LIBBOX_RULE_BYPASS_H_
 
 #include "box_proxy.h"
-#include "user_proxy.h"
-#include "codebase/object.h"
+#include "codebase/user_proxy.h"
 #include <unordered_set>
 
 

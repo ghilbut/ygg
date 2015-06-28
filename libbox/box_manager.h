@@ -2,8 +2,8 @@
 #define YGG_LIBBOX_BOX_MANAGER_H_
 
 #include "box_proxy.h"
-#include "user_proxy.h"
 #include "rule_bypass.h"
+#include "codebase/user_proxy.h"
 #include "codebase/ready.h"
 #include <unordered_map>
 #include <string>

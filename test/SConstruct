@@ -53,13 +53,11 @@ sources += Glob('../net/*.c*')
 sources += [
   '../libbox/box_proxy.cpp',
   '../libbox/box_manager.cpp',
-  '../libbox/rule_bypass.cpp',
-  '../libbox/user_proxy.cpp']
+  '../libbox/rule_bypass.cpp']
 sources += [
   '../libbox/box_proxy_test.cpp',
   '../libbox/box_manager_test.cpp',
-  '../libbox/rule_bypass_test.cpp',
-  '../libbox/user_proxy_test.cpp']
+  '../libbox/rule_bypass_test.cpp']
 
 # libuser
 sources += [

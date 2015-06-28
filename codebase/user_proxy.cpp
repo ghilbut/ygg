@@ -4,7 +4,7 @@
 #include <cassert>
 
 
-namespace box {
+namespace codebase {
 
 
 class NullDelegate : public UserProxy::Delegate {
@@ -109,4 +109,4 @@ UserProxy::UserProxy(Connection::Ptr & conn
 }
 
 
-}  // namespace box
+}  // namespace codebase

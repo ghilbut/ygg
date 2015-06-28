@@ -1,14 +1,11 @@
-#ifndef YGG_LIBBOX_USER_PROXY_H_
-#define YGG_LIBBOX_USER_PROXY_H_
+#ifndef YGG_CODEBASE_USER_PROXY_H_
+#define YGG_CODEBASE_USER_PROXY_H_
 
-#include "codebase/connection.h"
-#include "codebase/user_desc.h"
-
-
-using namespace codebase;
+#include "connection.h"
+#include "user_desc.h"
 
 
-namespace box {
+namespace codebase {
 
 
 class UserProxy
@@ -56,7 +53,7 @@ private:
 };
 
 
-}  // namespace box
+}  // namespace codebase
 
 
-#endif  // YGG_LIBBOX_USER_PROXY_H_
+#endif  // YGG_CODEBASE_USER_PROXY_H_

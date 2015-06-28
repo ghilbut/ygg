@@ -2,7 +2,7 @@
 #define YGG_LIBUSER_SERVER_ADAPTER_H_
 
 #include "libbox/box_proxy.h"
-#include "libbox/user_proxy.h"
+#include "codebase/user_proxy.h"
 
 
 using namespace box;

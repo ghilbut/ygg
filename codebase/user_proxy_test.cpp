@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 
 #include "user_proxy.h"
-#include "codebase/connection.h"
-#include "codebase/user_desc.h"
+#include "connection.h"
+#include "user_desc.h"
 #include "test/fake.h"
 
 
@@ -12,7 +12,7 @@ using ::testing::ElementsAreArray;
 using namespace test;
 
 
-namespace box {
+namespace codebase {
 
 
 static const std::string kValidJson = 
@@ -90,4 +90,4 @@ TEST(UserProxyTest, test_delegate) {
 }
 
 
-}  // namespace box
+}  // namespace codebase
