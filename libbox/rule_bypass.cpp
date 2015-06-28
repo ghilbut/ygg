@@ -12,9 +12,6 @@ Bypass::Ptr Bypass::New(BoxProxy::Ptr & box, Delegate * delegate) {
     return new Bypass(box, delegate);
 }
 
-
-
-
 void Bypass::SetUser(UserProxy::Ptr & user) {
     assert(user_list_.find(user) == user_list_.end());
 
@@ -33,6 +30,8 @@ void Bypass::Close() {
         user->Close();
     }
     user_list_.clear();
+
+    delegate_->OnClosed(this);
 }
 
 void Bypass::OnText(BoxProxy * box, const std::string & text) {

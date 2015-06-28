@@ -63,9 +63,9 @@ sources += [
 
 # libuser
 sources += [
-  ]
+  '../libuser/server/adapter.cpp']
 sources += [
-  ]
+  '../libuser/server/adapter_test.cpp']
 
 
 LIBS = [
