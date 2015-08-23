@@ -97,8 +97,6 @@ CPPPATH += THIRDPARTY.boost.CPPPATH
 CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
 
 sources = [
-    'box_desc.cpp',
-    'box_proxy.cpp',
     'connection.cpp'
   ]
 
@@ -134,10 +132,8 @@ sources = [
 
 # codebase
 sources += [
-    'box_proxy_test.cpp',
     'connection_test.cpp',
     'object_test.cpp',
-    'ready_test.cpp'
   ]
 
 LIBS += [
