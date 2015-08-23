@@ -11,7 +11,7 @@ ROOTPATH = os.path.abspath(ROOTPATH)
 #TESTPATH = os.path.abspath(TESTPATH)
 
 print '-----------------------------------------------------------------'
-print '[YGG]  build ygg codebase library and run test,'
+print '[YGG]  build ygg core library and run test,'
 print '       on %s.' % BASEPATH
 print '-----------------------------------------------------------------'
 
@@ -89,21 +89,20 @@ THIRDPARTY = get_thirdparty()
 
 
 
-# build codebase library
-print '    ======== build codebase library'
+# build core library
+print '    ======== build core library'
 
 CPPPATH = [ ROOTPATH ]
 CPPPATH += THIRDPARTY.boost.CPPPATH
 CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
 
 sources = [
-    'box_desc.cpp',
-    'box_proxy.cpp',
-    'connection.cpp'
+    'ctrl_desc.cpp',
+    'target_desc.cpp'
   ]
 
 env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
-env.StaticLibrary(target = 'codebase', source = sources)
+env.StaticLibrary(target='core', source=sources)
 
 # library files to build binary
 LIBS = [
@@ -114,13 +113,14 @@ LIBS = [
 
 LIBPATH = [
     THIRDPARTY.boost.LIBPATH,
-    THIRDPARTY.jsoncpp.LIBPATH
+    THIRDPARTY.jsoncpp.LIBPATH,
+    os.path.join(ROOTPATH, 'codebase')
   ]
 
 
 
 # build and run unittest
-print '    ======== build codebase unittest'
+print '    ======== build core unittest'
 
 CPPPATH += THIRDPARTY.gmock.CPPPATH
 
@@ -132,17 +132,17 @@ sources = [
     '../test/fake.cpp'
   ]
 
-# codebase
+# core
 sources += [
-    'box_proxy_test.cpp',
-    'connection_test.cpp',
-    'object_test.cpp',
-    'ready_test.cpp'
+    'ctrl_desc_test.cpp',
+    'target_desc_test.cpp',
+    'proxy_test.cpp'
   ]
 
 LIBS += [
     'gmock', 
-    'codebase'
+    'codebase',
+    'core'
   ]
 
 LIBPATH.append(THIRDPARTY.gmock.LIBPATH)

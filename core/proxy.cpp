@@ -7,17 +7,17 @@
 namespace codebase {
 
 
-class NullDelegate : public UserProxy::Delegate {
+class NullDelegate : public Proxy::Delegate {
 public:
-    virtual void OnText(UserProxy*, const std::string&) {}
-    virtual void OnBinary(UserProxy*, const std::vector<uint8_t>&) {}
-    virtual void OnClosed(UserProxy*) {}
+    virtual void OnText(Proxy*, const std::string&) {}
+    virtual void OnBinary(Proxy*, const std::vector<uint8_t>&) {}
+    virtual void OnClosed(Proxy*) {}
 };
 
 static NullDelegate kNullDelegate;
 
 
-UserProxy::Ptr UserProxy::New(Connection::Ptr &  conn, const std::string & json) {
+Proxy::Ptr Proxy::New(Connection::Ptr &  conn, const std::string & json) {
 
     assert(conn != nullptr);
     assert(!json.empty());
@@ -34,57 +34,57 @@ UserProxy::Ptr UserProxy::New(Connection::Ptr &  conn, const std::string & json)
     }
     const std::string box_id(tmp.asString());
 
-    return new UserProxy(conn, info, box_id);
+    return new Proxy(conn, info, box_id);
 }
 
-UserProxy::~UserProxy() {
+Proxy::~Proxy() {
     Close();
 }
 
-size_t UserProxy::SendText(const std::string & text) const {
+size_t Proxy::SendText(const std::string & text) const {
     return conn_->SendText(text);
 }
 
-size_t UserProxy::SendBinary(const std::vector<uint8_t> & bytes) const {
+size_t Proxy::SendBinary(const std::vector<uint8_t> & bytes) const {
     return SendBinary(bytes);
 }
 
-void UserProxy::Close() {
+void Proxy::Close() {
     if (conn_ != nullptr) {
         conn_->Close();
     }
 }
 
-void UserProxy::BindDelegate(Delegate * delegate) {
+void Proxy::BindDelegate(Delegate * delegate) {
     assert(delegate != nullptr);
     delegate_ = delegate;
 }
 
-void UserProxy::UnbindDelegate() {
+void Proxy::UnbindDelegate() {
     delegate_ = &kNullDelegate;
 }
 
-const UserDesc & UserProxy::info() const {
+const UserDesc & Proxy::info() const {
     return *info_;
 }
 
-const char * UserProxy::box_id() const {
+const char * Proxy::box_id() const {
     return box_id_.c_str();
 }
 
-void UserProxy::OnText(Connection * conn, const std::string & text) {
+void Proxy::OnText(Connection * conn, const std::string & text) {
     assert(conn != nullptr);
     assert(conn == conn_);
     delegate_->OnText(this, text);
 }
 
-void UserProxy::OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) {
+void Proxy::OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) {
     assert(conn != nullptr);
     assert(conn == conn_);
     delegate_->OnBinary(this, bytes);
 }
 
-void UserProxy::OnClosed(Connection * conn) {
+void Proxy::OnClosed(Connection * conn) {
     assert(conn != nullptr);
     assert(conn == conn_);
 
@@ -93,7 +93,7 @@ void UserProxy::OnClosed(Connection * conn) {
     delegate_->OnClosed(this);
 }
 
-UserProxy::UserProxy(Connection::Ptr & conn
+Proxy::Proxy(Connection::Ptr & conn
                      , const UserDesc::Ptr & info
                      , const std::string & box_id)
     : Object(this)
