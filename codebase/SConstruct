@@ -1,0 +1,165 @@
+import os
+
+# unix, linux, mac  : 'clear'
+# microsoft windows : 'CLS'
+os.system('clear' if os.name is 'posix' else 'CLS')
+
+BASEPATH = Dir('.').abspath
+ROOTPATH = os.path.join(BASEPATH, '..')
+ROOTPATH = os.path.abspath(ROOTPATH)
+#TESTPATH = os.path.join(BASEPATH, '../test')
+#TESTPATH = os.path.abspath(TESTPATH)
+
+print '-----------------------------------------------------------------'
+print '[YGG]  build ygg codebase library and run test,'
+print '       on %s.' % BASEPATH
+print '-----------------------------------------------------------------'
+
+
+
+# build all 3rd party libraries
+print '    ======== build and ready all 3rd-party library'
+
+def get_thirdparty():
+  
+  class Path:
+    def __init__(self, name, inc, lib):
+
+      CPPPATH = []
+
+      if isinstance(inc, str):
+        inc = [inc]
+      if not isinstance(inc, list):
+        print "library(%s)'s include path should be a string or list."
+        EXIT(-1)
+
+      for p in inc:
+        p = os.path.join(kBase, p)
+        if not os.path.exists(p):
+          print "library(%s)'s include path is not exists. - %s" % (name, p)
+          EXIT(-1)
+        CPPPATH.append(p)
+
+      if not isinstance(lib, str):
+        print "library(%s)'s binary path should be a string." % name
+        EXIT(-1)
+
+      lib = os.path.join(kBase, lib)
+      if not os.path.exists(lib):
+        print "library(%s)'s binary path is not exists. - %s" % (name, lib)
+        EXIT(-1)
+
+      self.CPPPATH = CPPPATH
+      self.LIBPATH = lib
+
+
+  kBase = os.path.join(ROOTPATH, '../ygg_thirdparty')
+  kBase = os.path.abspath(kBase) 
+
+  kLibs = {
+    'gmock': [
+        [ 'third_party/gmock-1.7.0/gtest/include', 'third_party/gmock-1.7.0/include' ],
+        'gmock'
+    ],
+    'boost': [
+        'third_party/boost_1_57_0/include',
+        'third_party/boost_1_57_0/lib'
+      ],
+    'jsoncpp': [
+        'third_party/jsoncpp-1.4.4/include',
+        'jsoncpp'
+      ]
+  }
+
+  names = []
+  targets = []
+  for name, params in kLibs.items():
+    inc = params[0]
+    lib = params[1]
+    names.append(name)
+    targets.append(Path(name, inc, lib))
+
+  from collections import namedtuple
+  targets = namedtuple('ThirdParty', names)._make(targets)
+ 
+  return targets
+
+SConscript('../../ygg_thirdparty/SConstruct')
+THIRDPARTY = get_thirdparty()
+
+
+
+# build codebase library
+print '    ======== build codebase library'
+
+CPPPATH = [ ROOTPATH ]
+CPPPATH += THIRDPARTY.boost.CPPPATH
+CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
+
+sources = [
+    'box_desc.cpp',
+    'box_proxy.cpp',
+    'connection.cpp',
+    'user_desc.cpp',
+    'user_proxy.cpp'
+  ]
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+env.StaticLibrary(target = 'codebase', source = sources)
+
+# library files to build binary
+LIBS = [
+    'libboost_system-mt-s',
+    'libboost_thread-mt-s',
+    'jsoncpp'
+  ]
+
+LIBPATH = [
+    THIRDPARTY.boost.LIBPATH,
+    THIRDPARTY.jsoncpp.LIBPATH
+  ]
+
+
+
+# build and run unittest
+print '    ======== build codebase unittest'
+
+CPPPATH += THIRDPARTY.gmock.CPPPATH
+
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
+
+# test tools
+sources = [
+    '../test/fake.cpp'
+  ]
+
+# codebase
+sources += [
+  'box_proxy_test.cpp',
+  'connection_test.cpp',
+  'object_test.cpp',
+  'ready_test.cpp',
+  'user_proxy_test.cpp']
+
+LIBS += [
+    'gmock', 
+    'codebase'
+  ]
+
+LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
+LIBPATH.append(BASEPATH)
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
+
+
+
+# run after build complete
+print '    ======== run codebase unittest'
+
+Command(
+  'unittest', 
+  test, 
+  lambda env, target, source: os.system(source[0].abspath))
+
