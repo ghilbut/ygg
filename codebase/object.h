@@ -16,9 +16,9 @@ public:
 };
   
 
-namespace codebase {
+namespace ygg {
 
-
+/*
 template<class T>
 void intrusive_ptr_add_ref(T * px) {
     if (px != nullptr) {
@@ -32,45 +32,58 @@ void intrusive_ptr_release(T * px) {
         px->Release();
     }
 }
+*/
 
 
-template<class T> class CountHelper;
+
+
+
+class CountHelper;
 template<class T> class WeakPtr;
 
 
-template<class T>
 class Object : public boost::noncopyable {
 public:
-    typedef boost::intrusive_ptr<T> Ptr;
-    typedef WeakPtr<T> Weak;
+    void AddRef();
+    void Release();
 
-    inline void AddRef() {
-        counter_->AddRef();
-    }
-
-    inline void Release() {
-        counter_->Release();
-    }
+    CountHelper * counter() const;
 
 protected:
-    Object(T * t) : counter_(new Counter(t)) {}
-    virtual ~Object() {}
+    Object();
+    virtual ~Object();
     
 private:
-    typedef CountHelper<T> Counter;
-    friend Counter;
-    friend Weak;
-
-    Counter * counter() const {
-        return counter_;
-    }
-
-    virtual void Dispose() {
-        delete this;
-    }
+    friend CountHelper;
+    //friend Weak;
+    
+    virtual void Dispose();
 
 private:
-    Counter * counter_;
+    CountHelper * counter_;
+};
+
+
+void intrusive_ptr_add_ref(Object * px);
+void intrusive_ptr_release(Object * px);
+
+
+class CountHelper : public boost::noncopyable {
+public:
+    CountHelper(Object * px);
+    ~CountHelper();
+      
+    void AddRef(bool is_weak = false);
+    void Release(bool is_weak = false);
+
+    bool Expired() const;
+
+    Object * Lock() const;
+
+private:
+    std::atomic_int use_count_;
+    std::atomic_int weak_count_;
+    Object * px_;
 };
 
 
@@ -120,7 +133,7 @@ public:
         if (counter_ == nullptr) {
             return nullptr;
         }
-        return counter_->Lock();
+        return static_cast<T*>(counter_->Lock());
     }
 
     WeakPtr & operator = (T * px) {
@@ -144,57 +157,11 @@ public:
 
 private:
     T * px_;
-    typename T::Counter * counter_;
+    CountHelper * counter_;
 };
 
 
-template<class T>
-class CountHelper : public boost::noncopyable {
-public:
-    CountHelper(T * px) : use_count_({0}), weak_count_({1}), px_(px) {}
-    ~CountHelper() {}
-      
-    inline void AddRef(bool is_weak = false) {
-        if (is_weak) {
-            ++weak_count_;
-        }
-        else {
-            ++use_count_;
-        }
-    }
-
-    inline void Release(bool is_weak = false) {
-        if (is_weak) {
-            --weak_count_;
-        }
-        else {
-            if (--use_count_ == 0) {
-                px_->Dispose();
-                --weak_count_;
-            }
-        }
-
-        if (weak_count_ == 0) {
-            delete this;
-        }
-    }
-
-    inline bool Expired() const {
-        return (px_ == nullptr || use_count_ == 0);
-    }
-
-    typename T::Ptr Lock() const {
-        return (use_count_ == 0 ? nullptr : px_);
-    }
-
-private:
-    std::atomic_int use_count_;
-    std::atomic_int weak_count_;
-    T * px_;
-};
-
-
-}  // codebase
+}  // ygg
 
 
 #endif  // YGG_CODEBASE_OBJECT_H_

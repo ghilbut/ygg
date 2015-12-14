@@ -1,5 +1,7 @@
 #include <gmock/gmock.h>
+#include "net/local_connection.h"
 #include "test/fake.h"
+#include "test/mock.h"
 #include "test_variables.h"
 #include "proxy.h"
 
@@ -7,12 +9,18 @@
 using ::testing::_;
 using ::testing::ElementsAreArray;
 
-using namespace test;
+using namespace ygg::test;
+using namespace ygg::net;
 
 
+namespace ygg {
+namespace core {
 
-class TestDesc : public codebase::Object<TestDesc> {
+
+class TestDesc : public Object {
 public:
+    typedef boost::intrusive_ptr<TestDesc> Ptr;
+
     static TestDesc::Ptr New(const std::string & json) {
         return new TestDesc(json);
     }
@@ -22,17 +30,57 @@ public:
 
 private:
     TestDesc(const std::string & json) 
-        : codebase::Object<TestDesc>(this), json(json) {}
+        : Object(), json(json) {}
 };
 
-typedef core::Proxy<TestDesc> TestProxy;
+typedef Proxy<TestDesc> TestProxy;
 
 
 
-namespace core {
+class ProxyTest : public ::testing::Test {
+public:
+    ProxyTest() {}
+    ~ProxyTest() {}
+
+    virtual void SetUp() {
+
+        srand((unsigned int) time(nullptr));
+
+        static const std::string kAlphaDigit(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789");
+
+        const int size = 100 + (rand() % 100);
+        for (int i = 0; i < size; ++i) {
+            const int r = rand() % kAlphaDigit.length();
+            const char c = kAlphaDigit[r-1];
+            text_.push_back(c);
+            bytes_.push_back(c);
+        }
+    }
+
+    virtual void TearDown() {
+        // nothing
+    }
+
+public:
+    std::string text_;
+    std::vector<uint8_t> bytes_;
+};
 
 
-TEST(ProxyTest, test_return_object_with_connection_and_desc) {
+
+class DelegateMock : public TestProxy::Delegate {
+public:
+    MOCK_METHOD2(OnText, void(TestProxy*, const Text&));
+    MOCK_METHOD2(OnBinary, void(TestProxy*, const Bytes&));
+    MOCK_METHOD1(OnClosed, void(TestProxy*));
+};
+
+
+
+TEST_F(ProxyTest, return_object_with_connection_and_desc) {
 
     Connection::Ptr conn(FakeConnection::New());
     TestDesc::Ptr desc(TestDesc::New(kCtrlJson));
@@ -42,41 +90,84 @@ TEST(ProxyTest, test_return_object_with_connection_and_desc) {
     ASSERT_EQ(kCtrlJson, (proxy->desc()).json);
 }
 
-class DelegateMock : public TestProxy::Delegate {
-public:
-    MOCK_METHOD2(OnText, void(TestProxy*, const std::string&));
-    MOCK_METHOD2(OnBinary, void(TestProxy*, const std::vector<uint8_t>&));
-    MOCK_METHOD1(OnClosed, void(TestProxy*));
-};
+TEST_F(ProxyTest, send_text) {
 
-TEST(ProxyTest, test_delegate) {
+    const Text kExpected(text_);
 
-    static const uint8_t kExpectedBytes[] = "binary";
-    static const size_t kExpectedBytesSize = sizeof(kExpectedBytes) / sizeof(uint8_t);
-    ASSERT_EQ('b', kExpectedBytes[0]);
-    ASSERT_EQ('i', kExpectedBytes[1]);
-    ASSERT_EQ('n', kExpectedBytes[2]);
-    ASSERT_EQ('a', kExpectedBytes[3]);
-    ASSERT_EQ('r', kExpectedBytes[4]);
-    ASSERT_EQ('y', kExpectedBytes[5]);
+    Connection::Ptr user_conn(LocalConnection::New());
+    Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
 
-    static const std::string kText("text");
-    static const std::vector<uint8_t> kBytes(kExpectedBytes, kExpectedBytes + kExpectedBytesSize);
-
-    Connection::Ptr conn(FakeConnection::New());
     TestDesc::Ptr desc(TestDesc::New(kCtrlJson));
-    TestProxy::Ptr proxy(TestProxy::New(conn, desc));
+    TestProxy::Ptr proxy(TestProxy::New(proxy_conn, desc));
 
     DelegateMock mock;
-    EXPECT_CALL(mock, OnText(proxy.get(), kText)).Times(1);
-    EXPECT_CALL(mock, OnBinary(proxy.get(), ElementsAreArray(kExpectedBytes, kExpectedBytesSize))).Times(1);
-    EXPECT_CALL(mock, OnClosed(proxy.get())).Times(1);
-
+    EXPECT_CALL(mock, OnText(proxy.get(), kExpected));
+    EXPECT_CALL(mock, OnClosed(proxy.get()));
     proxy->BindDelegate(&mock);
-    conn->FireOnTextEvent(kText);
-    conn->FireOnBinaryEvent(kBytes);
-    conn->FireOnClosedEvent();
+
+    user_conn->SendText(text_);
+    proxy->Close();
+
+    // foo();    // to test for check call stack
+}
+
+TEST_F(ProxyTest, recv_text) {
+
+    const Text kExpected(text_);
+
+    Connection::Ptr user_conn(LocalConnection::New());
+    Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+
+    TestDesc::Ptr desc(TestDesc::New(kCtrlJson));
+    TestProxy::Ptr proxy(TestProxy::New(proxy_conn, desc));
+
+    ConnectionDelegateMock mock;
+    EXPECT_CALL(mock, OnText(user_conn.get(), kExpected));
+    EXPECT_CALL(mock, OnClosed(user_conn.get()));
+    user_conn->BindDelegate(&mock);
+
+    proxy->SendText(text_);
+    proxy->Close();
+}
+
+TEST_F(ProxyTest, send_binary) {
+
+    const Bytes kExpected(bytes_);
+
+    Connection::Ptr user_conn(LocalConnection::New());
+    Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+
+    TestDesc::Ptr desc(TestDesc::New(kCtrlJson));
+    TestProxy::Ptr proxy(TestProxy::New(proxy_conn, desc));
+
+    DelegateMock mock;
+    EXPECT_CALL(mock, OnBinary(proxy.get(), kExpected));
+    EXPECT_CALL(mock, OnClosed(proxy.get()));
+    proxy->BindDelegate(&mock);
+
+    user_conn->SendBinary(bytes_);
+    proxy->Close();
+}
+
+TEST_F(ProxyTest, recv_binary) {
+
+    const Bytes kExpected(bytes_);
+
+    Connection::Ptr user_conn(LocalConnection::New());
+    Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+
+    TestDesc::Ptr desc(TestDesc::New(kCtrlJson));
+    TestProxy::Ptr proxy(TestProxy::New(proxy_conn, desc));
+
+    ConnectionDelegateMock mock;
+    EXPECT_CALL(mock, OnBinary(user_conn.get(), kExpected));
+    EXPECT_CALL(mock, OnClosed(user_conn.get()));
+    user_conn->BindDelegate(&mock);
+
+    proxy->SendBinary(bytes_);
+    proxy->Close();
 }
 
 
 }  // namespace core
+}  // namesapce ygg

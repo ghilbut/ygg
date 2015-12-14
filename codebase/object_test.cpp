@@ -8,14 +8,17 @@
 #include <unordered_set>
 
 
-using namespace test;
+using namespace ygg::test;
 
 
-namespace codebase {
+namespace ygg {
 
 
-class TestObject : public Object<TestObject> {
+class TestObject : public Object {
 public:
+    typedef boost::intrusive_ptr<TestObject> Ptr;
+    typedef WeakPtr<TestObject> Weak;
+
     static Ptr New(const LifeCycleMock * mock = nullptr) {
         return new TestObject(mock);
     }
@@ -26,7 +29,7 @@ public:
 
 private:
     TestObject(const LifeCycleMock * mock) 
-        : Object(this)
+        : Object()
         , mock_(mock) {
 
         if (mock_ != nullptr) {
@@ -193,7 +196,7 @@ TEST(ObjectTest, test_circular_with_object_weak) {
 }
 
 
-// TODO(ghilbut): how can I test CountHelper template life-cycle?
+// TODO(ghilbut): how can I test CountHelper life-cycle?
 
 
-}  // namespace codebase
+}  // namespace ygg

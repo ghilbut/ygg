@@ -3,7 +3,7 @@
 #include "target_desc.h"
 
 
-using namespace core;
+using namespace ygg::core;
 
 
 TEST(TargetDescTest, return_null_when_string_is_empty) {

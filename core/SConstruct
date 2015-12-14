@@ -1,4 +1,5 @@
 import os
+import sys
 
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
@@ -10,6 +11,9 @@ ROOTPATH = os.path.abspath(ROOTPATH)
 #TESTPATH = os.path.join(BASEPATH, '../test')
 #TESTPATH = os.path.abspath(TESTPATH)
 
+sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
+import utils
+
 print '-----------------------------------------------------------------'
 print '[YGG]  build ygg core library and run test,'
 print '       on %s.' % BASEPATH
@@ -19,73 +23,8 @@ print '-----------------------------------------------------------------'
 
 # build all 3rd party libraries
 print '    ======== build and ready all 3rd-party library'
-
-def get_thirdparty():
-  
-  class Path:
-    def __init__(self, name, inc, lib):
-
-      CPPPATH = []
-
-      if isinstance(inc, str):
-        inc = [inc]
-      if not isinstance(inc, list):
-        print "library(%s)'s include path should be a string or list."
-        EXIT(-1)
-
-      for p in inc:
-        p = os.path.join(kBase, p)
-        if not os.path.exists(p):
-          print "library(%s)'s include path is not exists. - %s" % (name, p)
-          EXIT(-1)
-        CPPPATH.append(p)
-
-      if not isinstance(lib, str):
-        print "library(%s)'s binary path should be a string." % name
-        EXIT(-1)
-
-      lib = os.path.join(kBase, lib)
-      if not os.path.exists(lib):
-        print "library(%s)'s binary path is not exists. - %s" % (name, lib)
-        EXIT(-1)
-
-      self.CPPPATH = CPPPATH
-      self.LIBPATH = lib
-
-
-  kBase = os.path.join(ROOTPATH, '../ygg_thirdparty')
-  kBase = os.path.abspath(kBase) 
-
-  kLibs = {
-    'gmock': [
-        [ 'third_party/gmock-1.7.0/gtest/include', 'third_party/gmock-1.7.0/include' ],
-        'gmock'
-    ],
-    'boost': [
-        'third_party/boost_1_57_0/include',
-        'third_party/boost_1_57_0/lib'
-      ],
-    'jsoncpp': [
-        'third_party/jsoncpp-1.4.4/include',
-        'jsoncpp'
-      ]
-  }
-
-  names = []
-  targets = []
-  for name, params in kLibs.items():
-    inc = params[0]
-    lib = params[1]
-    names.append(name)
-    targets.append(Path(name, inc, lib))
-
-  from collections import namedtuple
-  targets = namedtuple('ThirdParty', names)._make(targets)
- 
-  return targets
-
 SConscript('../../ygg_thirdparty/SConstruct')
-THIRDPARTY = get_thirdparty()
+THIRDPARTY = utils.get_thirdparty()
 
 
 
@@ -101,7 +40,7 @@ sources = [
     'target_desc.cpp'
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
 env.StaticLibrary(target='core', source=sources)
 
 # library files to build binary
@@ -114,7 +53,8 @@ LIBS = [
 LIBPATH = [
     THIRDPARTY.boost.LIBPATH,
     THIRDPARTY.jsoncpp.LIBPATH,
-    os.path.join(ROOTPATH, 'codebase')
+    os.path.join(ROOTPATH, 'codebase'),
+    os.path.join(ROOTPATH, 'net'),
   ]
 
 
@@ -142,7 +82,8 @@ sources += [
 LIBS += [
     'gmock', 
     'codebase',
-    'core'
+    'core',
+    'net',
   ]
 
 LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
@@ -154,7 +95,7 @@ test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 # run after build complete
-print '    ======== run codebase unittest'
+print '    ======== run core unittest'
 
 Command(
   'unittest', 

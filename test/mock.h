@@ -1,13 +1,14 @@
 #ifndef YGG_TEST_MOCK_H_
 #define YGG_TEST_MOCK_H_
 
-#include "codebase/connection.h"
+#include "net/connection.h"
 #include <gmock/gmock.h>
 
 
-using namespace codebase;
+typedef ygg::net::Connection Connection;
 
 
+namespace ygg {
 namespace test {
 
 
@@ -30,6 +31,7 @@ public:
 
 
 }  // namespace test
+}  // namespace ygg
 
 
 #endif  // YGG_TEST_MOCK_H_

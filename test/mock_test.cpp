@@ -3,6 +3,7 @@
 #include "mock.h"
 
 
+namespace ygg {
 namespace test {
 
 
@@ -20,3 +21,4 @@ TEST(MockTest, test) {
 
 
 }  // namespace test
+}  // namespace ygg

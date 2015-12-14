@@ -2,6 +2,7 @@
 #include <json/json.h>
 
 
+namespace ygg {
 namespace core {
 
 
@@ -31,10 +32,11 @@ TargetDesc::Ptr TargetDesc::New(const std::string & json) {
 
 TargetDesc::TargetDesc(const std::string & json
                       , const std::string & endpoint)
-    : Object(this)
+    : Object()
     , json(json)
     , endpoint(endpoint) {
     // nothing
 }
 
 }  // namespace core
+}  // namespace ygg

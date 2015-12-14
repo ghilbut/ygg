@@ -10,6 +10,7 @@ using ::testing::_;
 using ::testing::ElementsAreArray;
 
 
+namespace ygg {
 namespace test {
 
 
@@ -122,3 +123,4 @@ TEST_F(FakeTest, test_fake_connection_receive_from_its_connection) {
 
 
 }  // namespace test
+}  // namespace ygg

@@ -2,6 +2,7 @@
 #include <json/json.h>
 
 
+namespace ygg {
 namespace core {
 
 
@@ -41,7 +42,7 @@ CtrlDesc::Ptr CtrlDesc::New(const std::string & json, Json::Value & root) {
 CtrlDesc::CtrlDesc(const std::string & json
                   , const std::string & user
                   , const std::string & endpoint)
-    : Object(this)
+    : Object()
     , json(json)
     , user(user)
     , endpoint(endpoint) {
@@ -50,3 +51,4 @@ CtrlDesc::CtrlDesc(const std::string & json
 
 
 }  // namespace core
+}  // namespace ygg

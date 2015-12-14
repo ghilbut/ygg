@@ -4,6 +4,7 @@
 #include <json/json.h>
 
 
+namespace ygg {
 namespace core {
 
 
@@ -36,6 +37,7 @@ std::string InitTargetJson() {
 
 
 }  // namespace core
+}  // namespace ygg
  
 
 #endif  //  _YGG_CORE_TEST_VARIABLES_H_

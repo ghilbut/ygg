@@ -1,24 +1,24 @@
 #ifndef YGG_CORE_PROXY_H_
 #define YGG_CORE_PROXY_H_
 
-#include "codebase/connection.h"
+#include "net/connection.h"
 
 
+using namespace ygg::net;
+
+
+namespace ygg {
 namespace core {
 
 
 template<class Desc>
 class Proxy
-    : public codebase::Object<Proxy<Desc>>
+    : public Object
     , public Connection::Delegate {
 
 public:
-    class Delegate {
-    public:
-        virtual void OnText(Proxy * user, const std::string & text) = 0;
-        virtual void OnBinary(Proxy * user, const std::vector<uint8_t> & bytes) = 0;
-        virtual void OnClosed(Proxy * user) = 0;
-    };
+    typedef boost::intrusive_ptr<Proxy<Desc>> Ptr;
+    typedef net::Delegate<Proxy<Desc>> Delegate;
 
 public:
     static typename Proxy::Ptr
@@ -29,7 +29,10 @@ public:
     }
 
     virtual ~Proxy() {
-        Close();
+        // NOTE(ghilbut): below code makes 
+        // "libc++abi.dylib: Pure virtual function called!" runtime error
+        // because calling Close() function of Connection interface
+        // Close();
     }
 
     inline size_t SendText(const std::string & text) const {
@@ -60,7 +63,7 @@ public:
     }
 
     // core::Connection::Delegate
-    virtual void OnText(Connection * conn, const std::string & text) {
+    virtual void OnText(Connection * conn, const Text & text) {
         assert(conn != nullptr);
         assert(conn == conn_);
 
@@ -69,7 +72,7 @@ public:
         }
     }
 
-    virtual void OnBinary(Connection * conn, const std::vector<uint8_t> & bytes) {
+    virtual void OnBinary(Connection * conn, const Bytes & bytes) {
         assert(conn != nullptr);
         assert(conn == conn_);
         
@@ -92,7 +95,7 @@ public:
 
 private:
     Proxy(Connection::Ptr & conn, const typename Desc::Ptr &  desc)
-        : codebase::Object<Proxy<Desc>>(this)
+        : Object()
         , delegate_(nullptr)
         , conn_(conn)
         , desc_(desc) {
@@ -104,13 +107,19 @@ private:
 
 
 private:
+    typedef net::NullDelegate<Proxy<Desc>> NullDelegate;
+    static NullDelegate kNullDelegate;
+
     Delegate * delegate_;
     Connection::Ptr conn_;
     const typename Desc::Ptr desc_;
 };
 
+//Proxy::NullDelegate kNullDelegate;
+
 
 }  // namespace core
+}  // namespace ygg
 
 
 #endif  // YGG_CORE_PROXY_H_

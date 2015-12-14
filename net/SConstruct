@@ -15,7 +15,7 @@ sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
 import utils
 
 print '-----------------------------------------------------------------'
-print '[YGG]  build ygg codebase library and run test,'
+print '[YGG]  build ygg net library and run test,'
 print '       on %s.' % BASEPATH
 print '-----------------------------------------------------------------'
 
@@ -28,26 +28,26 @@ THIRDPARTY = utils.get_thirdparty()
 
 
 
-# build codebase library
-print '    ======== build codebase library'
+# build net library
+print '    ======== build net library'
 
 CPPPATH = [ ROOTPATH ]
 CPPPATH += THIRDPARTY.boost.CPPPATH
 CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
 
 sources = [
-#    'connection.cpp'
-    'object.cpp',
+    'connection.cpp',
+    'local_connection.cpp',
   ]
 
 env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-env.StaticLibrary(target = 'codebase', source = sources)
+env.StaticLibrary(target = 'net', source = sources)
 
 # library files to build binary
 LIBS = [
     'libboost_system-mt-s',
     'libboost_thread-mt-s',
-    'jsoncpp'
+    'jsoncpp',
   ]
 
 LIBPATH = [
@@ -58,38 +58,41 @@ LIBPATH = [
 
 
 # build and run unittest
-print '    ======== build codebase unittest'
+print '    ======== build net unittest'
 
 CPPPATH += THIRDPARTY.gmock.CPPPATH
 
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
+
 # test tools
 sources = [
-    #'../test/fake.cpp'
+    '../test/fake.cpp',
   ]
 
-# codebase
+# net
 sources += [
-    #'connection_test.cpp',
-    'object_test.cpp',
+    'connection_test.cpp',
+    'local_connection_test.cpp',
   ]
 
 LIBS += [
     'gmock', 
     'codebase',
+    'net',
   ]
 
 LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
-LIBPATH.append(BASEPATH)
+LIBPATH.append(os.path.join(ROOTPATH, 'codebase'))
+LIBPATH.append(os.path.join(ROOTPATH, 'net'))
 
 env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
-if os.name == 'posix':
-  env.Append(LINKFLAGS=['-pthread'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 
 # run after build complete
-print '    ======== run codebase unittest'
+print '    ======== run net unittest'
 
 Command(
   'unittest', 

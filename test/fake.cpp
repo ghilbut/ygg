@@ -2,6 +2,7 @@
 #include <cassert>
 
 
+namespace ygg {
 namespace test {
 
 
@@ -76,3 +77,4 @@ FakeConnection::~FakeConnection() {
 
 
 }  // namespace test
+}  // namespace ygg

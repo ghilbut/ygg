@@ -3,7 +3,7 @@
 #include "ctrl_desc.h"
 
 
-using namespace core;
+using namespace ygg::core;
 
 
 TEST(CtrlDescTest, return_null_when_string_is_empty) {

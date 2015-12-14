@@ -2,16 +2,15 @@
 #define YGG_TEST_FAKE_H_
 
 #include "mock.h"
-#include "codebase/connection.h"
+#include "net/connection.h"
 
 
-using namespace codebase;
+
+typedef ygg::net::Connection Connection;
 
 
+namespace ygg {
 namespace test {
-
-
-class FakeConnection;
 
 
 class FakeConnection : public Connection {
@@ -32,12 +31,14 @@ private:
 
 private:
     FakeConnection * fake_;
-    Connection::Weak conn_;
+    WeakPtr<Connection> conn_;
+    //Connection::Weak conn_;
     LifeCycleMock * mock_;
 };
 
 
 }  // namespace test
+}  // namesapce ygg
 
 
 #endif  // YGG_TEST_FAKE_H_

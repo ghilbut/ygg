@@ -4,17 +4,8 @@
 #include <cassert>
 
 
-namespace codebase {
-
-
-class NullDelegate : public Proxy::Delegate {
-public:
-    virtual void OnText(Proxy*, const std::string&) {}
-    virtual void OnBinary(Proxy*, const std::vector<uint8_t>&) {}
-    virtual void OnClosed(Proxy*) {}
-};
-
-static NullDelegate kNullDelegate;
+namespace ygg
+namespace core {
 
 
 Proxy::Ptr Proxy::New(Connection::Ptr &  conn, const std::string & json) {
@@ -96,7 +87,7 @@ void Proxy::OnClosed(Connection * conn) {
 Proxy::Proxy(Connection::Ptr & conn
                      , const UserDesc::Ptr & info
                      , const std::string & box_id)
-    : Object(this)
+    : Object()
     , delegate_(&kNullDelegate)
     , conn_(conn)
     , info_(info)
@@ -109,4 +100,5 @@ Proxy::Proxy(Connection::Ptr & conn
 }
 
 
-}  // namespace codebase
+}  // namespace core
+}  // namespace ygg
