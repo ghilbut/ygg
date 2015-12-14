@@ -261,6 +261,4 @@ third_party/
 
 # scons
 .sconsign.dblite
-codebase/test
-core/test
-test/test
+test

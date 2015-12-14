@@ -1,0 +1,102 @@
+import os
+import sys
+
+# unix, linux, mac  : 'clear'
+# microsoft windows : 'CLS'
+os.system('clear' if os.name is 'posix' else 'CLS')
+
+BASEPATH = Dir('.').abspath
+ROOTPATH = os.path.join(BASEPATH, '../..')
+ROOTPATH = os.path.abspath(ROOTPATH)
+#TESTPATH = os.path.join(BASEPATH, '../test')
+#TESTPATH = os.path.abspath(TESTPATH)
+
+sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
+import utils
+
+print '-----------------------------------------------------------------'
+print '[YGG]  build ygg core library and run test,'
+print '       on %s.' % BASEPATH
+print '-----------------------------------------------------------------'
+
+
+
+# build all 3rd party libraries
+print '    ======== build and ready all 3rd-party library'
+SConscript('../../../ygg_thirdparty/SConstruct')
+THIRDPARTY = utils.get_thirdparty()
+
+
+
+# build core library
+print '    ======== build core library'
+
+CPPPATH = [ ROOTPATH ]
+CPPPATH += THIRDPARTY.boost.CPPPATH
+CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
+
+sources = [
+    'target_ready.cpp',
+  ]
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+env.StaticLibrary(target='targets', source=sources)
+
+# library files to build binary
+LIBS = [
+    'libboost_system-mt-s',
+    'libboost_thread-mt-s',
+    'jsoncpp'
+  ]
+
+LIBPATH = [
+    THIRDPARTY.boost.LIBPATH,
+    THIRDPARTY.jsoncpp.LIBPATH,
+    os.path.join(ROOTPATH, 'codebase'),
+    os.path.join(ROOTPATH, 'core'),
+    os.path.join(ROOTPATH, 'net'),
+  ]
+
+
+
+# build and run unittest
+print '    ======== build core unittest'
+
+CPPPATH += THIRDPARTY.gmock.CPPPATH
+
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
+
+# test tools
+sources = [
+    '../../test/fake.cpp'
+  ]
+
+# core
+sources += [
+    'target_ready_test.cpp',
+  ]
+
+LIBS += [
+    'gmock', 
+    'codebase',
+    'core',
+    'net',
+  ]
+
+LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
+LIBPATH.append(BASEPATH)
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
+
+
+
+# run after build complete
+print '    ======== run core unittest'
+
+Command(
+  'unittest', 
+  test, 
+  lambda env, target, source: os.system(source[0].abspath))
+
