@@ -36,6 +36,8 @@ CPPPATH += THIRDPARTY.boost.CPPPATH
 CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
 
 sources = [
+    'bypass_adapter.cpp',
+    'ctrl_ready.cpp',
     'target_ready.cpp',
   ]
 
@@ -69,11 +71,14 @@ if os.name == 'posix':
 
 # test tools
 sources = [
-    '../../test/fake.cpp'
+    '../../test/fake.cpp',
+    '../../test/vars.cpp',
   ]
 
 # core
 sources += [
+    'bypass_adapter_test.cpp',
+    'ctrl_ready_test.cpp',
     'target_ready_test.cpp',
   ]
 
@@ -82,12 +87,13 @@ LIBS += [
     'codebase',
     'core',
     'net',
+    'targets',
   ]
 
 LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
 LIBPATH.append(BASEPATH)
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 

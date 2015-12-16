@@ -2,13 +2,22 @@
 #define YGG_TEST_MOCK_H_
 
 #include "net/connection.h"
+#include "libtarget/server/ctrl_ready.h"
+#include "libtarget/server/target_ready.h"
 #include <gmock/gmock.h>
 
 
-typedef ygg::net::Connection Connection;
-
-
 namespace ygg {
+
+typedef net::Connection Connection;
+
+// libtarget/server
+typedef core::Proxy<CtrlDesc> CtrlProxy;
+typedef target::server::CtrlReady CtrlReady;
+typedef core::Proxy<TargetDesc> TargetProxy;
+typedef target::server::TargetReady TargetReady;
+
+
 namespace test {
 
 
@@ -27,6 +36,21 @@ public:
     MOCK_METHOD2(OnText, void(Connection*, const std::string&));
     MOCK_METHOD2(OnBinary, void(Connection*, const std::vector<uint8_t>&));
     MOCK_METHOD1(OnClosed, void(Connection*));
+};
+
+
+////////////////////////////////////////////////////////////////
+// libtarget/server
+
+class MockCtrlReadyDelegate : public CtrlReady::Delegate {
+public:
+    MOCK_METHOD1(OnProxy, void(CtrlProxy::Ptr&));
+};
+
+
+class MockTargetReadyDelegate : public TargetReady::Delegate {
+public:
+    MOCK_METHOD1(OnProxy, void(TargetProxy::Ptr&));
 };
 
 
