@@ -7,14 +7,17 @@ namespace target {
 namespace server {
 
 
-BypassAdapter::Ptr BypassAdapter::New(TargetProxy::Ptr & target) {
-    return new BypassAdapter(target);
+BypassAdapter::Ptr BypassAdapter::New(TargetProxy::Ptr & target, 
+                                      Delegate * delegate) {
+    return new BypassAdapter(target, delegate);
 }
 
-BypassAdapter::BypassAdapter(TargetProxy::Ptr & target)
-    : target_(target) {
+BypassAdapter::BypassAdapter(TargetProxy::Ptr & target, 
+                             Delegate * delegate)
+    : target_(target), delegate_(delegate) {
 
     assert(target != nullptr);
+    assert(delegate != nullptr);
 
     target_->BindDelegate(this);
 }
@@ -33,6 +36,10 @@ void BypassAdapter::SetCtrl(CtrlProxy::Ptr & ctrl) {
 bool BypassAdapter::HasCtrl(CtrlProxy::Ptr & ctrl) const {
     assert(ctrl != nullptr);
     return (ctrls_.find(ctrl) != ctrls_.end());
+}
+
+TargetProxy::Ptr & BypassAdapter::target() {
+    return target_;
 }
     
 void BypassAdapter::OnText(CtrlProxy * ctrl, const Text & text) {
@@ -53,7 +60,7 @@ void BypassAdapter::OnClosed(CtrlProxy * ctrl) {
     assert(ctrl != nullptr);
     assert(ctrls_.find(ctrl) != ctrls_.end());
 
-    target_->Close();
+    ctrls_.erase(ctrl);
 }
 
 void BypassAdapter::OnText(TargetProxy * target, const Text & text) {
@@ -78,9 +85,13 @@ void BypassAdapter::OnClosed(TargetProxy * target) {
     assert(target != nullptr);
     assert(target == target_);
 
+    target->UnbindDelegate();
     for (auto ctrl : ctrls_) {
+        ctrl->UnbindDelegate();
         ctrl->Close();
     }
+
+    delegate_->OnClosed(this);
 }
 
 

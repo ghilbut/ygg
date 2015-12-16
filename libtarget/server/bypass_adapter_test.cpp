@@ -11,9 +11,18 @@
 #include <unordered_map>
 
 
+using ::testing::_;
+
+
 namespace ygg {
 namespace target {
 namespace server {
+
+
+class NullAdapterDelegate : public BypassAdapter::Delegate {
+public:
+    virtual void OnClosed(BypassAdapter * adapter) {}
+};
 
 
 class BypassAdapterTest : public ::testing::Test {
@@ -56,6 +65,8 @@ public:
     }
 
 protected:
+    NullAdapterDelegate null_delegate_;
+
     std::vector<Connection::Ptr> ctrl_conns_;
     std::vector<CtrlProxy::Ptr> ctrl_proxys_;
     Connection::Ptr target_conn_;
@@ -65,7 +76,7 @@ protected:
 
 TEST_F(BypassAdapterTest, ctrl_send_text_to_target) {
 
-    auto adapter(BypassAdapter::New(target_proxy_));
+    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -85,7 +96,7 @@ TEST_F(BypassAdapterTest, ctrl_send_text_to_target) {
 
 TEST_F(BypassAdapterTest, ctrl_send_bytes_to_target) {
 
-    auto adapter(BypassAdapter::New(target_proxy_));
+    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -105,7 +116,7 @@ TEST_F(BypassAdapterTest, ctrl_send_bytes_to_target) {
 
 TEST_F(BypassAdapterTest, target_send_text_to_ctrl) {
 
-    auto adapter(BypassAdapter::New(target_proxy_));
+    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -124,7 +135,7 @@ TEST_F(BypassAdapterTest, target_send_text_to_ctrl) {
 
 TEST_F(BypassAdapterTest, target_send_bytes_to_ctrl) {
 
-    auto adapter(BypassAdapter::New(target_proxy_));
+    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -138,6 +149,42 @@ TEST_F(BypassAdapterTest, target_send_bytes_to_ctrl) {
     }
 
     target_conn_->SendBinary(expected);
+}
+
+
+class MockAdapterDelegate : public BypassAdapter::Delegate {
+public:
+    MOCK_METHOD1(OnClosed, void(BypassAdapter*));
+};
+
+
+TEST_F(BypassAdapterTest, do_not_fire_onclosed_event_when_ctrls_are_closed) {
+
+    MockAdapterDelegate mock;
+    EXPECT_CALL(mock, OnClosed(_)).Times(0);
+
+    auto adapter(BypassAdapter::New(target_proxy_, &mock));
+    for (auto & ctrl : ctrl_proxys_) {
+        adapter->SetCtrl(ctrl);
+    }
+
+    for (auto & ctrl : ctrl_proxys_) {
+        ctrl->Close();
+    }
+}
+
+
+TEST_F(BypassAdapterTest, fire_oncloased_event_when_target_is_closed) {
+
+    MockAdapterDelegate mock;
+    EXPECT_CALL(mock, OnClosed(_));
+
+    auto adapter(BypassAdapter::New(target_proxy_, &mock));
+    for (auto & ctrl : ctrl_proxys_) {
+        adapter->SetCtrl(ctrl);
+    }
+
+    target_conn_->Close();
 }
 
 

@@ -27,12 +27,23 @@ class BypassAdapter
     , public TargetProxy::Delegate {
 
 public:
+    class Delegate {
+    public:
+        virtual void OnClosed(BypassAdapter * adapter) = 0;
+
+    protected:
+        virtual ~Delegate() {}
+    };
+
+public:
     typedef boost::intrusive_ptr<BypassAdapter> Ptr;
     
-    static Ptr New(TargetProxy::Ptr & target);
+    static Ptr New(TargetProxy::Ptr & target, Delegate * delegate);
 
     void SetCtrl(CtrlProxy::Ptr & ctrl);
     bool HasCtrl(CtrlProxy::Ptr & ctrl) const;
+
+    TargetProxy::Ptr & target();
     
     virtual void OnText(CtrlProxy * target, const Text & text);
     virtual void OnBinary(CtrlProxy * target, const Bytes & bytes);
@@ -43,11 +54,13 @@ public:
     virtual void OnClosed(TargetProxy * target);
 
 private:
-    BypassAdapter(TargetProxy::Ptr & target);
+    BypassAdapter(TargetProxy::Ptr & target, Delegate * delegate);
     ~BypassAdapter();
 
 
 private:
+    Delegate * delegate_;
+
     std::unordered_set<CtrlProxy::Ptr> ctrls_;
     TargetProxy::Ptr target_;
 };

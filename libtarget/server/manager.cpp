@@ -1,4 +1,4 @@
-#include "manaher.h"
+#include "manager.h"
 
 
 namespace ygg {
@@ -25,10 +25,30 @@ void Manager::SetTargetConnection(Connection::Ptr & conn) {
     target_ready_.SetConnection(conn);
 }
 
-void Manager::OnProxy(CtrlProxy::Ptr & proxy) {
+void Manager::OnProxy(CtrlProxy::Ptr & ctrl) {
 }
 
-void Manager::OnProxy(TargetProxy::Ptr & proxy) {
+void Manager::OnProxy(TargetProxy::Ptr & target) {
+    const auto & desc = target->desc();
+    const auto & endpoint = desc.endpoint;
+    assert(adapters_.find(endpoint) == adapters_.end());
+
+    auto adapter(BypassAdapter::New(target, this));
+    adapters_[endpoint] = adapter;
+}
+
+void Manager::OnClosed(BypassAdapter * adapter) {
+    assert(adapter != nullptr);
+
+    const auto & target = adapter->target();
+    const auto & desc = target->desc();
+    const auto & endpoint = desc.endpoint;
+
+    if (adapters_.find(endpoint) != adapters_.end()) {
+        adapters_.erase(endpoint);
+    } else {
+        // TODO(ghilbut): log and notify warning
+    }
 }
 
 
