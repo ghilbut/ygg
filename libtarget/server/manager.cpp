@@ -26,15 +26,32 @@ void Manager::SetTargetConnection(Connection::Ptr & conn) {
 }
 
 void Manager::OnProxy(CtrlProxy::Ptr & ctrl) {
+
+    const auto & desc = ctrl->desc();
+    const auto & endpoint = desc.endpoint;
+
+    auto itr = adapters_.find(endpoint);
+    if (itr != adapters_.end()) {
+        auto & adapter = itr->second;
+        adapter->SetCtrl(ctrl);
+    } else {
+        // TODO(ghilbut): log error and notify
+    }
 }
 
 void Manager::OnProxy(TargetProxy::Ptr & target) {
+
     const auto & desc = target->desc();
     const auto & endpoint = desc.endpoint;
-    assert(adapters_.find(endpoint) == adapters_.end());
 
-    auto adapter(BypassAdapter::New(target, this));
-    adapters_[endpoint] = adapter;
+    auto itr = adapters_.find(endpoint);
+    if (itr == adapters_.end()) {
+        auto adapter(BypassAdapter::New(target, this));
+        adapters_[endpoint] = adapter;
+    } else {
+        // TODO(ghilbut): log error and notify
+        //                close adapter already exists
+    }
 }
 
 void Manager::OnClosed(BypassAdapter * adapter) {
