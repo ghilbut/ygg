@@ -74,7 +74,7 @@ protected:
 };
 
 
-TEST_F(BypassAdapterTest, ctrl_send_text_to_target) {
+TEST_F(BypassAdapterTest, ctrls_send_text_to_target) {
 
     auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
@@ -94,7 +94,7 @@ TEST_F(BypassAdapterTest, ctrl_send_text_to_target) {
 }
 
 
-TEST_F(BypassAdapterTest, ctrl_send_bytes_to_target) {
+TEST_F(BypassAdapterTest, ctrls_send_bytes_to_target) {
 
     auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
@@ -114,7 +114,7 @@ TEST_F(BypassAdapterTest, ctrl_send_bytes_to_target) {
 }
 
 
-TEST_F(BypassAdapterTest, target_send_text_to_ctrl) {
+TEST_F(BypassAdapterTest, target_sends_text_to_ctrls) {
 
     auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
@@ -133,7 +133,7 @@ TEST_F(BypassAdapterTest, target_send_text_to_ctrl) {
 }
 
 
-TEST_F(BypassAdapterTest, target_send_bytes_to_ctrl) {
+TEST_F(BypassAdapterTest, target_sends_bytes_to_ctrls) {
 
     auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
@@ -174,7 +174,7 @@ TEST_F(BypassAdapterTest, do_not_fire_onclosed_event_when_ctrls_are_closed) {
 }
 
 
-TEST_F(BypassAdapterTest, fire_oncloased_event_when_target_is_closed) {
+TEST_F(BypassAdapterTest, fire_onclosed_event_when_target_is_closed) {
 
     MockAdapterDelegate mock;
     EXPECT_CALL(mock, OnClosed(_));
@@ -185,6 +185,11 @@ TEST_F(BypassAdapterTest, fire_oncloased_event_when_target_is_closed) {
     }
 
     target_conn_->Close();
+}
+
+
+TEST_F(BypassAdapterTest, DISABLED_every_connections_fire_onclosed_event_when_close_adapter) {
+
 }
 
 
