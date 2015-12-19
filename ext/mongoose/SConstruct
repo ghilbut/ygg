@@ -1,0 +1,47 @@
+#-*- coding:utf-8 -*-
+
+import os
+import sys
+
+BASEPATH = Dir('.').abspath
+
+
+
+################################################################
+##  set environment and get build options
+################################################################
+
+cpppath = [
+  './',
+]
+
+env = Environment(CPPPATH=cpppath, CXXFLAGS="-std=c++11", PREFIX='../lib')
+is_clean = env.GetOption('clean')
+
+# don't clone or update from git repository when clean
+if not is_clean:
+  sys.path.append(os.path.dirname(BASEPATH))
+  import utils
+  url = 'https://github.com/cesanta/mongoose.git'
+  utils.clone_or_update(url, BASEPATH)
+
+  #if os.name == 'posix':
+  #  env.Append(LINKFLAGS=['-pthread'])
+
+
+
+################################################################
+##  build static library
+################################################################
+
+sources = [
+  'mongoose/mongoose.c',
+]
+
+# build static library
+lib = env.StaticLibrary(target='mongoose', source=sources)
+env.Install('../include/mongoose', 'mongoose/mongoose.h')
+env.Install('../lib', lib)
+env.Alias('install', "../include/mongoose")
+env.Alias('install', "../lib")
+Default('install')

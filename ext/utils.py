@@ -74,16 +74,12 @@ def unzip(filepath, targetdir):
   namelist = zip.namelist()
 
   current = 1
-  nextp = current
-  steps = total / 100
   total = len(namelist)
   for name in namelist:
     zip.extract(name, targetdir)
-    if current == nextp or current == total:
-      progress = 'EXTRACTING: %5d /%5d (%3.1f%%)' % (current, total, current * 100.1 / total)
-      progress = progress + (chr(8) * (len(progress) + 1))
-      print progress,
-      nextp += steps
+    progress = 'EXTRACTING: %5d /%5d (%3.1f%%)' % (current, total, current * 100.1 / total)
+    progress = progress + (chr(8) * (len(progress) + 1))
+    print progress,
     current += 1
   fp.close()
 
@@ -96,16 +92,12 @@ def untgz(filepath, targetdir):
   names = tgz.getnames()
 
   current = 1
-  nextp = current
-  steps = total / 100
   total = len(names)
   for name in names:
     tgz.extract(name, targetdir)
-    if current == nextp or current == total:
-      progress = 'EXTRACTING: %5d /%5d (%3.1f%%)' % (current, total, current * 100.1 / total)
-      progress = progress + (chr(8) * (len(progress) + 1))
-      print progress,
-      nextp += steps
+    progress = 'EXTRACTING: %5d /%5d (%3.1f%%)' % (current, total, current * 100.1 / total)
+    progress = progress + (chr(8) * (len(progress) + 1))
+    print progress,
     current += 1
   tgz.close()
 
