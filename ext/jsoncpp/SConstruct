@@ -1,0 +1,52 @@
+#-*- coding:utf-8 -*-
+
+import os
+import sys
+
+BASEPATH = Dir('.').abspath
+
+
+
+################################################################
+##  set environment and get build options
+################################################################
+
+cpppath = [
+    './jsoncpp/include',
+  ]
+
+env = Environment(CPPPATH=cpppath, CXXFLAGS='-std=c++11')
+is_clean = env.GetOption('clean')
+
+# don't clone or update from git repository when clean
+if not is_clean:
+  sys.path.append(os.path.dirname(BASEPATH))
+  import utils
+  url = 'https://github.com/open-source-parsers/jsoncpp.git'
+  utils.clone_or_update(url, BASEPATH)
+
+  #if os.name == 'posix':
+  #  env.Append(LINKFLAGS=['-pthread'])
+
+
+
+################################################################
+##  build static library
+################################################################
+
+sources = [
+    'jsoncpp/src/lib_json/json_value.cpp',
+    'jsoncpp/src/lib_json/json_reader.cpp',
+    'jsoncpp/src/lib_json/json_writer.cpp',
+  ]
+
+# build static library
+lib = env.StaticLibrary(target='jsoncpp', source=sources)
+env.Install('../include', 'jsoncpp/include/json')
+env.Install('../lib', lib)
+env.Alias('install', '../include')
+env.Alias('install', '../lib')
+Default('install')
+
+# "env.Alias('install', '../include')" remove only file, not directory.
+Clean(lib, '../include/json')
