@@ -39,6 +39,7 @@ sources = [
     'bypass_adapter.cpp',
     'ctrl_ready.cpp',
     'manager.cpp',
+    'target_proxy.cpp',
     'target_ready.cpp',
   ]
 
@@ -81,6 +82,7 @@ sources += [
     'bypass_adapter_test.cpp',
     'ctrl_ready_test.cpp',
     'manager_test.cpp',
+    'target_proxy_test.cpp',
     'target_ready_test.cpp',
   ]
 
