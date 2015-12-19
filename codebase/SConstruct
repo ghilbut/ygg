@@ -21,67 +21,42 @@ print '-----------------------------------------------------------------'
 
 
 
-# build all 3rd party libraries
-print '    ======== build and ready all 3rd-party library'
-SConscript('../../ygg_thirdparty/SConstruct')
-THIRDPARTY = utils.get_thirdparty()
-
-
-
 # build codebase library
 print '    ======== build codebase library'
 
-CPPPATH = [ ROOTPATH ]
-CPPPATH += THIRDPARTY.boost.CPPPATH
-CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
+CPPPATH = [
+    '../ext/include',
+    '../',
+  ]
 
 sources = [
-#    'connection.cpp'
     'object.cpp',
   ]
 
 env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-env.StaticLibrary(target = 'codebase', source = sources)
-
-# library files to build binary
-LIBS = [
-    'libboost_system-mt-s',
-    'libboost_thread-mt-s',
-    'jsoncpp'
-  ]
-
-LIBPATH = [
-    THIRDPARTY.boost.LIBPATH,
-    THIRDPARTY.jsoncpp.LIBPATH
-  ]
+env.StaticLibrary(target = 'codebase', source=sources)
 
 
 
 # build and run unittest
 print '    ======== build codebase unittest'
 
-CPPPATH += THIRDPARTY.gmock.CPPPATH
-
-# test tools
-sources = [
-    #'../test/fake.cpp'
-  ]
-
 # codebase
-sources += [
-    #'connection_test.cpp',
+sources = [
     'object_test.cpp',
+    '../ext/src/gmock_main.cc',
   ]
 
-LIBS += [
-    'gmock', 
+LIBS = [
+    'gtest', 
     'codebase',
   ]
 
-LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
-LIBPATH.append(BASEPATH)
+LIBPATH = [
+    '../ext/lib',
+    './',
+  ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
 if os.name == 'posix':
   env.Append(LINKFLAGS=['-pthread'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)

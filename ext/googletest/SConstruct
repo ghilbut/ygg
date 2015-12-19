@@ -47,8 +47,10 @@ lib = env.StaticLibrary(target='gtest', source=sources)
 env.Install('../include', ['googletest/googletest/include/gtest',
                            'googletest/googlemock/include/gmock'])
 env.Install('../lib', lib)
+env.Install('../src', 'googletest/googlemock/src/gmock_main.cc')
 env.Alias('install', '../include')
 env.Alias('install', '../lib')
+env.Alias('install', '../src')
 Default('install')
 
 # "env.Alias('install', '../include')" is not work for clean.
