@@ -5,3 +5,7 @@
 *.bat              eol=crlf
 *.rc               eol=crlf
 **/compiled/*.h    eol=crlf
+
+ext/boost/7z1512-x64.exe      binary
+ext/boost/7z1512.exe          binary
+ext/boost/wget-1.17.1.tar.gz  binary
