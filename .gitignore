@@ -256,7 +256,7 @@ pip-log.txt
 #############
 
 third_party/
-
+ext/
 
 
 # scons
