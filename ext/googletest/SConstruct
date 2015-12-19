@@ -12,7 +12,10 @@ BASEPATH = Dir('.').abspath
 ################################################################
 
 cpppath = [
-  './',
+  'googletest/googletest/include',
+  'googletest/googletest',
+  'googletest/googlemock/include',
+  'googletest/googlemock',
 ]
 
 env = Environment(CPPPATH=cpppath, CXXFLAGS='-std=c++11')
@@ -22,7 +25,7 @@ is_clean = env.GetOption('clean')
 if not is_clean:
   sys.path.append(os.path.dirname(BASEPATH))
   import utils
-  url = 'https://github.com/cesanta/mongoose.git'
+  url = 'https://github.com/google/googletest.git'
   utils.clone_or_update(url, BASEPATH)
 
   #if os.name == 'posix':
@@ -35,16 +38,20 @@ if not is_clean:
 ################################################################
 
 sources = [
-  'mongoose/mongoose.c',
+  'googletest/googletest/src/gtest-all.cc',
+  'googletest/googlemock/src/gmock-all.cc',
 ]
 
 # build static library
-lib = env.StaticLibrary(target='mongoose', source=sources)
-env.Install('../include/mongoose', 'mongoose/mongoose.h')
+lib = env.StaticLibrary(target='gtest', source=sources)
+env.Install('../include', ['googletest/googletest/include/gtest',
+                           'googletest/googlemock/include/gmock'])
 env.Install('../lib', lib)
-env.Alias('install', '../include/mongoose')
+env.Alias('install', '../include')
 env.Alias('install', '../lib')
 Default('install')
 
-# "env.Alias('install', '../include/mongoose')" remove only file, not directory.
-Clean(lib, '../include/mongoose')
+# "env.Alias('install', '../include')" is not work for clean.
+# Because, it seems working only on files, not directory.
+Clean(lib, ['../include/gtest',
+            '../include/gmock'])
