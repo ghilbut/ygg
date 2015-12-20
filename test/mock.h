@@ -1,7 +1,7 @@
 #ifndef YGG_TEST_MOCK_H_
 #define YGG_TEST_MOCK_H_
 
-#include "net/connection.h"
+#include "core/connection.h"
 #include "libtarget/server/ctrl_ready.h"
 #include "libtarget/server/target_ready.h"
 #include <gmock/gmock.h>
@@ -9,7 +9,6 @@
 
 namespace ygg {
 
-typedef net::Connection Connection;
 
 // libtarget/server
 typedef Proxy<CtrlDesc> CtrlProxy;

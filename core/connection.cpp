@@ -3,7 +3,6 @@
 
 
 namespace ygg {
-namespace net {
 
 
 NullDelegate<Connection> Connection::kNullDelegate;
@@ -39,5 +38,4 @@ Connection::Connection(Delegate * delegate)
 }
 
 
-}  // namespace net
 }  // namespace ygg

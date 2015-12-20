@@ -13,7 +13,6 @@ using namespace ygg::test;
 
 
 namespace ygg {
-namespace net {
 
 
 class LocalConnectionTest : public ::testing::Test {
@@ -141,5 +140,4 @@ TEST_F(LocalConnectionTest, closed) {
 }
 
 
-}  // namespace net
 }  // namespace ygg

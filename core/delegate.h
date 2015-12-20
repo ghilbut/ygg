@@ -1,11 +1,10 @@
-#ifndef YGG_NET_DELEGATE_H_
-#define YGG_NET_DELEGATE_H_
+#ifndef YGG_CORE_DELEGATE_H_
+#define YGG_CORE_DELEGATE_H_
 
 #include "define.h"
 
 
 namespace ygg {
-namespace net {
 
 
 template<class T>
@@ -28,8 +27,7 @@ public:
 };
 
 
-}  // namespace net
 }  // namespace ygg
 
 
-#endif  // YGG_NET_DELEGATE_H_
+#endif  // YGG_CORE_DELEGATE_H_

@@ -1,10 +1,7 @@
 #ifndef YGG_CORE_PROXY_H_
 #define YGG_CORE_PROXY_H_
 
-#include "net/connection.h"
-
-
-using namespace ygg::net;
+#include "connection.h"
 
 
 namespace ygg {
@@ -17,7 +14,7 @@ class Proxy
 
 public:
     typedef boost::intrusive_ptr<Proxy<Desc>> Ptr;
-    typedef net::Delegate<Proxy<Desc>> Delegate;
+    typedef Delegate<Proxy<Desc>> Delegate;
 
 public:
     static typename Proxy::Ptr
@@ -106,7 +103,7 @@ private:
 
 
 private:
-    typedef net::NullDelegate<Proxy<Desc>> NullDelegate;
+    typedef NullDelegate<Proxy<Desc>> NullDelegate;
     static NullDelegate kNullDelegate;
 
     Delegate * delegate_;

@@ -1,17 +1,17 @@
 #ifndef YGG_LIBTARGET_SERVER_TARGET_PROXY_H_
 #define YGG_LIBTARGET_SERVER_TARGET_PROXY_H_
 
-#include "codebase/object.h"
+#include "core/connection.h"
+#include "core/object.h"
 #include "core/target_desc.h"
-#include "net/connection.h"
 
 
 namespace ygg {
 
-typedef core::TargetDesc TargetDesc;
-typedef net::Connection Connection;
-typedef net::Text Text;
-typedef net::Bytes Bytes;
+typedef TargetDesc TargetDesc;
+typedef Connection Connection;
+typedef Text Text;
+typedef Bytes Bytes;
 
 namespace target {
 namespace server {

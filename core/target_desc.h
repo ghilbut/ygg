@@ -1,7 +1,7 @@
 #ifndef YGG_CORE_TARGET_DESC_H_
 #define YGG_CORE_TARGET_DESC_H_
 
-#include "codebase/object.h"
+#include "object.h"
 #include <string>
 
 

@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
-#include "net/local_connection.h"
+#include "local_connection.h"
+#include "proxy.h"
 #include "test/fake.h"
 #include "test/mock.h"
-#include "proxy.h"
 #include "test/vars.h"
 
 
@@ -10,7 +10,6 @@ using ::testing::_;
 using ::testing::ElementsAreArray;
 
 using namespace ygg::test;
-using namespace ygg::net;
 
 
 namespace ygg {

@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "manager.h"
-#include "net/local_connection.h"
+#include "core/local_connection.h"
 #include "test/mock.h"
 #include "test/vars.h"
 #include <vector>

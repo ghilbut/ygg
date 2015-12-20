@@ -21,21 +21,20 @@ print '-----------------------------------------------------------------'
 
 
 
-# build all 3rd party libraries
-print '    ======== build and ready all 3rd-party library'
-SConscript('../../../ygg_thirdparty/SConstruct')
-THIRDPARTY = utils.get_thirdparty()
-
-
-
 # build core library
 print '    ======== build core library'
 
-CPPPATH = [ ROOTPATH ]
-CPPPATH += THIRDPARTY.boost.CPPPATH
-CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
+CPPPATH = [
+    '../../ext/include',
+    '../../',
+  ]
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+
+
 
 sources = [
+    '../../ext/src/gmock_main.cc',
     'bypass_adapter.cpp',
     'ctrl_ready.cpp',
     'manager.cpp',
@@ -43,42 +42,17 @@ sources = [
     'target_ready.cpp',
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
 env.StaticLibrary(target='targets', source=sources)
-
-# library files to build binary
-LIBS = [
-    'libboost_system-mt-s',
-    'libboost_thread-mt-s',
-    'jsoncpp'
-  ]
-
-LIBPATH = [
-    THIRDPARTY.boost.LIBPATH,
-    THIRDPARTY.jsoncpp.LIBPATH,
-    os.path.join(ROOTPATH, 'codebase'),
-    os.path.join(ROOTPATH, 'core'),
-    os.path.join(ROOTPATH, 'net'),
-  ]
 
 
 
 # build and run unittest
 print '    ======== build core unittest'
 
-CPPPATH += THIRDPARTY.gmock.CPPPATH
-
-if os.name == 'posix':
-  env.Append(LINKFLAGS=['-pthread'])
-
-# test tools
+# core
 sources = [
     '../../test/fake.cpp',
     '../../test/vars.cpp',
-  ]
-
-# core
-sources += [
     'bypass_adapter_test.cpp',
     'ctrl_ready_test.cpp',
     'manager_test.cpp',
@@ -86,18 +60,24 @@ sources += [
     'target_ready_test.cpp',
   ]
 
-LIBS += [
-    'gmock', 
-    'codebase',
+LIBS = [
+    'libboost_system-mt-s',
+    'libboost_thread-mt-s',
+    'jsoncpp',
+    'gtest', 
     'core',
-    'net',
+    #'net',
     'targets',
   ]
 
-LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
-LIBPATH.append(BASEPATH)
+LIBPATH = [
+    '../../ext/lib',
+    '../../lib',
+    './',
+  ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 

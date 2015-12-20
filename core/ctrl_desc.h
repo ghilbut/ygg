@@ -1,7 +1,7 @@
 #ifndef YGG_CORE_CTRL_DESC_H_
 #define YGG_CORE_CTRL_DESC_H_
 
-#include "codebase/object.h"
+#include "object.h"
 #include <boost/intrusive_ptr.hpp>
 #include <string>
 

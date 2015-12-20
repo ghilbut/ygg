@@ -1,11 +1,10 @@
 #include <gmock/gmock.h>
 #include "ctrl_ready.h"
-#include "net/local_connection.h"
+#include "core/local_connection.h"
 #include "test/mock.h"
 #include <json/json.h>
 #include <string>
 
-using namespace ygg::net;
 
 using ::testing::_;
 

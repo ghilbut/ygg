@@ -1,14 +1,12 @@
 #ifndef YGG_LIBTARGET_SERVER_TARGET_READY_H_
 #define YGG_LIBTARGET_SERVER_TARGET_READY_H_
 
-#include "codebase/object.h"
+#include "core/connection.h"
+#include "core/delegate.h"
+#include "core/object.h"
 #include "core/proxy.h"
 #include "core/target_desc.h"
-#include "net/connection.h"
-#include "net/delegate.h"
 #include <unordered_set>
-
-using namespace ygg::net;
 
 
 namespace ygg {

@@ -26,8 +26,11 @@ env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
 
 
 sources = [
+    'connection.cpp',
     'ctrl_desc.cpp',
-    'target_desc.cpp'
+    'local_connection.cpp',
+    'object.cpp',
+    'target_desc.cpp',
   ]
 
 lib = env.StaticLibrary(target='core', source=sources)
@@ -44,17 +47,17 @@ sources = [
     '../ext/src/gmock_main.cc',
     '../test/fake.cpp',  # this should be seperated library
     '../test/vars.cpp',  # this should be seperated library
+    'connection_test.cpp',
     'ctrl_desc_test.cpp',
-    'target_desc_test.cpp',
+    'object_test.cpp',
     'proxy_test.cpp',
+    'target_desc_test.cpp',
   ]
 
 LIBS = [
     'gtest', 
     'jsoncpp',
-    'codebase',
     'core',
-    'net',
   ]
 
 LIBPATH = [

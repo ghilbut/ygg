@@ -3,7 +3,6 @@
 
 
 namespace ygg {
-namespace net {
 
 
 Connection::Ptr LocalConnection::New() {
@@ -59,5 +58,4 @@ LocalConnection::~LocalConnection() {
 }
 
 
-}  // namespace net
 }  // namespace ygg 

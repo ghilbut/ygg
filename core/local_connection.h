@@ -1,11 +1,10 @@
-#ifndef YGG_NET_LOCAL_CONNECTION_H_
-#define YGG_NET_LOCAL_CONNECTION_H_
+#ifndef YGG_CORE_LOCAL_CONNECTION_H_
+#define YGG_CORE_LOCAL_CONNECTION_H_
 
 #include "connection.h"
 
 
 namespace ygg {
-namespace net {
 
 
 class LocalConnection : public Connection {
@@ -30,8 +29,7 @@ private:
 };
 
 
-}  // namespace net
 }  // namespace ygg
 
 
-#endif  // YGG_NET_LOCAL_CONNECTION_H_
+#endif  // YGG_CORE_LOCAL_CONNECTION_H_

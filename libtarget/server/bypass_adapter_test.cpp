@@ -1,9 +1,9 @@
 #include <gmock/gmock.h>
 #include "bypass_adapter.h"
 #include "core/ctrl_desc.h"
-#include "core/target_desc.h"
+#include "core/local_connection.h"
 #include "core/proxy.h"
-#include "net/local_connection.h"
+#include "core/target_desc.h"
 #include "test/mock.h"
 #include "test/vars.h"
 #include <vector>

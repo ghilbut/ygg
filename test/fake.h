@@ -2,11 +2,7 @@
 #define YGG_TEST_FAKE_H_
 
 #include "mock.h"
-#include "net/connection.h"
-
-
-
-typedef ygg::net::Connection Connection;
+#include "core/connection.h"
 
 
 namespace ygg {

@@ -1,12 +1,11 @@
-#ifndef YGG_NET_CONNECTION_H_
-#define YGG_NET_CONNECTION_H_
+#ifndef YGG_CORE_CONNECTION_H_
+#define YGG_CORE_CONNECTION_H_
 
 #include "delegate.h"
-#include "codebase/object.h"
+#include "object.h"
 
 
 namespace ygg {
-namespace net {
 
 
 class Connection : public Object {
@@ -35,8 +34,7 @@ private:
 };
 
 
-}  // namespace net
 }  // namespace ygg
 
 
-#endif  // YGG_NET_CONNECTION_H_
+#endif  // YGG_CORE_CONNECTION_H_

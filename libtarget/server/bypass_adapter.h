@@ -11,10 +11,10 @@
 namespace ygg {
 
 
-typedef core::CtrlDesc CtrlDesc;
-typedef core::TargetDesc TargetDesc;
-typedef core::Proxy<CtrlDesc> CtrlProxy;
-typedef core::Proxy<TargetDesc> TargetProxy;
+typedef CtrlDesc CtrlDesc;
+typedef TargetDesc TargetDesc;
+typedef Proxy<CtrlDesc> CtrlProxy;
+typedef Proxy<TargetDesc> TargetProxy;
 
 
 namespace target {

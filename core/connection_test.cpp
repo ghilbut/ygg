@@ -8,7 +8,6 @@ using ::testing::ElementsAreArray;
 
 
 namespace ygg {
-namespace net {
 
 
 class ConnectionDelegateMock : public Connection::Delegate {
@@ -78,5 +77,4 @@ TEST(ConnectionTest, fire_close_event) {
 }
 
 
-}  // namespace net
 }  // namespace ygg
