@@ -7,18 +7,18 @@
 namespace ygg {
 
 
-template<class Desc>
+template<class DescT>
 class Proxy
     : public Object
     , public Connection::Delegate {
 
 public:
-    typedef boost::intrusive_ptr<Proxy<Desc>> Ptr;
-    typedef Delegate<Proxy<Desc>> Delegate;
+    typedef boost::intrusive_ptr<Proxy<DescT>> Ptr;
+    typedef BaseDelegate<Proxy<DescT>> Delegate;
 
 public:
     static typename Proxy::Ptr
-    New(Connection::Ptr & conn, const typename Desc::Ptr & desc) {
+    New(Connection::Ptr & conn, const typename DescT::Ptr & desc) {
         assert(conn != nullptr);
         assert(desc != nullptr);
         return new Proxy(conn, desc);
@@ -54,7 +54,7 @@ public:
         delegate_ = nullptr;
     }
 
-    inline const Desc & desc() const {
+    inline const DescT & desc() const {
         return *desc_;
     }
 
@@ -90,7 +90,7 @@ public:
     }
 
 private:
-    Proxy(Connection::Ptr & conn, const typename Desc::Ptr &  desc)
+    Proxy(Connection::Ptr & conn, const typename DescT::Ptr &  desc)
         : Object()
         , delegate_(nullptr)
         , conn_(conn)
@@ -103,12 +103,18 @@ private:
 
 
 private:
-    typedef NullDelegate<Proxy<Desc>> NullDelegate;
+    class NullDelegate : public Delegate {
+    public:
+        virtual void OnText(Proxy*, const Text&) {}
+        virtual void OnBinary(Proxy*, const Bytes&) {}
+        virtual void OnClosed(Proxy*) {}
+    };
+
     static NullDelegate kNullDelegate;
 
     Delegate * delegate_;
     Connection::Ptr conn_;
-    const typename Desc::Ptr desc_;
+    const typename DescT::Ptr desc_;
 };
 
 

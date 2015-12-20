@@ -5,7 +5,15 @@
 namespace ygg {
 
 
-NullDelegate<Connection> Connection::kNullDelegate;
+class NullDelegate : public Connection::Delegate {
+public:
+    virtual void OnText(Connection*, const Text&) {}
+    virtual void OnBinary(Connection*, const Bytes&) {}
+    virtual void OnClosed(Connection*) {}
+};
+
+static NullDelegate kNullDelegate;
+
 
 
 void Connection::FireOnTextEvent(const Text & text) {
@@ -32,8 +40,8 @@ void Connection::UnbindDelegate() {
     delegate_ = &kNullDelegate;
 }
 
-Connection::Connection(Delegate * delegate)
-    : Object(), delegate_(delegate) {
+Connection::Connection()
+    : Object(), delegate_(&kNullDelegate) {
     // nothing
 }
 

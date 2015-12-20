@@ -3,7 +3,6 @@
 
 #include "core/connection.h"
 #include "core/ctrl_desc.h"
-#include "core/delegate.h"
 #include "core/object.h"
 #include "core/proxy.h"
 #include <unordered_set>
@@ -16,7 +15,7 @@ namespace server {
 typedef Proxy<CtrlDesc> CtrlProxy;
 
 
-class CtrlReady : public Delegate<Connection> {
+class CtrlReady : public Connection::Delegate {
 public: 
     class Delegate {
     public:

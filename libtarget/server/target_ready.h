@@ -2,7 +2,6 @@
 #define YGG_LIBTARGET_SERVER_TARGET_READY_H_
 
 #include "core/connection.h"
-#include "core/delegate.h"
 #include "core/object.h"
 #include "core/proxy.h"
 #include "core/target_desc.h"
@@ -16,7 +15,7 @@ namespace server {
 typedef Proxy<TargetDesc> TargetProxy;
 
 
-class TargetReady : public Delegate<Connection> {
+class TargetReady : public Connection::Delegate {
 public: 
     class Delegate {
     public:
