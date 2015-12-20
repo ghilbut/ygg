@@ -7,7 +7,7 @@
 if ! which wget >/dev/null; then 
   tar -vxzf wget-1.17.1.tar.gz
   pushd wget-1.17.1
-  ./configure --with-ssl=openssl
+  ./configure --with-ssl=openssl --with-libssl-prefix=/usr/local/opt/openssl
   make
   sudo make install
   popd
