@@ -10,7 +10,7 @@ using ::testing::ElementsAreArray;
 namespace ygg {
 
 
-class ConnectionDelegateMock : public Connection::Delegate {
+class MockConnectionDelegate : public Connection::Delegate {
 public:
     MOCK_METHOD2(OnText, void(Connection*, const Text&));
     MOCK_METHOD2(OnBinary, void(Connection*, const Bytes&));
@@ -25,7 +25,7 @@ TEST(ConnectionTest, fire_text_event) {
 
     Connection::Ptr conn(test::FakeConnection::New());
 
-    ConnectionDelegateMock mock;
+    MockConnectionDelegate mock;
     EXPECT_CALL(mock, OnText(conn.get(), kExpected)).Times(2);
 
     conn->FireOnTextEvent("first");
@@ -46,7 +46,7 @@ TEST(ConnectionTest, fire_binary_event) {
 
     Connection::Ptr conn(test::FakeConnection::New());
 
-    ConnectionDelegateMock mock;
+    MockConnectionDelegate mock;
     EXPECT_CALL(mock, OnBinary(conn.get(), kExpected)).Times(2);
 
     conn->FireOnBinaryEvent(kBuffer);
@@ -63,7 +63,7 @@ TEST(ConnectionTest, fire_close_event) {
 
     Connection::Ptr conn(test::FakeConnection::New());
 
-    ConnectionDelegateMock mock;
+    MockConnectionDelegate mock;
     EXPECT_CALL(mock, OnClosed(conn.get())).Times(2);
 
     conn->FireOnClosedEvent();
