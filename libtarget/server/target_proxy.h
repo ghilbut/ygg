@@ -7,12 +7,6 @@
 
 
 namespace ygg {
-
-typedef TargetDesc TargetDesc;
-typedef Connection Connection;
-typedef Text Text;
-typedef Bytes Bytes;
-
 namespace target {
 namespace server {
 
