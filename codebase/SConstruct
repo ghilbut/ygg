@@ -1,18 +1,10 @@
 import os
-import sys
 
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
 os.system('clear' if os.name is 'posix' else 'CLS')
 
 BASEPATH = Dir('.').abspath
-ROOTPATH = os.path.join(BASEPATH, '..')
-ROOTPATH = os.path.abspath(ROOTPATH)
-#TESTPATH = os.path.join(BASEPATH, '../test')
-#TESTPATH = os.path.abspath(TESTPATH)
-
-sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
-import utils
 
 print '-----------------------------------------------------------------'
 print '[YGG]  build ygg codebase library and run test,'
@@ -29,12 +21,17 @@ CPPPATH = [
     '../',
   ]
 
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+
+
+
 sources = [
     'object.cpp',
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-env.StaticLibrary(target = 'codebase', source=sources)
+lib = env.StaticLibrary(target = 'codebase', source=sources)
+env.Install('../lib', lib)
+env.Alias('install', '../lib')
 
 
 
@@ -43,8 +40,8 @@ print '    ======== build codebase unittest'
 
 # codebase
 sources = [
-    'object_test.cpp',
     '../ext/src/gmock_main.cc',
+    'object_test.cpp',
   ]
 
 LIBS = [
@@ -54,7 +51,7 @@ LIBS = [
 
 LIBPATH = [
     '../ext/lib',
-    './',
+    '../lib',
   ]
 
 if os.name == 'posix':

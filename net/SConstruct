@@ -1,18 +1,10 @@
 import os
-import sys
 
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
 os.system('clear' if os.name is 'posix' else 'CLS')
 
 BASEPATH = Dir('.').abspath
-ROOTPATH = os.path.join(BASEPATH, '..')
-ROOTPATH = os.path.abspath(ROOTPATH)
-#TESTPATH = os.path.join(BASEPATH, '../test')
-#TESTPATH = os.path.abspath(TESTPATH)
-
-sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
-import utils
 
 print '-----------------------------------------------------------------'
 print '[YGG]  build ygg net library and run test,'
@@ -21,72 +13,55 @@ print '-----------------------------------------------------------------'
 
 
 
-# build all 3rd party libraries
-print '    ======== build and ready all 3rd-party library'
-SConscript('../../ygg_thirdparty/SConstruct')
-THIRDPARTY = utils.get_thirdparty()
-
-
-
 # build net library
 print '    ======== build net library'
 
-CPPPATH = [ ROOTPATH ]
-CPPPATH += THIRDPARTY.boost.CPPPATH
-CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
+CPPPATH = [
+    '../ext/include',
+    '../',
+  ]
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+
+
 
 sources = [
     'connection.cpp',
     'local_connection.cpp',
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-env.StaticLibrary(target = 'net', source = sources)
-
-# library files to build binary
-LIBS = [
-    'libboost_system-mt-s',
-    'libboost_thread-mt-s',
-    'jsoncpp',
-  ]
-
-LIBPATH = [
-    THIRDPARTY.boost.LIBPATH,
-    THIRDPARTY.jsoncpp.LIBPATH
-  ]
+lib = env.StaticLibrary(target = 'net', source = sources)
+env.Install('../lib', lib)
+env.Alias('install', '../lib')
 
 
 
 # build and run unittest
 print '    ======== build net unittest'
 
-CPPPATH += THIRDPARTY.gmock.CPPPATH
-
-if os.name == 'posix':
-  env.Append(LINKFLAGS=['-pthread'])
-
-# test tools
-sources = [
-    '../test/fake.cpp',
-  ]
-
 # net
-sources += [
+sources = [
+    '../ext/src/gmock_main.cc',
+    '../test/fake.cpp',
     'connection_test.cpp',
     'local_connection_test.cpp',
   ]
 
-LIBS += [
-    'gmock', 
+LIBS = [
+    'gtest', 
+    'libboost_system-mt-s',
+    'libboost_thread-mt-s',
     'codebase',
     'net',
   ]
 
-LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
-LIBPATH.append(os.path.join(ROOTPATH, 'codebase'))
-LIBPATH.append(os.path.join(ROOTPATH, 'net'))
+LIBPATH = [
+    '../ext/lib',
+    '../lib',
+  ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 

@@ -1,18 +1,10 @@
 import os
-import sys
 
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
 os.system('clear' if os.name is 'posix' else 'CLS')
 
 BASEPATH = Dir('.').abspath
-ROOTPATH = os.path.join(BASEPATH, '..')
-ROOTPATH = os.path.abspath(ROOTPATH)
-#TESTPATH = os.path.join(BASEPATH, '../test')
-#TESTPATH = os.path.abspath(TESTPATH)
-
-sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
-import utils
 
 print '-----------------------------------------------------------------'
 print '[YGG]  build ygg core library and run test,'
@@ -21,75 +13,56 @@ print '-----------------------------------------------------------------'
 
 
 
-# build all 3rd party libraries
-print '    ======== build and ready all 3rd-party library'
-SConscript('../../ygg_thirdparty/SConstruct')
-THIRDPARTY = utils.get_thirdparty()
-
-
-
 # build core library
 print '    ======== build core library'
 
-CPPPATH = [ ROOTPATH ]
-CPPPATH += THIRDPARTY.boost.CPPPATH
-CPPPATH += THIRDPARTY.jsoncpp.CPPPATH
+CPPPATH = [
+    '../ext/include',
+    '../',
+  ]
+
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+
+
 
 sources = [
     'ctrl_desc.cpp',
     'target_desc.cpp'
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-env.StaticLibrary(target='core', source=sources)
-
-# library files to build binary
-LIBS = [
-    'libboost_system-mt-s',
-    'libboost_thread-mt-s',
-    'jsoncpp'
-  ]
-
-LIBPATH = [
-    THIRDPARTY.boost.LIBPATH,
-    THIRDPARTY.jsoncpp.LIBPATH,
-    os.path.join(ROOTPATH, 'codebase'),
-    os.path.join(ROOTPATH, 'net'),
-  ]
+lib = env.StaticLibrary(target='core', source=sources)
+env.Install('../lib', lib)
+env.Alias('install', '../lib')
 
 
 
 # build and run unittest
 print '    ======== build core unittest'
 
-CPPPATH += THIRDPARTY.gmock.CPPPATH
-
-if os.name == 'posix':
-  env.Append(LINKFLAGS=['-pthread'])
-
-# test tools
-sources = [
-    '../test/fake.cpp'
-  ]
-
 # core
-sources += [
+sources = [
+    '../ext/src/gmock_main.cc',
+    '../test/fake.cpp',
     'ctrl_desc_test.cpp',
     'target_desc_test.cpp',
-    'proxy_test.cpp'
+    'proxy_test.cpp',
   ]
 
-LIBS += [
-    'gmock', 
+LIBS = [
+    'gtest', 
+    'jsoncpp',
     'codebase',
     'core',
     'net',
   ]
 
-LIBPATH.append(THIRDPARTY.gmock.LIBPATH)
-LIBPATH.append(BASEPATH)
+LIBPATH = [
+    '../ext/lib',
+    '../lib',
+  ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS="-std=c++11")
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
