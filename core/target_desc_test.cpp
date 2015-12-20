@@ -1,9 +1,13 @@
 #include <gmock/gmock.h>
-#include "test_variables.h"
 #include "target_desc.h"
+#include "test/vars.h"
+#include <json/json.h>
 
 
-using namespace ygg::core;
+namespace ygg {
+
+
+static const std::string kTargetJson(test::GetTargetJson("B")); 
 
 
 TEST(TargetDescTest, return_null_when_string_is_empty) {
@@ -42,3 +46,6 @@ TEST(TargetDescTest, return_object_when_json_is_valid) {
     ASSERT_EQ(kTargetJson, desc->json);
     ASSERT_EQ("B", desc->endpoint);
 }
+
+
+}  // namespace ygg

@@ -8,7 +8,6 @@ using namespace ygg::net;
 
 
 namespace ygg {
-namespace core {
 
 
 template<class Desc>
@@ -115,10 +114,7 @@ private:
     const typename Desc::Ptr desc_;
 };
 
-//Proxy::NullDelegate kNullDelegate;
 
-
-}  // namespace core
 }  // namespace ygg
 
 

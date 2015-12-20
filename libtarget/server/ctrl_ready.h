@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 using namespace ygg::net;
-using namespace ygg::core;
 
 
 namespace ygg {

@@ -12,7 +12,6 @@ class Value;
 
 
 namespace ygg {
-namespace core {
 
 
 class CtrlDesc : public Object {
@@ -34,7 +33,6 @@ private:
 };
 
 
-}  // namespace core
 }  // namespace ygg
 
 

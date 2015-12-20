@@ -2,8 +2,8 @@
 #include "net/local_connection.h"
 #include "test/fake.h"
 #include "test/mock.h"
-#include "test_variables.h"
 #include "proxy.h"
+#include "test/vars.h"
 
 
 using ::testing::_;
@@ -14,7 +14,10 @@ using namespace ygg::net;
 
 
 namespace ygg {
-namespace core {
+
+
+static const std::string kCtrlJson(GetCtrlJson("A", "B"));
+static const std::string kTargetJson(GetTargetJson("B"));
 
 
 class TestDesc : public Object {
@@ -169,5 +172,4 @@ TEST_F(ProxyTest, recv_binary) {
 }
 
 
-}  // namespace core
 }  // namesapce ygg

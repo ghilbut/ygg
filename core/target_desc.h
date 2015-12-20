@@ -6,7 +6,6 @@
 
 
 namespace ygg {
-namespace core {
 
 
 class TargetDesc : public Object {
@@ -26,7 +25,6 @@ private:
 };
 
 
-}  // namespace core
 }  // namespace ygg
 
 

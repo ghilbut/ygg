@@ -1,9 +1,13 @@
 #include <gmock/gmock.h>
-#include "test_variables.h"
 #include "ctrl_desc.h"
+#include "test/vars.h"
+#include <json/json.h>
 
 
-using namespace ygg::core;
+namespace ygg {
+
+
+static const std::string kCtrlJson(test::GetCtrlJson("A", "B"));
 
 
 TEST(CtrlDescTest, return_null_when_string_is_empty) {
@@ -57,3 +61,6 @@ TEST(CtrlDescTest, return_object_when_json_is_valid) {
     ASSERT_EQ("A", desc->user);
     ASSERT_EQ("B", desc->endpoint);
 }
+
+
+}  // namespace

@@ -3,7 +3,6 @@
 
 
 namespace ygg {
-namespace core {
 
 
 CtrlDesc::Ptr CtrlDesc::New(const std::string & json) {
@@ -50,5 +49,4 @@ CtrlDesc::CtrlDesc(const std::string & json
 }
 
 
-}  // namespace core
 }  // namespace ygg

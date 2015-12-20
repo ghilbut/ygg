@@ -5,7 +5,6 @@
 
 
 namespace ygg
-namespace core {
 
 
 Proxy::Ptr Proxy::New(Connection::Ptr &  conn, const std::string & json) {
@@ -100,5 +99,4 @@ Proxy::Proxy(Connection::Ptr & conn
 }
 
 
-}  // namespace core
 }  // namespace ygg

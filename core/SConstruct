@@ -42,7 +42,8 @@ print '    ======== build core unittest'
 # core
 sources = [
     '../ext/src/gmock_main.cc',
-    '../test/fake.cpp',
+    '../test/fake.cpp',  # this should be seperated library
+    '../test/vars.cpp',  # this should be seperated library
     'ctrl_desc_test.cpp',
     'target_desc_test.cpp',
     'proxy_test.cpp',

@@ -12,9 +12,9 @@ namespace ygg {
 typedef net::Connection Connection;
 
 // libtarget/server
-typedef core::Proxy<CtrlDesc> CtrlProxy;
+typedef Proxy<CtrlDesc> CtrlProxy;
 typedef target::server::CtrlReady CtrlReady;
-typedef core::Proxy<TargetDesc> TargetProxy;
+typedef Proxy<TargetDesc> TargetProxy;
 typedef target::server::TargetReady TargetReady;
 
 

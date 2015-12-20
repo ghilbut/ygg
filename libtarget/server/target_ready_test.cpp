@@ -5,7 +5,6 @@
 #include <json/json.h>
 #include <string>
 
-using namespace ygg::core;
 using namespace ygg::net;
 
 using ::testing::_;

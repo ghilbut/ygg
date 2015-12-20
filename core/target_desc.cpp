@@ -3,7 +3,6 @@
 
 
 namespace ygg {
-namespace core {
 
 
 TargetDesc::Ptr TargetDesc::New(const std::string & json) {
@@ -38,5 +37,4 @@ TargetDesc::TargetDesc(const std::string & json
     // nothing
 }
 
-}  // namespace core
 }  // namespace ygg
