@@ -6,6 +6,14 @@ namespace ygg {
 namespace server {
 
 
+class TargetProxyServer {
+public:
+
+
+private:
+};
+
+
 }  // namespace server
 }  // namespace ygg
 
