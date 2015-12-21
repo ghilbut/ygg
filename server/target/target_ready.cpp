@@ -3,8 +3,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 TargetReady::TargetReady(Delegate * delegate) 
@@ -52,6 +52,6 @@ void TargetReady::OnClosed(Connection * conn) {
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg

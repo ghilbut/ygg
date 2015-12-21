@@ -3,8 +3,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 
@@ -67,6 +67,6 @@ TargetProxy::TargetProxy(Connection::Ptr & conn, TargetDesc::Ptr & desc)
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg

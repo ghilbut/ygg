@@ -4,8 +4,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 class TargetProxyTest : public ::testing::Test {
@@ -24,6 +24,6 @@ TEST_F(TargetProxyTest, DISABLED_test) {
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg

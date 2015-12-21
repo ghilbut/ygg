@@ -2,6 +2,7 @@
 #include "target_ready.h"
 #include "core/local_connection.h"
 #include "test/mock.h"
+#include "test/vars.h"
 #include <json/json.h>
 #include <string>
 
@@ -10,24 +11,14 @@ using ::testing::_;
 
 
 namespace ygg {
-namespace target {
 namespace server {
-
-
-static std::string GetTargetJson() {
-
-    Json::Value root(Json::objectValue);
-    root["endpoint"] = "B";
-
-    Json::FastWriter w;
-    return w.write(root);
-}
+namespace target {
 
 
 class TargetReadyTest : public ::testing::Test {
 public:
     TargetReadyTest()
-        : kTargetJson_(GetTargetJson()) {
+        : kTargetJson_(test::GetTargetJson("B")) {
         // nothing
     }
 
@@ -85,6 +76,6 @@ TEST_F(TargetReadyTest, pass_proxy_when_get_valid_json_from_connection) {
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg

@@ -2,8 +2,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 Manager::Manager()
@@ -69,6 +69,6 @@ void Manager::OnClosed(BypassAdapter * adapter) {
 }
 
 
-}  // namespace ygg
 }  // namespace target
 }  // namespace server
+}  // namespace ygg

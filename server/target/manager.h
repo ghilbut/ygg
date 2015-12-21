@@ -1,5 +1,5 @@
-#ifndef YGG_LIBTARGET_SERVER_MANAGER_H_
-#define YGG_LIBTARGET_SERVER_MANAGER_H_
+#ifndef YGG_SERVER_TARGET_MANAGER_H_
+#define YGG_SERVER_TARGET_MANAGER_H_
 
 #include "bypass_adapter.h"
 #include "ctrl_ready.h"
@@ -9,8 +9,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 class Manager
@@ -37,9 +37,9 @@ private:
 };
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg
 
 
-#endif  // YGG_LIBTARGET_SERVER_MANAGER_H_
+#endif  // YGG_SERVER_TARGET_MANAGER_H_

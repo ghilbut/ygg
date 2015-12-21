@@ -7,8 +7,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 class ManagerTest : public ::testing::Test {
@@ -211,6 +211,6 @@ TEST_F(ManagerTest, DISABLED_every_connections_fire_onclosed_event_when_clear_ma
 }
 
 
-}  // namespace ygg
 }  // namespace target
 }  // namespace server
+}  // namespace ygg

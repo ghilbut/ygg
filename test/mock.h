@@ -2,8 +2,8 @@
 #define YGG_TEST_MOCK_H_
 
 #include "core/connection.h"
-#include "libtarget/server/ctrl_ready.h"
-#include "libtarget/server/target_ready.h"
+#include "server/target/ctrl_ready.h"
+#include "server/target/target_ready.h"
 #include <gmock/gmock.h>
 
 
@@ -12,9 +12,9 @@ namespace ygg {
 
 // libtarget/server
 typedef Proxy<CtrlDesc> CtrlProxy;
-typedef target::server::CtrlReady CtrlReady;
+typedef server::target::CtrlReady CtrlReady;
 typedef Proxy<TargetDesc> TargetProxy;
-typedef target::server::TargetReady TargetReady;
+typedef server::target::TargetReady TargetReady;
 
 
 namespace test {

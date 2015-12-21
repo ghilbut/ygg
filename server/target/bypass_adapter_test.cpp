@@ -15,8 +15,8 @@ using ::testing::_;
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 class NullAdapterDelegate : public BypassAdapter::Delegate {
@@ -193,7 +193,7 @@ TEST_F(BypassAdapterTest, DISABLED_every_connections_fire_onclosed_event_when_cl
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg
 

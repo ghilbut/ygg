@@ -3,8 +3,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 BypassAdapter::Ptr BypassAdapter::New(TargetProxy::Ptr & target, 
@@ -95,7 +95,7 @@ void BypassAdapter::OnClosed(TargetProxy * target) {
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg
 

@@ -1,5 +1,5 @@
-#ifndef YGG_LIBTARGET_SERVER_TARGET_PROXY_H_
-#define YGG_LIBTARGET_SERVER_TARGET_PROXY_H_
+#ifndef YGG_SERVER_TARGET_TARGET_PROXY_H_
+#define YGG_SERVER_TARGET_TARGET_PROXY_H_
 
 #include "core/connection.h"
 #include "core/object.h"
@@ -7,8 +7,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 class CtrlProxy;
@@ -52,9 +52,9 @@ private:
 };
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg
 
 
-#endif  // YGG_LIBTARGET_SERVER_TARGET_PROXY_H_
+#endif  // YGG_SERVER_TARGET_TARGET_PROXY_H_

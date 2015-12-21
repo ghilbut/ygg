@@ -3,8 +3,8 @@
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 CtrlReady::CtrlReady(CtrlReady::Delegate * delegate) 
@@ -52,6 +52,6 @@ void CtrlReady::OnClosed(Connection * conn) {
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg

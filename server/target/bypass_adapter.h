@@ -1,5 +1,5 @@
-#ifndef YGG_LIBTARGET_SERVER_BYPASS_ADAPTER_H_
-#define YGG_LIBTARGET_SERVER_BYPASS_ADAPTER_H_
+#ifndef YGG_SERVER_TARGET_BYPASS_ADAPTER_H_
+#define YGG_SERVER_TARGET_BYPASS_ADAPTER_H_
 
 #include "core/ctrl_desc.h"
 #include "core/target_desc.h"
@@ -11,14 +11,12 @@
 namespace ygg {
 
 
-typedef CtrlDesc CtrlDesc;
-typedef TargetDesc TargetDesc;
 typedef Proxy<CtrlDesc> CtrlProxy;
 typedef Proxy<TargetDesc> TargetProxy;
 
 
-namespace target {
 namespace server {
+namespace target {
 
 
 class BypassAdapter
@@ -66,9 +64,9 @@ private:
 };
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg
 
 
-#endif  // YGG_LIBTARGET_SERVER_BYPASS_ADAPTER_H_
+#endif  // YGG_SERVER_TARGET_BYPASS_ADAPTER_H_

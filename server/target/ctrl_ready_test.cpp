@@ -10,8 +10,8 @@ using ::testing::_;
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
 
 static std::string GetCtrlJson() {
@@ -86,6 +86,6 @@ TEST_F(CtrlReadyTest, pass_proxy_when_get_valid_json_from_connection) {
 }
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg

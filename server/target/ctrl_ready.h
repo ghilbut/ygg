@@ -1,33 +1,34 @@
-#ifndef YGG_LIBTARGET_SERVER_TARGET_READY_H_
-#define YGG_LIBTARGET_SERVER_TARGET_READY_H_
+#ifndef YGG_SERVER_TARGET_CTRL_READY_H_
+#define YGG_SERVER_TARGET_CTRL_READY_H_
 
 #include "core/connection.h"
+#include "core/ctrl_desc.h"
 #include "core/object.h"
 #include "core/proxy.h"
-#include "core/target_desc.h"
 #include <unordered_set>
 
 
 namespace ygg {
-namespace target {
 namespace server {
+namespace target {
 
-typedef Proxy<TargetDesc> TargetProxy;
+
+typedef Proxy<CtrlDesc> CtrlProxy;
 
 
-class TargetReady : public Connection::Delegate {
+class CtrlReady : public Connection::Delegate {
 public: 
     class Delegate {
     public:
-        virtual void OnProxy(TargetProxy::Ptr & proxy) = 0;
+        virtual void OnProxy(CtrlProxy::Ptr & proxy) = 0;
 
     protected:
         virtual ~Delegate() {}
     };
 
 public:
-    TargetReady(Delegate * delegate);
-    ~TargetReady() {}
+    CtrlReady(Delegate * delegate);
+    ~CtrlReady() {}
 
     void SetConnection(Connection::Ptr conn);
     bool HasConnection(Connection::Ptr conn);
@@ -43,9 +44,9 @@ private:
 };
 
 
-}  // namespace server
 }  // namespace target
+}  // namespace server
 }  // namespace ygg
 
 
-#endif  // YGG_LIBTARGET_SERVER_TARGET_READY_H_
+#endif  // YGG_SERVER_TARGET_CTRL_READY_H_
