@@ -30,10 +30,10 @@ void Manager::OnProxy(CtrlProxy::Ptr & ctrl) {
     const auto & desc = ctrl->desc();
     const auto & endpoint = desc.endpoint;
 
-    auto itr = adapters_.find(endpoint);
-    if (itr != adapters_.end()) {
-        auto & adapter = itr->second;
-        adapter->SetCtrl(ctrl);
+    auto itr = contexts_.find(endpoint);
+    if (itr != contexts_.end()) {
+        auto & context = itr->second;
+        context->SetCtrl(ctrl);
     } else {
         // TODO(ghilbut): log error and notify
     }
@@ -44,25 +44,25 @@ void Manager::OnProxy(TargetProxy::Ptr & target) {
     const auto & desc = target->desc();
     const auto & endpoint = desc.endpoint;
 
-    auto itr = adapters_.find(endpoint);
-    if (itr == adapters_.end()) {
-        auto adapter(BypassAdapter::New(target, this));
-        adapters_[endpoint] = adapter;
+    auto itr = contexts_.find(endpoint);
+    if (itr == contexts_.end()) {
+        auto context(BaseContext::New(target, this));
+        contexts_[endpoint] = context;
     } else {
         // TODO(ghilbut): log error and notify
-        //                close adapter already exists
+        //                close context already exists
     }
 }
 
-void Manager::OnClosed(BypassAdapter * adapter) {
-    assert(adapter != nullptr);
+void Manager::OnClosed(BaseContext * context) {
+    assert(context != nullptr);
 
-    const auto & target = adapter->target();
+    const auto & target = context->target();
     const auto & desc = target->desc();
     const auto & endpoint = desc.endpoint;
 
-    if (adapters_.find(endpoint) != adapters_.end()) {
-        adapters_.erase(endpoint);
+    if (contexts_.find(endpoint) != contexts_.end()) {
+        contexts_.erase(endpoint);
     } else {
         // TODO(ghilbut): log and notify warning
     }

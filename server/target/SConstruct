@@ -35,7 +35,7 @@ env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
 
 sources = [
     '../../ext/src/gmock_main.cc',
-    'bypass_adapter.cpp',
+    'base_context.cpp',
     'ctrl_ready.cpp',
     'manager.cpp',
     'target_proxy.cpp',
@@ -53,7 +53,7 @@ print '    ======== build target server unittest'
 sources = [
     '../../test/fake.cpp',
     '../../test/vars.cpp',
-    'bypass_adapter_test.cpp',
+    'base_context_test.cpp',
     'ctrl_ready_test.cpp',
     'manager_test.cpp',
     'target_proxy_test.cpp',

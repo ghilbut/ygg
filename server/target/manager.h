@@ -1,7 +1,7 @@
 #ifndef YGG_SERVER_TARGET_MANAGER_H_
 #define YGG_SERVER_TARGET_MANAGER_H_
 
-#include "bypass_adapter.h"
+#include "base_context.h"
 #include "ctrl_ready.h"
 #include "target_ready.h"
 #include <string>
@@ -16,7 +16,7 @@ namespace target {
 class Manager
     : public CtrlReady::Delegate
     , public TargetReady::Delegate
-    , public BypassAdapter::Delegate {
+    , public BaseContext::Delegate {
 
 public:
     Manager();
@@ -27,13 +27,13 @@ public:
 
     virtual void OnProxy(CtrlProxy::Ptr & ctrl);
     virtual void OnProxy(TargetProxy::Ptr & target);
-    virtual void OnClosed(BypassAdapter * adapter);
+    virtual void OnClosed(BaseContext * adapter);
 
 
 private:
     CtrlReady ctrl_ready_;
     TargetReady target_ready_;
-    std::unordered_map<std::string, BypassAdapter::Ptr> adapters_;
+    std::unordered_map<std::string, BaseContext::Ptr> contexts_;
 };
 
 

@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include "bypass_adapter.h"
+#include "base_context.h"
 #include "core/ctrl_desc.h"
 #include "core/local_connection.h"
 #include "core/proxy.h"
@@ -19,13 +19,13 @@ namespace server {
 namespace target {
 
 
-class NullAdapterDelegate : public BypassAdapter::Delegate {
+class NullAdapterDelegate : public BaseContext::Delegate {
 public:
-    virtual void OnClosed(BypassAdapter * adapter) {}
+    virtual void OnClosed(BaseContext * adapter) {}
 };
 
 
-class BypassAdapterTest : public ::testing::Test {
+class BaseContextTest : public ::testing::Test {
 public:
     void SetUp() {
 
@@ -74,9 +74,9 @@ protected:
 };
 
 
-TEST_F(BypassAdapterTest, ctrls_send_text_to_target) {
+TEST_F(BaseContextTest, ctrls_send_text_to_target) {
 
-    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
+    auto adapter(BaseContext::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -94,9 +94,9 @@ TEST_F(BypassAdapterTest, ctrls_send_text_to_target) {
 }
 
 
-TEST_F(BypassAdapterTest, ctrls_send_bytes_to_target) {
+TEST_F(BaseContextTest, ctrls_send_bytes_to_target) {
 
-    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
+    auto adapter(BaseContext::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -114,9 +114,9 @@ TEST_F(BypassAdapterTest, ctrls_send_bytes_to_target) {
 }
 
 
-TEST_F(BypassAdapterTest, target_sends_text_to_ctrls) {
+TEST_F(BaseContextTest, target_sends_text_to_ctrls) {
 
-    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
+    auto adapter(BaseContext::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -133,9 +133,9 @@ TEST_F(BypassAdapterTest, target_sends_text_to_ctrls) {
 }
 
 
-TEST_F(BypassAdapterTest, target_sends_bytes_to_ctrls) {
+TEST_F(BaseContextTest, target_sends_bytes_to_ctrls) {
 
-    auto adapter(BypassAdapter::New(target_proxy_, &null_delegate_));
+    auto adapter(BaseContext::New(target_proxy_, &null_delegate_));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -152,18 +152,18 @@ TEST_F(BypassAdapterTest, target_sends_bytes_to_ctrls) {
 }
 
 
-class MockAdapterDelegate : public BypassAdapter::Delegate {
+class MockAdapterDelegate : public BaseContext::Delegate {
 public:
-    MOCK_METHOD1(OnClosed, void(BypassAdapter*));
+    MOCK_METHOD1(OnClosed, void(BaseContext*));
 };
 
 
-TEST_F(BypassAdapterTest, do_not_fire_onclosed_event_when_ctrls_are_closed) {
+TEST_F(BaseContextTest, do_not_fire_onclosed_event_when_ctrls_are_closed) {
 
     MockAdapterDelegate mock;
     EXPECT_CALL(mock, OnClosed(_)).Times(0);
 
-    auto adapter(BypassAdapter::New(target_proxy_, &mock));
+    auto adapter(BaseContext::New(target_proxy_, &mock));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -174,12 +174,12 @@ TEST_F(BypassAdapterTest, do_not_fire_onclosed_event_when_ctrls_are_closed) {
 }
 
 
-TEST_F(BypassAdapterTest, fire_onclosed_event_when_target_is_closed) {
+TEST_F(BaseContextTest, fire_onclosed_event_when_target_is_closed) {
 
     MockAdapterDelegate mock;
     EXPECT_CALL(mock, OnClosed(_));
 
-    auto adapter(BypassAdapter::New(target_proxy_, &mock));
+    auto adapter(BaseContext::New(target_proxy_, &mock));
     for (auto & ctrl : ctrl_proxys_) {
         adapter->SetCtrl(ctrl);
     }
@@ -188,7 +188,7 @@ TEST_F(BypassAdapterTest, fire_onclosed_event_when_target_is_closed) {
 }
 
 
-TEST_F(BypassAdapterTest, DISABLED_every_connections_fire_onclosed_event_when_close_adapter) {
+TEST_F(BaseContextTest, DISABLED_every_connections_fire_onclosed_event_when_close_adapter) {
 
 }
 

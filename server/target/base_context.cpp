@@ -1,4 +1,4 @@
-#include "bypass_adapter.h"
+#include "base_context.h"
 
 
 
@@ -7,12 +7,12 @@ namespace server {
 namespace target {
 
 
-BypassAdapter::Ptr BypassAdapter::New(TargetProxy::Ptr & target, 
+BaseContext::Ptr BaseContext::New(TargetProxy::Ptr & target, 
                                       Delegate * delegate) {
-    return new BypassAdapter(target, delegate);
+    return new BaseContext(target, delegate);
 }
 
-BypassAdapter::BypassAdapter(TargetProxy::Ptr & target, 
+BaseContext::BaseContext(TargetProxy::Ptr & target, 
                              Delegate * delegate)
     : target_(target), delegate_(delegate) {
 
@@ -22,48 +22,48 @@ BypassAdapter::BypassAdapter(TargetProxy::Ptr & target,
     target_->BindDelegate(this);
 }
 
-BypassAdapter::~BypassAdapter() {
+BaseContext::~BaseContext() {
     // nothing
 }
 
-void BypassAdapter::SetCtrl(CtrlProxy::Ptr & ctrl) {
+void BaseContext::SetCtrl(CtrlProxy::Ptr & ctrl) {
     assert(ctrls_.find(ctrl) == ctrls_.end());
 
     ctrls_.insert(ctrl);
     ctrl->BindDelegate(this);
 }
 
-bool BypassAdapter::HasCtrl(CtrlProxy::Ptr & ctrl) const {
+bool BaseContext::HasCtrl(CtrlProxy::Ptr & ctrl) const {
     assert(ctrl != nullptr);
     return (ctrls_.find(ctrl) != ctrls_.end());
 }
 
-TargetProxy::Ptr & BypassAdapter::target() {
+TargetProxy::Ptr & BaseContext::target() {
     return target_;
 }
     
-void BypassAdapter::OnText(CtrlProxy * ctrl, const Text & text) {
+void BaseContext::OnText(CtrlProxy * ctrl, const Text & text) {
     assert(ctrl != nullptr);
     assert(ctrls_.find(ctrl) != ctrls_.end());
 
     target_->SendText(text);
 }
 
-void BypassAdapter::OnBinary(CtrlProxy * ctrl, const Bytes & bytes) {
+void BaseContext::OnBinary(CtrlProxy * ctrl, const Bytes & bytes) {
     assert(ctrl != nullptr);
     assert(ctrls_.find(ctrl) != ctrls_.end());
 
     target_->SendBinary(bytes);
 }
 
-void BypassAdapter::OnClosed(CtrlProxy * ctrl) {
+void BaseContext::OnClosed(CtrlProxy * ctrl) {
     assert(ctrl != nullptr);
     assert(ctrls_.find(ctrl) != ctrls_.end());
 
     ctrls_.erase(ctrl);
 }
 
-void BypassAdapter::OnText(TargetProxy * target, const Text & text) {
+void BaseContext::OnText(TargetProxy * target, const Text & text) {
     assert(target != nullptr);
     assert(target == target_);
 
@@ -72,7 +72,7 @@ void BypassAdapter::OnText(TargetProxy * target, const Text & text) {
     }
 }
 
-void BypassAdapter::OnBinary(TargetProxy * target, const Bytes & bytes) {
+void BaseContext::OnBinary(TargetProxy * target, const Bytes & bytes) {
     assert(target != nullptr);
     assert(target == target_);
 
@@ -81,7 +81,7 @@ void BypassAdapter::OnBinary(TargetProxy * target, const Bytes & bytes) {
     }
 }
 
-void BypassAdapter::OnClosed(TargetProxy * target) {
+void BaseContext::OnClosed(TargetProxy * target) {
     assert(target != nullptr);
     assert(target == target_);
 
