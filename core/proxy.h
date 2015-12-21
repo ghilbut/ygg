@@ -13,8 +13,8 @@ class Proxy
     , public Connection::Delegate {
 
 public:
-    typedef boost::intrusive_ptr<Proxy<DescT>> Ptr;
-    typedef BaseDelegate<Proxy<DescT>> Delegate;
+    typedef boost::intrusive_ptr<Proxy> Ptr;
+    typedef BaseDelegate<Proxy> Delegate;
 
 public:
     static typename Proxy::Ptr
