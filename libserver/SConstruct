@@ -6,23 +6,16 @@ import sys
 os.system('clear' if os.name is 'posix' else 'CLS')
 
 BASEPATH = Dir('.').abspath
-ROOTPATH = os.path.join(BASEPATH, '..')
-ROOTPATH = os.path.abspath(ROOTPATH)
-#TESTPATH = os.path.join(BASEPATH, '../test')
-#TESTPATH = os.path.abspath(TESTPATH)
-
-sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
-import utils
 
 print '-----------------------------------------------------------------'
-print '[YGG]  build ygg core library and run test,'
+print '[YGG]  build ygg server library and run test,'
 print '       on %s.' % BASEPATH
 print '-----------------------------------------------------------------'
 
 
 
-# build core library
-print '    ======== build core library'
+# build server library
+print '    ======== build server library'
 
 CPPPATH = [
     '../ext/include',
@@ -34,31 +27,14 @@ sources = [
   ]
 
 env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-env.StaticLibrary(target='core', source=sources)
-
-
-
-
-# library files to build binary
-LIBS = [
-    'libboost_system-mt-s',
-    'libboost_thread-mt-s',
-    'jsoncpp',
-    'mongoose',
-  ]
-
-LIBPATH = [
-    '../ext/lib',
-    '../lib',
-  ]
+lib = env.StaticLibrary(target='server', source=sources)
+env.Install('../lib', lib)
+env.Alias('install', '../lib')
 
 
 
 # build and run unittest
 print '    ======== build core unittest'
-
-if os.name == 'posix':
-  env.Append(LINKFLAGS=['-pthread'])
 
 sources = [
     '../ext/src/gmock_main.cc',
@@ -66,19 +42,29 @@ sources = [
     'target_proxy_server_test.cpp',
   ]
 
-LIBS += [
+LIBS = [
+    'libboost_system-mt-s',
+    'libboost_thread-mt-s',
+    'jsoncpp',
+    'mongoose',
     'gtest', 
-    'codebase',
     'core',
-    'net',
+    'server',
   ]
 
+LIBPATH = [
+    '../ext/lib',
+    '../lib',
+  ]
+
+if os.name == 'posix':
+  env.Append(LINKFLAGS=['-pthread'])
 test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 
 # run after build complete
-print '    ======== run core unittest'
+print '    ======== run server unittest'
 
 Command(
   'unittest', 
