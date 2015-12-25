@@ -23,10 +23,11 @@ CPPPATH = [
   ]
 
 sources = [
+    'http_server.cpp',
     'target_proxy_server.cpp',
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g'])
 lib = env.StaticLibrary(target='server', source=sources)
 env.Install('../lib', lib)
 env.Alias('install', '../lib')
@@ -39,6 +40,7 @@ print '    ======== build core unittest'
 sources = [
     '../ext/src/gmock_main.cc',
     '../test/fake.cpp',
+    'http_server_test.cpp',
     'target_proxy_server_test.cpp',
   ]
 
