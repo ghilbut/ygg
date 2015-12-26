@@ -16,6 +16,16 @@ namespace server {
 
 class HttpServer {
  public:
+  class Delegate {
+   public:
+    virtual void OnRequest(struct mg_connection * conn,
+                           struct http_message * msg) = 0;
+
+   protected:
+    virtual ~Delegate() {}
+  };
+
+ public:
   enum Status {
     kStopped = 0,
     kStarting,
@@ -26,21 +36,25 @@ class HttpServer {
   HttpServer();
   ~HttpServer();
 
+  void BindDelegate(Delegate * delegate);
+  void UnbindDelegate();
+
   bool Start();
   void Stop();
 
 
  private:
   void polling();
-  void DoHandle(struct mg_connection * conn, int event);
+  void DoHandle(struct mg_connection * conn, int event, void * data);
   static void ev_handler(struct mg_connection * conn,
                          int event,
                          void * data);
 
 
  private:
+  Delegate * delegate_;
+
   std::atomic_bool stop_;
-  //volatile bool stop_;
   std::atomic<Status> status_;
 
   struct mg_mgr mgr_;
