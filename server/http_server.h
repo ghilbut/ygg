@@ -20,6 +20,10 @@ class HttpServer {
    public:
     virtual void OnRequest(struct mg_connection * conn,
                            struct http_message * msg) = 0;
+    virtual void OnWSOpened(struct mg_connection * conn) = 0;
+    virtual void OnWSMessage(struct mg_connection * conn,
+                             struct websocket_message * msg) = 0;
+    virtual void OnWSClosed(struct mg_connection * conn) = 0;
 
    protected:
     virtual ~Delegate() {}

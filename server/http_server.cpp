@@ -6,7 +6,7 @@ namespace server {
 
 
 static bool is_websocket(const struct mg_connection * conn) {
-  return (conn->flags & MG_F_IS_WEBSOCKET != 0);
+  return ((conn->flags & MG_F_IS_WEBSOCKET) == MG_F_IS_WEBSOCKET);
 }
 
 
@@ -91,11 +91,14 @@ void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
       delegate_->OnRequest(conn, (struct http_message*) data);
       break;
     case MG_EV_WEBSOCKET_HANDSHAKE_DONE:
+      delegate_->OnWSOpened(conn);
       break;
     case MG_EV_WEBSOCKET_FRAME:
+      delegate_->OnWSMessage(conn, (struct websocket_message*) data);
       break;
     case MG_EV_CLOSE:
       if (is_websocket(conn)) {
+        delegate_->OnWSClosed(conn);
       }
       break;
     default:
