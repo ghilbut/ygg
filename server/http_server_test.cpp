@@ -3,23 +3,72 @@
 
 
 using ::testing::_;
+using ::testing::InvokeWithoutArgs;
 
 
 namespace ygg {
 namespace server {
 
 
+static int s_exit_flag = 0;
+
+
 class HttpServerTest : public ::testing::Test {
  public:
   void SetUp() {
+    mg_mgr_init(&mgr_, this);
+
+    stop_ = false;
+    boost::thread t(boost::bind(&HttpServerTest::polling, this));
+    thread_.swap(t);
   }
 
   void TearDown() {
+    stop_ = true;
+    thread_.join();
+
+    mg_mgr_free(&mgr_);
+  }
+
+
+  static void callback(struct mg_connection * nc, int ev, void *ev_data) {
+    auto pThis = reinterpret_cast<HttpServerTest*>(nc->mgr->user_data);
+    pThis->DoCallback(nc, ev, ev_data);
+  }
+
+  void DoCallback(struct mg_connection * nc, int ev, void *ev_data) {
+    struct websocket_message *wm = (struct websocket_message *) ev_data;
+
+    if (ev == MG_EV_WEBSOCKET_HANDSHAKE_DONE) {
+      mutex_.lock();
+      handshake_cond_.notify_one();
+      mutex_.unlock();
+      return;
+    }
+
+    if (ev == MG_EV_WEBSOCKET_FRAME) {
+      return;
+    }
+  }
+
+
+  void polling() {
+    while (!stop_) {
+      mg_mgr_poll(&mgr_, 1000);
+    }
   }
 
 
  protected:
+  struct mg_mgr mgr_;
 
+  std::atomic_bool stop_;
+
+  boost::mutex mutex_;
+  boost::condition_variable handshake_cond_;
+  boost::condition_variable message_cond_;
+  boost::condition_variable close_cond_;
+  boost::thread thread_;
 };
 
 
@@ -36,7 +85,6 @@ class MockHttpServerDelegate : public HttpServer::Delegate {
 
 
 
-static int s_exit_flag = 0;
 static int s_show_headers = 0;
 
 static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
@@ -86,6 +134,8 @@ TEST_F(HttpServerTest, test1) {
 
 
 
+  s_exit_flag = 0;
+
   struct mg_mgr mgr;
   mg_mgr_init(&mgr, NULL);
 
@@ -105,33 +155,23 @@ TEST_F(HttpServerTest, test1) {
 
 
 
-void DoUpdate() {
-  ++s_exit_flag;
-}
 
-static void cb4(struct mg_connection * nc, int ev, void *ev_data) {
-  struct websocket_message *wm = (struct websocket_message *) ev_data;
 
-  if (ev == MG_EV_WEBSOCKET_FRAME) {
-    memcpy(nc->user_data, wm->data, wm->size);
-    mg_send_websocket_frame(nc, WEBSOCKET_OP_CLOSE, NULL, 0);
-  } else if (ev == MG_EV_WEBSOCKET_HANDSHAKE_DONE) {
-    /* Send "hi" to server. server must reply "A". */
-    struct mg_str h[2];
-    h[0].p = "h";
-    h[0].len = 1;
-    h[1].p = "i";
-    h[1].len = 1;
-    mg_send_websocket_framev(nc, WEBSOCKET_OP_TEXT, h, 2);
-  }
-}
 
 TEST_F(HttpServerTest, test2) {
 
   MockHttpServerDelegate mock;
-  EXPECT_CALL(mock, OnWSOpened(_)).WillOnce(::testing::InvokeWithoutArgs(DoUpdate));
-  EXPECT_CALL(mock, OnWSMessage(_, _)).WillOnce(::testing::InvokeWithoutArgs(DoUpdate));
-  EXPECT_CALL(mock, OnWSClosed(_)).WillOnce(::testing::InvokeWithoutArgs(DoUpdate));
+  EXPECT_CALL(mock, OnWSOpened(_));
+  auto f_message = InvokeWithoutArgs([this]() {
+      boost::mutex::scoped_lock lock(mutex_);
+      message_cond_.notify_all();
+    });
+  EXPECT_CALL(mock, OnWSMessage(_, _)).WillOnce(f_message);
+  auto f_close = InvokeWithoutArgs([this]() {
+      boost::mutex::scoped_lock lock(mutex_);
+      close_cond_.notify_all();
+    });
+  EXPECT_CALL(mock, OnWSClosed(_)).WillOnce(f_close);
 
   HttpServer s;
   s.BindDelegate(&mock);
@@ -139,30 +179,34 @@ TEST_F(HttpServerTest, test2) {
 
 
 
-
-
-  s_exit_flag = 0;
-
-  struct mg_mgr mgr;
-  struct mg_connection *nc;
   const char *local_addr = "127.0.0.1:8000";
   char buf[20] = "";
 
-  mg_mgr_init(&mgr, NULL);
-  nc = mg_connect(&mgr, local_addr, cb4);
+  struct mg_connection * nc = mg_connect(&mgr_, local_addr, callback);
   mg_set_protocol_http_websocket(nc);
   nc->user_data = buf;
   mg_send_websocket_handshake(nc, "/ws", NULL);
-  while (s_exit_flag != 3) {
-    mg_mgr_poll(&mgr, 1000);
-    
-    if (s_exit_flag == 2) {
-      mg_send_websocket_frame(nc, WEBSOCKET_OP_CLOSE, NULL, 0);
-    }
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    handshake_cond_.wait(lock);
   }
-  
-  mg_mgr_free(&mgr);
+ 
+  struct mg_str h[2];
+  h[0].p = "h";
+  h[0].len = 1;
+  h[1].p = "i";
+  h[1].len = 1;
+  mg_send_websocket_framev(nc, WEBSOCKET_OP_TEXT, h, 2);
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    message_cond_.wait(lock);
+  }
 
+  mg_send_websocket_frame(nc, WEBSOCKET_OP_CLOSE, NULL, 0);
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    close_cond_.wait(lock);
+  }
 
 
 
