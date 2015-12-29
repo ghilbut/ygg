@@ -39,6 +39,10 @@ class HttpServerTest : public ::testing::Test {
   void DoCallback(struct mg_connection * nc, int ev, void *ev_data) {
     struct websocket_message *wm = (struct websocket_message *) ev_data;
 
+    if (ev == MG_EV_HTTP_REPLY) {
+      return;
+    }
+
     if (ev == MG_EV_WEBSOCKET_HANDSHAKE_DONE) {
       mutex_.lock();
       handshake_cond_.notify_one();
@@ -65,6 +69,7 @@ class HttpServerTest : public ::testing::Test {
   std::atomic_bool stop_;
 
   boost::mutex mutex_;
+  boost::condition_variable request_cond_;
   boost::condition_variable handshake_cond_;
   boost::condition_variable message_cond_;
   boost::condition_variable close_cond_;
@@ -124,7 +129,14 @@ void DoStop() {
 TEST_F(HttpServerTest, test1) {
 
   MockHttpServerDelegate mock;
-  EXPECT_CALL(mock, OnRequest(_, _)).WillOnce(::testing::InvokeWithoutArgs(DoStop));
+
+  ON_CALL(mock, OnRequest(_, _))
+    .WillByDefault(InvokeWithoutArgs([this]() {
+        boost::mutex::scoped_lock lock(mutex_);
+        request_cond_.notify_one();
+      }));
+
+  EXPECT_CALL(mock, OnRequest(_, _));
 
   HttpServer s;
   s.BindDelegate(&mock);
@@ -132,20 +144,11 @@ TEST_F(HttpServerTest, test1) {
 
 
 
-
-
-  s_exit_flag = 0;
-
-  struct mg_mgr mgr;
-  mg_mgr_init(&mgr, NULL);
-
-  mg_connect_http(&mgr, ev_handler, "http://127.0.0.1:8000/B/methods", NULL, NULL);
-  while (s_exit_flag == 0) {
-    mg_mgr_poll(&mgr, 1000);
+  mg_connect_http(&mgr_, ev_handler, "http://127.0.0.1:8000/B/methods", NULL, NULL);
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    request_cond_.wait(lock);
   }
-  mg_mgr_free(&mgr);
-
-
 
 
 
@@ -207,7 +210,6 @@ TEST_F(HttpServerTest, test2) {
     boost::mutex::scoped_lock lock(mutex_);
     close_cond_.wait(lock);
   }
-
 
 
 
