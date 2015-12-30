@@ -58,9 +58,8 @@ class HttpServerTest : public ::testing::Test {
     }
 
     if (ev == MG_EV_WEBSOCKET_HANDSHAKE_DONE) {
-      mutex_.lock();
+      boost::mutex::scoped_lock lock(mutex_);
       handshake_cond_.notify_one();
-      mutex_.unlock();
       return;
     }
 
