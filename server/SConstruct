@@ -45,6 +45,7 @@ sources = [
   ]
 
 LIBS = [
+    'libboost_chrono-mt-s',
     'libboost_system-mt-s',
     'libboost_thread-mt-s',
     'jsoncpp',

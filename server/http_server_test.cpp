@@ -109,7 +109,7 @@ TEST_F(HttpServerTest, test1) {
   ON_CALL(mock, OnRequest(_, _))
     .WillByDefault(InvokeWithoutArgs([this]() {
         boost::mutex::scoped_lock lock(mutex_);
-        request_cond_.notify_one();
+        request_cond_.notify_all();
       }));
 
   EXPECT_CALL(mock, OnRequest(_, _));
@@ -120,10 +120,13 @@ TEST_F(HttpServerTest, test1) {
 
 
 
-  mg_connect_http(&mgr_, callback, "http://127.0.0.1:8000/B/methods", NULL, NULL);
+  static const char * kUrl = "http://127.0.0.1:8000/B/methods";
+  mg_connect_http(&mgr_, callback, kUrl, NULL, NULL);
   {
     boost::mutex::scoped_lock lock(mutex_);
-    request_cond_.wait(lock);
+    //request_cond_.wait(lock);
+    boost::chrono::seconds d(10);
+    EXPECT_TRUE(boost::cv_status::timeout != request_cond_.wait_for(lock, d));
   }
 
 
