@@ -91,14 +91,34 @@ void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
       delegate_->OnRequest(conn, (struct http_message*) data);
       break;
     case MG_EV_WEBSOCKET_HANDSHAKE_DONE:
-      delegate_->OnWSOpened(conn);
+      {
+        auto ws = ws_list_[conn] = WebSocket::New(conn);
+        delegate_->OnWebSocket(ws);
+      }
       break;
     case MG_EV_WEBSOCKET_FRAME:
-      delegate_->OnWSMessage(conn, (struct websocket_message*) data);
+      {
+        assert(ws_list_.find(conn) != ws_list_.end());
+        auto wm = reinterpret_cast<struct websocket_message *>(data);
+        auto ws = ws_list_[conn];
+        if ((wm->flags & WEBSOCKET_OP_TEXT) == WEBSOCKET_OP_TEXT) {
+          Text text(wm->data, wm->data + wm->size);
+          ws->FireOnTextEvent(text);
+          return;
+        }
+        if ((wm->flags & WEBSOCKET_OP_BINARY) == WEBSOCKET_OP_BINARY) {
+          Bytes bytes(wm->data, wm->data + wm->size);
+          ws->FireOnBinaryEvent(bytes);
+          return;
+        }
+      }
       break;
     case MG_EV_CLOSE:
       if (is_websocket(conn)) {
-        delegate_->OnWSClosed(conn);
+        assert(ws_list_.find(conn) != ws_list_.end());
+        auto ws = ws_list_[conn];
+        ws->FireOnClosedEvent();
+        ws_list_.erase(conn);
       }
       break;
     default:

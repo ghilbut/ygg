@@ -1,6 +1,7 @@
 #ifndef YGG_SERVER_HTTP_SERVER_H_
 #define YGG_SERVER_HTTP_SERVER_H_
 
+#include "http_server_websocket_connection.h"
 // NOT(ghilbut): boost thread make undeclared 'getpagesize' function error.
 //               include unistd.h solve this problem.
 #include <unistd.h> 
@@ -8,6 +9,7 @@
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <atomic>
+#include <unordered_map>
 
 
 namespace ygg {
@@ -20,10 +22,7 @@ class HttpServer {
    public:
     virtual void OnRequest(struct mg_connection * conn,
                            struct http_message * msg) = 0;
-    virtual void OnWSOpened(struct mg_connection * conn) = 0;
-    virtual void OnWSMessage(struct mg_connection * conn,
-                             struct websocket_message * msg) = 0;
-    virtual void OnWSClosed(struct mg_connection * conn) = 0;
+    virtual void OnWebSocket(Connection::Ptr ws) = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -60,6 +59,8 @@ class HttpServer {
 
   std::atomic_bool stop_;
   std::atomic<Status> status_;
+
+  std::unordered_map<mg_connection*, Connection::Ptr> ws_list_;
 
   struct mg_mgr mgr_;
   struct mg_connection * conn_;
