@@ -26,15 +26,6 @@ WebSocket::~WebSocket() {
   // nothing
 }
 
-void WebSocket::BindDelegate(Delegate * delegate) {
-  assert(delegate != nullptr);
-  delegate_ = delegate;
-}
-
-void WebSocket::UnbindDelegate() {
-  delegate_ = &kNullDelegate;
-}
-
 size_t WebSocket::SendText(const Text & text) const {
   mg_send_websocket_frame(conn_, WEBSOCKET_OP_TEXT, &text[0], text.length());
   return 0;

@@ -17,9 +17,6 @@ class WebSocket : public Connection {
   static Connection::Ptr New(struct mg_connection * conn);
   ~WebSocket();
 
-  void BindDelegate(Delegate * delegate);
-  void UnbindDelegate();
-
   virtual size_t SendText(const Text & text) const;
   virtual size_t SendBinary(const Bytes & bytes) const;
   virtual void Close();
@@ -30,7 +27,6 @@ class WebSocket : public Connection {
 
  private:
   struct mg_connection * conn_;
-  Delegate * delegate_;
 };
 
 
