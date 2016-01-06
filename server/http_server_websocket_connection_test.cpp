@@ -21,17 +21,6 @@ namespace server {
 static const char * const kAddress = "127.0.0.1:8000";
 
 
-
-
-class MockWebSocketDelegate : public WebSocket::Delegate {
- public:
-  MOCK_METHOD2(OnText, void(Connection*, const Text&));
-  MOCK_METHOD2(OnBinary, void(Connection*, const Bytes&));
-  MOCK_METHOD1(OnClosed, void(Connection*));
-};
-
-
-
 class HttpServerWebSocketTest
   : public ::testing::Test
   , public HttpServer::Delegate {
@@ -203,9 +192,12 @@ class HttpServerWebSocketTest
 };
 
 
-
-
-
+class MockWebSocketDelegate : public WebSocket::Delegate {
+ public:
+  MOCK_METHOD2(OnText, void(Connection*, const Text&));
+  MOCK_METHOD2(OnBinary, void(Connection*, const Bytes&));
+  MOCK_METHOD1(OnClosed, void(Connection*));
+};
 
 
 TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
