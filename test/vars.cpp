@@ -42,7 +42,7 @@ std::string GetRandomString() {
     const int size = 100 + (rand() % 100);
     for (int i = 0; i < size; ++i) {
         const int r = rand() % kAlphaDigit.length();
-        const char c = kAlphaDigit[r-1];
+        const char c = kAlphaDigit[r];
         text.push_back(c);
     }
 
@@ -58,7 +58,7 @@ std::vector<uint8_t> GetRandomBytes() {
     const int size = 100 + (rand() % 100);
     for (int i = 0; i < size; ++i) {
         const int r = rand() % kAlphaDigit.length();
-        const char c = kAlphaDigit[r-1];
+        const char c = kAlphaDigit[r];
         bytes.push_back(c);
     }
 

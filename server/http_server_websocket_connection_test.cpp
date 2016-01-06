@@ -77,7 +77,7 @@ class HttpServerWebSocketTest
 
 
  protected:
-  struct mg_connection * OpenClient() {
+  struct mg_connection * OpenClient(const std::string & uri = kUri) {
 
     boost::mutex mutex;
     boost::condition_variable cond;
@@ -91,7 +91,7 @@ class HttpServerWebSocketTest
 
     client = mg_connect(&mgr_, kAddress, callback);
     mg_set_protocol_http_websocket(client);
-    mg_send_websocket_handshake(client, kUri, NULL);
+    mg_send_websocket_handshake(client, uri.c_str(), NULL);
     {
       const boost::chrono::seconds d(10);
       boost::mutex::scoped_lock lock(mutex);
@@ -206,14 +206,16 @@ TEST_F(HttpServerWebSocketTest, websocket_connect_and_close) {
 
   Connection::Ptr target;
 
+  const std::string expected(test::GetRandomString());
+
   // callback when websocket connected on server side.
   on_server_websocket_ = [&](Connection::Ptr ws, const std::string & uri) {
       ASSERT_NE(nullptr, ws);
-      ASSERT_EQ(kUri, uri);
+      ASSERT_EQ(expected, uri);
       target = ws;
     };
 
-  const auto client = OpenClient();
+  const auto client = OpenClient(expected);
   ASSERT_NE(nullptr, client);
 
   boost::mutex mutex;
