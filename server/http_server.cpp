@@ -105,6 +105,7 @@ void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
         auto ws = ws_list_[conn];
         auto uri = ws_uri_list_[conn];
         delegate_->OnWebSocket(ws, uri);
+        ws_uri_list_.erase(conn);
       }
       break;
     case MG_EV_WEBSOCKET_FRAME:

@@ -93,9 +93,9 @@ class HttpServerWebSocketTest
     mg_set_protocol_http_websocket(client);
     mg_send_websocket_handshake(client, kUri, NULL);
     {
-      boost::chrono::seconds d(10);
+      const boost::chrono::seconds d(10);
       boost::mutex::scoped_lock lock(mutex);
-      auto timeout = cond.wait_for(lock, d);
+      const auto timeout = cond.wait_for(lock, d);
       if (boost::cv_status::timeout == timeout) {
         mg_send_websocket_frame(client, WEBSOCKET_OP_CLOSE, nullptr, 0);
         return nullptr;

@@ -16,30 +16,31 @@ static const char * const kAddress = "127.0.0.1:8000";
 
 
 class HttpServerTest : public ::testing::Test {
- public:
+ protected:
   void SetUp() {
     mg_mgr_init(&mgr_, this);
 
     stop_ = false;
-    recv_text_.clear();
-    recv_bytes_.clear();
-    boost::thread t(boost::bind(&HttpServerTest::polling, this));
+    boost::thread t([this]() {
+        while (!stop_) {
+          mg_mgr_poll(&mgr_, 1000);
+        }
+        mg_mgr_free(&mgr_);
+      });
     thread_.swap(t);
   }
 
   void TearDown() {
     stop_ = true;
     thread_.join();
-
-    mg_mgr_free(&mgr_);
   }
-
 
   static void callback(struct mg_connection * nc, int ev, void *ev_data) {
     auto pThis = reinterpret_cast<HttpServerTest*>(nc->mgr->user_data);
     pThis->DoCallback(nc, ev, ev_data);
   }
 
+ private:
   void DoCallback(struct mg_connection * nc, int ev, void *ev_data) {
 
     if (ev == MG_EV_CONNECT) {
@@ -60,64 +61,14 @@ class HttpServerTest : public ::testing::Test {
       putchar('\n');
       return;
     }
-
-    if (ev == MG_EV_WEBSOCKET_HANDSHAKE_DONE) {
-      boost::mutex::scoped_lock lock(mutex_);
-      handshake_cond_.notify_one();
-      return;
-    }
-
-    if (ev == MG_EV_WEBSOCKET_FRAME) {
-      struct websocket_message * wm = (struct websocket_message *) ev_data;
-      if ((wm->flags & WEBSOCKET_OP_TEXT) == WEBSOCKET_OP_TEXT) {
-        Text text(wm->data, wm->data + wm->size);
-        recv_text_ = text;
-        boost::mutex::scoped_lock lock(mutex_);
-        text_cond_.notify_one();
-      }
-      else if ((wm->flags & WEBSOCKET_OP_BINARY) == WEBSOCKET_OP_BINARY) {
-        Bytes bytes(wm->data, wm->data + wm->size);
-        recv_bytes_ = bytes;
-        boost::mutex::scoped_lock lock(mutex_);
-        binary_cond_.notify_one();
-      }
-      else {
-        // nothing
-      }
-      return;
-    }
-
-    if (ev == MG_EV_CLOSE) {
-      if ((nc->flags & MG_F_IS_WEBSOCKET) == MG_F_IS_WEBSOCKET) {
-        boost::mutex::scoped_lock lock(mutex_);
-        close_cond_.notify_one();
-      }
-      return;
-    }
-  }
-
-
-  void polling() {
-    while (!stop_) {
-      mg_mgr_poll(&mgr_, 1000);
-    }
   }
 
 
  protected:
   struct mg_mgr mgr_;
 
+ private:
   std::atomic_bool stop_;
-
-  Text recv_text_;
-  Bytes recv_bytes_;
-
-  boost::mutex mutex_;
-  boost::condition_variable request_cond_;
-  boost::condition_variable handshake_cond_;
-  boost::condition_variable text_cond_;
-  boost::condition_variable binary_cond_;
-  boost::condition_variable close_cond_;
   boost::thread thread_;
 };
 
@@ -129,23 +80,19 @@ class MockHttpServerDelegate : public HttpServer::Delegate {
   MOCK_METHOD2(OnWebSocket, void(Connection::Ptr, const std::string&));
 };
 
-class MockWebSocketDelegate : public WebSocket::Delegate {
- public:
-  MOCK_METHOD2(OnText, void(Connection*, const Text&));
-  MOCK_METHOD2(OnBinary, void(Connection*, const Bytes&));
-  MOCK_METHOD1(OnClosed, void(Connection*));
-};
-
 
 
 TEST_F(HttpServerTest, test_request) {
 
+  boost::mutex mutex;
+  boost::condition_variable cond;
+
   MockHttpServerDelegate mock;
 
   ON_CALL(mock, OnRequest(_, _))
-    .WillByDefault(InvokeWithoutArgs([this]() {
-        boost::mutex::scoped_lock lock(mutex_);
-        request_cond_.notify_all();
+    .WillByDefault(InvokeWithoutArgs([&]() {
+        boost::mutex::scoped_lock lock(mutex);
+        cond.notify_all();
       }));
 
   EXPECT_CALL(mock, OnRequest(_, _));
@@ -159,10 +106,10 @@ TEST_F(HttpServerTest, test_request) {
   static const char * kUrl = "http://127.0.0.1:8000/B/methods";
   mg_connect_http(&mgr_, callback, kUrl, NULL, NULL);
   {
-    boost::mutex::scoped_lock lock(mutex_);
-    //request_cond_.wait(lock);
-    boost::chrono::seconds d(10);
-    EXPECT_TRUE(boost::cv_status::timeout != request_cond_.wait_for(lock, d));
+    const boost::chrono::seconds d(10);
+    boost::mutex::scoped_lock lock(mutex);
+    const auto timeout = cond.wait_for(lock, d);
+    ASSERT_EQ(boost::cv_status::no_timeout, timeout);
   }
 
 
