@@ -90,10 +90,19 @@ void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
     case MG_EV_HTTP_REQUEST:
       delegate_->OnRequest(conn, (struct http_message*) data);
       break;
+    case MG_EV_WEBSOCKET_HANDSHAKE_REQUEST:
+      {
+        auto hm = reinterpret_cast<struct http_message*>(data);
+        const std::string uri(hm->uri.p, hm->uri.p + hm->uri.len);
+        ws_list_[conn] = WebSocket::New(conn, uri);
+      }
+      break;
     case MG_EV_WEBSOCKET_HANDSHAKE_DONE:
       {
-        auto ws = ws_list_[conn] = WebSocket::New(conn);
-        delegate_->OnWebSocket(ws);
+        auto itr = ws_list_.find(conn);
+        if (itr != ws_list_.end()) {
+          delegate_->OnWebSocket(itr->second);
+        }
       }
       break;
     case MG_EV_WEBSOCKET_FRAME:
