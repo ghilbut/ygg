@@ -5,6 +5,7 @@
 #include <mongoose/mongoose.h>
 #include <boost/thread.hpp>
 #include <atomic>
+#include <functional>
 
 
 using ::testing::_;
@@ -19,6 +20,7 @@ namespace server {
 
 
 static const char * const kAddress = "127.0.0.1:8000";
+static const char * const kUri = "/ws";
 
 
 class HttpServerWebSocketTest
@@ -81,7 +83,7 @@ class HttpServerWebSocketTest
     boost::condition_variable cond;
 
     struct mg_connection * client;
-    on_client_handshake_ = [&mutex, &cond, &client](struct mg_connection * ws) {
+    on_client_handshake_ = [&](struct mg_connection * ws) {
         ASSERT_EQ(client, ws);
         boost::mutex::scoped_lock lock(mutex);
         cond.notify_one();
@@ -108,7 +110,7 @@ class HttpServerWebSocketTest
     boost::mutex mutex;
     boost::condition_variable cond;
 
-    on_client_closed_ = [&mutex, &cond, &client](struct mg_connection * ws) {
+    on_client_closed_ = [&](struct mg_connection * ws) {
         ASSERT_EQ(client, ws);
         boost::mutex::scoped_lock lock(mutex);
         cond.notify_one();
@@ -179,14 +181,14 @@ class HttpServerWebSocketTest
 
  protected:
   HttpServer server_;
-  boost::function<void (Connection::Ptr)> on_server_websocket_;
+  std::function<void (Connection::Ptr)> on_server_websocket_;
 
   struct mg_mgr mgr_;
   std::atomic_bool stop_;
-  boost::function<void (struct mg_connection*)> on_client_handshake_;
-  boost::function<void (struct mg_connection*, const Text&)> on_client_text_;
-  boost::function<void (struct mg_connection*, const Bytes&)> on_client_binary_;
-  boost::function<void (struct mg_connection*)> on_client_closed_;
+  std::function<void (struct mg_connection*)> on_client_handshake_;
+  std::function<void (struct mg_connection*, const Text&)> on_client_text_;
+  std::function<void (struct mg_connection*, const Bytes&)> on_client_binary_;
+  std::function<void (struct mg_connection*)> on_client_closed_;
 
   boost::thread thread_;
 };
@@ -205,7 +207,7 @@ TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
   Connection::Ptr target;
 
   // callback when websocket connected on server side.
-  on_server_websocket_ = [&target](Connection::Ptr ws) {
+  on_server_websocket_ = [&](Connection::Ptr ws) {
       ASSERT_NE(nullptr, ws);
       target = ws;
     };
@@ -219,7 +221,7 @@ TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
   // mock for websocket connection delegate.
   MockWebSocketDelegate mock_ws;
   EXPECT_CALL(mock_ws, OnClosed(_))
-    .WillOnce(Invoke([&target, &mutex, &cond](Connection * ws) {
+    .WillOnce(Invoke([&](Connection * ws) {
         ASSERT_EQ(target, ws);
         boost::mutex::scoped_lock lock(mutex);
         cond.notify_one();
@@ -248,7 +250,7 @@ TEST_F(HttpServerWebSocketTest, test_recv_text) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&target](Connection::Ptr ws) {
+  on_server_websocket_ = [&](Connection::Ptr ws) {
       ASSERT_NE(nullptr, ws);
       target = ws;
     };
@@ -263,7 +265,7 @@ TEST_F(HttpServerWebSocketTest, test_recv_text) {
 
   MockWebSocketDelegate mock_ws;
   EXPECT_CALL(mock_ws, OnText(_, StrEq(expected)))
-    .WillOnce(InvokeWithoutArgs([&mutex, &cond]() {
+    .WillOnce(InvokeWithoutArgs([&]() {
         boost::mutex::scoped_lock lock(mutex);
         cond.notify_one();
       }));
@@ -289,7 +291,7 @@ TEST_F(HttpServerWebSocketTest, test_send_text) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&target](Connection::Ptr ws) {
+  on_server_websocket_ = [&](Connection::Ptr ws) {
       ASSERT_NE(nullptr, ws);
       target = ws;
     };
@@ -302,7 +304,7 @@ TEST_F(HttpServerWebSocketTest, test_send_text) {
 
   const auto expected(test::GetRandomString());
 
-  on_client_text_ = [&mutex, &cond, &client, &expected](struct mg_connection * ws, const Text & text) {
+  on_client_text_ = [&](struct mg_connection * ws, const Text & text) {
       ASSERT_EQ(client, ws);
       ASSERT_EQ(expected, text);
       boost::mutex::scoped_lock lock(mutex);
@@ -327,7 +329,7 @@ TEST_F(HttpServerWebSocketTest, test_recv_binary) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&target](Connection::Ptr ws) {
+  on_server_websocket_ = [&](Connection::Ptr ws) {
       ASSERT_NE(nullptr, ws);
       target = ws;
     };
@@ -342,7 +344,7 @@ TEST_F(HttpServerWebSocketTest, test_recv_binary) {
 
   MockWebSocketDelegate mock_ws;
   EXPECT_CALL(mock_ws, OnBinary(_, ContainerEq(expected)))
-    .WillOnce(InvokeWithoutArgs([&mutex, &cond]() {
+    .WillOnce(InvokeWithoutArgs([&]() {
         boost::mutex::scoped_lock lock(mutex);
         cond.notify_one();
       }));
@@ -368,7 +370,7 @@ TEST_F(HttpServerWebSocketTest, test_send_binary) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&target](Connection::Ptr ws) {
+  on_server_websocket_ = [&](Connection::Ptr ws) {
       ASSERT_NE(nullptr, ws);
       target = ws;
     };
@@ -381,7 +383,7 @@ TEST_F(HttpServerWebSocketTest, test_send_binary) {
 
   const auto expected(test::GetRandomBytes());
 
-  on_client_binary_ = [&mutex, &cond, &client, &expected](struct mg_connection * ws, const Bytes& bytes) {
+  on_client_binary_ = [&](struct mg_connection * ws, const Bytes& bytes) {
       ASSERT_EQ(client, ws);
       ASSERT_EQ(expected, bytes);
       boost::mutex::scoped_lock lock(mutex);
