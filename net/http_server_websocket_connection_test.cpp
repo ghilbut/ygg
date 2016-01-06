@@ -16,7 +16,7 @@ using ::testing::StrEq;
 
 
 namespace ygg {
-namespace server {
+namespace net {
 
 
 static const char * const kAddress = "127.0.0.1:8000";
@@ -403,5 +403,5 @@ TEST_F(HttpServerWebSocketTest, send_binary) {
 }
 
 
-}  // namespace server
+}  // namespace net
 }  // namespace ygg

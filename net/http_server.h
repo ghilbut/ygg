@@ -1,77 +1,80 @@
-#ifndef YGG_NET_HTTP_SERVER_H_
-#define YGG_NET_HTTP_SERVER_H_
+#ifndef NET_HTTP_SERVER_H_
+#define NET_HTTP_SERVER_H_
 
-#include <mongoose.h>
-#include <boost/atomic.hpp>
+#include "http_server_websocket_connection.h"
+// NOT(ghilbut): boost thread make undeclared 'getpagesize' function error.
+//               include unistd.h solve this problem.
+#include <unistd.h> 
+#include <mongoose/mongoose.h>
+#include <boost/bind.hpp>
 #include <boost/thread.hpp>
-#include <condition_variable>
-#include <map>
-#include <mutex>
+#include <atomic>
+#include <unordered_map>
 
 
+namespace ygg {
 namespace net {
-namespace http {
-
-
-class ServerDelegate;
-
-
-namespace server {
-namespace websocket {
-    class Session;
-}  // namespace websocket
-}  // namespace server
-
-typedef server::websocket::Session WebSocket;
 
 
 class HttpServer {
-public:
-	explicit HttpServer(ServerDelegate *delegate = nullptr);
-    ~HttpServer();
+ public:
+  class Delegate {
+   public:
+    virtual void OnRequest(struct mg_connection * conn,
+                           struct http_message * msg) = 0;
+    virtual void OnWebSocket(Connection::Ptr ws, const std::string & uri) = 0;
 
-    void Start(int port);
-    void Stop();
+   protected:
+    virtual ~Delegate() {}
+  };
 
-	bool IsRunning() const;
-	bool IsStopping() const;
-	bool IsStopped() const;
+ public:
+  enum Status {
+    kStopped = 0,
+    kStarting,
+    kRunning,
+    kStopping,
+  };
+
+  HttpServer();
+  ~HttpServer();
+
+  void BindDelegate(Delegate * delegate);
+  void UnbindDelegate();
+
+  bool Start();
+  void Stop();
 
 
-private:
-    void run();
-
-    static int ev_handler(mg_connection * conn, enum mg_event ev);
-    int handle_auth(mg_connection * conn);
-    int handle_request(mg_connection * conn);
-    int handle_ws_request(mg_connection * conn);
-    int handle_close(mg_connection * conn);
-    int handle_ws_connect(mg_connection * conn);
-    
+ private:
+  void polling();
+  void DoHandle(struct mg_connection * conn, int event, void * data);
+  static void ev_handler(struct mg_connection * conn,
+                         int event,
+                         void * data);
 
 
-private:
-	class NullDelegate;
-	static NullDelegate * const kNullDelegate_;
-	static NullDelegate *NewNullDelegate();
-	static void DelNullDelegate();
+ private:
+  Delegate * delegate_;
 
-    struct mg_server *server_;
-    ServerDelegate *delegate_;
+  std::atomic_bool stop_;
+  std::atomic<Status> status_;
 
-	std::mutex mutex_;
-	std::condition_variable cv_;
-	boost::atomic_bool is_running_;
-	boost::atomic_bool is_stopping_;
-	boost::atomic_bool is_stopped_;
-    boost::thread thread_;
+  std::unordered_map<struct mg_connection*, Connection::Ptr> ws_list_;
+  std::unordered_map<struct mg_connection*, std::string> ws_uri_list_;
 
-    typedef std::map<mg_connection*, WebSocket *> WSTable;
-    WSTable ws_table_;
+  struct mg_mgr mgr_;
+  struct mg_connection * conn_;
+
+  boost::mutex mutex_;
+  boost::condition_variable running_cond_;
+  boost::condition_variable stopped_cond_;
+  boost::thread thread_;
 };
 
 
-}  // namespace http
 }  // namespace net
+}  // namespace ygg
 
-#endif  // YGG_NET_HTTP_SERVER_H_
+
+#endif  // NET_HTTP_SERVER_H_

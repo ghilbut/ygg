@@ -4,7 +4,7 @@
 
 
 namespace ygg {
-namespace server {
+namespace net {
 
 
 class NullWebSocketDelegate : public Connection::Delegate {
@@ -46,5 +46,5 @@ WebSocket::WebSocket(struct mg_connection * conn)
 }
 
 
-}  // namespace server
+}  // namespace net
 }  // namespace ygg

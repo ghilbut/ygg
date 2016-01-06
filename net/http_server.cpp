@@ -1,174 +1,145 @@
 #include "http_server.h"
-#include "http_server_delegate.h"
-#include "http_server_null_delegate.h"
-#include "http_server_websocket_session.h"
-#include <boost/bind.hpp>
-#include <cassert>
-#include <cstdio>
 
 
-
+namespace ygg {
 namespace net {
-namespace http {
 
 
-HttpServer::NullDelegate * const HttpServer::kNullDelegate_ = HttpServer::NewNullDelegate();
-
-HttpServer::NullDelegate *HttpServer::NewNullDelegate() {
-	HttpServer::NullDelegate* deleagate = new HttpServer::NullDelegate();
-	atexit(&HttpServer::DelNullDelegate);
-	return deleagate;
-}
-
-void HttpServer::DelNullDelegate() {
-	delete kNullDelegate_;
-}
-
-
-HttpServer::HttpServer(ServerDelegate *delegate)
-	: server_(0)
-	, delegate_(delegate == nullptr ? kNullDelegate_ : delegate)
-	, is_running_(false)
-	, is_stopping_(false)
-	, is_stopped_(true) {
-	// nothing
+HttpServer::HttpServer() 
+  : stop_(true)
+  , status_(kStopped) {
+  // nothing
 }
 
 HttpServer::~HttpServer() {
-    Stop();
+  // nothing
 }
 
-void HttpServer::Start(int port) {
+void HttpServer::BindDelegate(Delegate * delegate) {
+  delegate_ = delegate;
+}
 
-    if (is_stopping_ || !is_stopped_) {
-        // TODO(ghilbut): error handling
-        return;
+void HttpServer::UnbindDelegate() {
+  delegate_ = nullptr;
+}
+
+bool HttpServer::Start() {
+  if (status_ == kStarting || status_ == kRunning) {
+    return false;
+  }
+
+  if (status_ == kStopping || status_ == kStopped) {
+    boost::mutex::scoped_lock lock(mutex_);
+    while (status_ != kStopped) {
+      stopped_cond_.wait(lock);
     }
+  }
 
-	is_running_ = false;
-	is_stopping_ = false;
-	is_stopped_ = false;
+  stop_ = false;
+  status_ = kStarting;
 
-	char sport[16];
-	sprintf(sport, "%d", port);
+  mg_mgr_init(&mgr_, this);
+  conn_ = mg_bind(&mgr_, "8000", ev_handler);
+  mg_set_protocol_http_websocket(conn_);
 
-    server_ = mg_create_server(this, &HttpServer::ev_handler);
-    mg_set_option(server_, "listening_port", sport);
+  auto b = boost::bind(&HttpServer::polling, this);
+  boost::thread t(b);
+  thread_.swap(t);
 
-    boost::thread t(boost::bind(&HttpServer::run, this));
-    thread_.swap(t);
+  boost::mutex::scoped_lock lock(mutex_);
+  while (status_ != kRunning) {
+    running_cond_.wait(lock);
+  }
 
-	std::unique_lock<std::mutex> lock(mutex_);
-	cv_.wait(lock, [this]() { return (bool) is_running_; });
+  return true;
 }
 
 void HttpServer::Stop() {
+  status_ = kStopping;
+  stop_ = true;
 
-	if (is_stopping_ || is_stopped_) {
-		return;
-	}
-
-	is_stopping_ = true;
-	thread_.join();
-	mg_destroy_server(&server_);
-	is_stopping_ = false;
-	is_stopped_ = true;
+  thread_.join();
 }
 
-bool HttpServer::IsRunning() const {
-	return is_running_;
+void HttpServer::polling() {
+  mutex_.lock();
+  status_ = kRunning;
+  running_cond_.notify_all();
+  mutex_.unlock();
+
+  while (!stop_) {
+    mg_mgr_poll(&mgr_, 1000);
+  }
+
+  mg_mgr_free(&mgr_);
+
+  mutex_.lock();
+  status_ = kStopped;
+  stopped_cond_.notify_all();
+  mutex_.unlock();
 }
 
-bool HttpServer::IsStopping() const {
-	return is_stopped_;
-}
+void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
 
-bool HttpServer::IsStopped() const {
-	return is_stopped_;
-}
-
-
-void HttpServer::run() {
-
-	{
-		std::lock_guard<std::mutex> lock(mutex_);
-		is_running_ = true;
-	}
-	cv_.notify_one();
-
-    while (!is_stopping_) {
-        mg_poll_server(server_, 1000);
-    }
-    mg_destroy_server(&server_);
-    is_running_ = false;
-}
-
-int HttpServer::ev_handler(mg_connection * conn, enum mg_event ev) {
-
-    HttpServer *self = static_cast<HttpServer*>(conn->server_param);
-
-    if (ev == MG_REQUEST) {
-        if (conn->is_websocket) {
-            return self->handle_ws_request(conn);
+  switch (event) {
+    case MG_EV_HTTP_REQUEST:
+      delegate_->OnRequest(conn, (struct http_message*) data);
+      break;
+    case MG_EV_WEBSOCKET_HANDSHAKE_REQUEST:
+      {
+        auto hm = reinterpret_cast<struct http_message*>(data);
+        const std::string uri(hm->uri.p, hm->uri.p + hm->uri.len);
+        ws_list_[conn] = WebSocket::New(conn);
+        ws_uri_list_[conn] = uri;
+      }
+      break;
+    case MG_EV_WEBSOCKET_HANDSHAKE_DONE:
+      {
+        assert(ws_list_.find(conn) != ws_list_.end());
+        assert(ws_uri_list_.find(conn) != ws_uri_list_.end());
+        auto ws = ws_list_[conn];
+        auto uri = ws_uri_list_[conn];
+        delegate_->OnWebSocket(ws, uri);
+        ws_uri_list_.erase(conn);
+      }
+      break;
+    case MG_EV_WEBSOCKET_FRAME:
+      {
+        assert(ws_list_.find(conn) != ws_list_.end());
+        auto wm = reinterpret_cast<struct websocket_message *>(data);
+        auto ws = ws_list_[conn];
+        if ((wm->flags & WEBSOCKET_OP_TEXT) == WEBSOCKET_OP_TEXT) {
+          Text text(wm->data, wm->data + wm->size);
+          ws->FireOnTextEvent(text);
+          return;
         }
-        else {
-            return self->handle_request(conn);
+        if ((wm->flags & WEBSOCKET_OP_BINARY) == WEBSOCKET_OP_BINARY) {
+          Bytes bytes(wm->data, wm->data + wm->size);
+          ws->FireOnBinaryEvent(bytes);
+          return;
         }
-    }
-    if (ev == MG_WS_CONNECT) {
-        return self->handle_ws_connect(conn);
-    }
-    if (ev == MG_CLOSE) {
-        return self->handle_close(conn);
-    }
-    if (ev == MG_AUTH) {
-        return self->handle_auth(conn);
-    }
-    return MG_FALSE;
+      }
+      break;
+    case MG_EV_CLOSE:
+      if ((conn->flags & MG_F_IS_WEBSOCKET) == MG_F_IS_WEBSOCKET) {
+        assert(ws_list_.find(conn) != ws_list_.end());
+        auto ws = ws_list_[conn];
+        ws->FireOnClosedEvent();
+        ws_list_.erase(conn);
+      }
+      break;
+    default:
+      break;
+  }
 }
 
-int HttpServer::handle_auth(mg_connection * conn) {
-    return MG_TRUE;
-}
-
-int HttpServer::handle_request(mg_connection * conn) {
-
-    delegate_->OnRequest();
-    return MG_TRUE;
-}
-
-int HttpServer::handle_ws_request(mg_connection * conn) {
-
-    if (conn->content_len > 0) {
-        if (conn->wsbits & WEBSOCKET_OPCODE_TEXT) {
-            WebSocket * ws = ws_table_[conn];
-            const std::string text(conn->content, conn->content + conn->content_len);
-            delegate_->OnTextMessage(ws, text);
-        }
-        else {
-
-        }
-    }
-    return MG_TRUE;
-}
-
-int HttpServer::handle_close(mg_connection * conn) {
-
-    auto itr = ws_table_.find(conn);
-    if (itr != ws_table_.end()) {
-        delegate_->OnClose(itr->second);
-        ws_table_.erase(itr);
-    }
-    return MG_TRUE;
-}
-
-int HttpServer::handle_ws_connect(mg_connection * conn) {
-    WebSocket * ws = new WebSocket(conn);
-    ws_table_[conn] = ws;
-    delegate_->OnConnect(ws);
-    return MG_FALSE;
+void HttpServer::ev_handler(struct mg_connection * conn,
+                            int event,
+                            void * data) {
+  auto pThis = reinterpret_cast<HttpServer*>(conn->mgr->user_data);
+  pThis->DoHandle(conn, event, data);
 }
 
 
-}  // namespace http
 }  // namespace net
+}  // namespace ygg

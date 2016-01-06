@@ -1,5 +1,5 @@
-#ifndef YGG_SERVER_HTTP_SERVER_WEBSOCKET_CONNECTION_H_
-#define YGG_SERVER_HTTP_SERVER_WEBSOCKET_CONNECTION_H_
+#ifndef NET_HTTP_SERVER_WEBSOCKET_CONNECTION_H_
+#define NET_HTTP_SERVER_WEBSOCKET_CONNECTION_H_
 
 #include "core/base_delegate.h"
 #include "core/connection.h"
@@ -10,7 +10,7 @@ struct mg_connection;
 
 
 namespace ygg {
-namespace server {
+namespace net {
 
 
 class WebSocket : public Connection {
@@ -32,8 +32,8 @@ class WebSocket : public Connection {
 };
 
 
-}  // namespace server
+}  // namespace net
 }  // namespace ygg
 
 
-#endif  // YGG_SERVER_HTTP_SERVER_WEBSOCKET_CONNECTION_H_
+#endif  // NET_HTTP_SERVER_WEBSOCKET_CONNECTION_H_

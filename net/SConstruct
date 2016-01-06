@@ -1,4 +1,5 @@
 import os
+import sys
 
 # unix, linux, mac  : 'clear'
 # microsoft windows : 'CLS'
@@ -21,37 +22,37 @@ CPPPATH = [
     '../',
   ]
 
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-
-
-
 sources = [
-    'connection.cpp',
-    'local_connection.cpp',
+    'http_server.cpp',
+    'http_server_websocket_connection.cpp',
   ]
 
-lib = env.StaticLibrary(target = 'net', source = sources)
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g'])
+lib = env.StaticLibrary(target='net', source=sources)
 env.Install('../lib', lib)
 env.Alias('install', '../lib')
 
 
 
 # build and run unittest
-print '    ======== build net unittest'
+print '    ======== build core unittest'
 
-# net
 sources = [
     '../ext/src/gmock_main.cc',
     '../test/fake.cpp',
-    'connection_test.cpp',
-    'local_connection_test.cpp',
+    '../test/vars.cpp',
+    'http_server_test.cpp',
+    'http_server_websocket_connection_test.cpp',
   ]
 
 LIBS = [
-    'gtest', 
+    'libboost_chrono-mt-s',
     'libboost_system-mt-s',
     'libboost_thread-mt-s',
-    'codebase',
+    'jsoncpp',
+    'mongoose',
+    'gtest', 
+    'core',
     'net',
   ]
 
@@ -67,7 +68,7 @@ test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 # run after build complete
-print '    ======== run net unittest'
+print '    ======== run server unittest'
 
 Command(
   'unittest', 

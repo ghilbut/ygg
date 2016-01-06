@@ -1,86 +1,122 @@
-#include "gmock/gmock.h"
+#include <gmock/gmock.h>
 #include "http_server.h"
-#include <websocketpp/client.hpp>
-#include <websocketpp/config/asio_no_tls_client.hpp>
+#include "test/vars.h"
 
 
-typedef net::http::HttpServer HttpServer;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 
 
-class codebase_http_server_test : public ::testing::Test {
-protected:
-	virtual void SetUp() {
-		httpd_.Start(kPort);
-	}
+namespace ygg {
+namespace net {
 
-	virtual void TearDown() {
-		httpd_.Stop();
-	}
 
-protected:
-	static const int kPort = 80;
-	HttpServer httpd_;
+static const char * const kAddress = "127.0.0.1:8000";
+
+
+class HttpServerTest : public ::testing::Test {
+ protected:
+  void SetUp() {
+    mg_mgr_init(&mgr_, this);
+
+    stop_ = false;
+    boost::thread t([this]() {
+        while (!stop_) {
+          mg_mgr_poll(&mgr_, 1000);
+        }
+        mg_mgr_free(&mgr_);
+      });
+    thread_.swap(t);
+  }
+
+  void TearDown() {
+    stop_ = true;
+    thread_.join();
+  }
+
+  static void callback(struct mg_connection * nc, int ev, void *ev_data) {
+    auto pThis = reinterpret_cast<HttpServerTest*>(nc->mgr->user_data);
+    pThis->DoCallback(nc, ev, ev_data);
+  }
+
+ private:
+  void DoCallback(struct mg_connection * nc, int ev, void *ev_data) {
+
+    if (ev == MG_EV_CONNECT) {
+      if (* (int *) ev_data != 0) {
+        fprintf(stderr, "connect() failed: %s\n", strerror(* (int*) ev_data));
+      }
+      return;
+    }
+
+    if (ev == MG_EV_HTTP_REPLY) {
+      struct http_message *hm = (struct http_message *) ev_data;
+      nc->flags |= MG_F_CLOSE_IMMEDIATELY;
+      //if (s_show_headers) {
+      //  fwrite(hm->message.p, 1, hm->message.len, stdout);
+      //} else {
+        fwrite(hm->body.p, 1, hm->body.len, stdout);
+      //}
+      putchar('\n');
+      return;
+    }
+  }
+
+
+ protected:
+  struct mg_mgr mgr_;
+
+ private:
+  std::atomic_bool stop_;
+  boost::thread thread_;
 };
 
 
-class WebSocketClient {
-	typedef websocketpp::client<websocketpp::config::asio_client> Client;
 
-public:
-	WebSocketClient() {
-		client_.init_asio();
-		client_.set_message_handler(boost::bind(&WebSocketClient::on_message, &client_, _1, _2));
-	}
-
-	~WebSocketClient() {
-
-	}
-
-	void Connect(const std::string& uri) {
-		websocketpp::lib::error_code ec;
-		conn_ = client_.get_connection(uri + "/getCaseCount", ec);
-		client_.connect(conn_);
-		client_.run();
-	}
-
-	void Close() {
-
-		client_.stop();
-
-		websocketpp::lib::error_code ec;
-		client_.close(conn_->get_handle(), websocketpp::close::status::going_away, "", ec);
-	}
-
-
-private:
-
-	static void on_message(Client* c, websocketpp::connection_hdl hdl, Client::message_ptr msg) {
-		
-	}
-
-
-private:
-	Client::connection_ptr conn_;
-	Client client_;
+class MockHttpServerDelegate : public HttpServer::Delegate {
+ public:
+  MOCK_METHOD2(OnRequest, void(struct mg_connection*, struct http_message*));
+  MOCK_METHOD2(OnWebSocket, void(Connection::Ptr, const std::string&));
 };
 
 
-TEST_F(codebase_http_server_test, running_status_validation_test) {
-	HttpServer httpd;
-	httpd.Start(81);
-	ASSERT_TRUE(httpd.IsRunning());
-	httpd.Stop();
-	ASSERT_TRUE(!httpd.IsRunning());
+
+TEST_F(HttpServerTest, test_request) {
+
+  boost::mutex mutex;
+  boost::condition_variable cond;
+
+  MockHttpServerDelegate mock;
+
+  ON_CALL(mock, OnRequest(_, _))
+    .WillByDefault(InvokeWithoutArgs([&]() {
+        boost::mutex::scoped_lock lock(mutex);
+        cond.notify_all();
+      }));
+
+  EXPECT_CALL(mock, OnRequest(_, _));
+
+  HttpServer s;
+  s.BindDelegate(&mock);
+  s.Start();
+
+
+
+  static const char * kUrl = "http://127.0.0.1:8000/B/methods";
+  mg_connect_http(&mgr_, callback, kUrl, NULL, NULL);
+  {
+    const boost::chrono::seconds d(10);
+    boost::mutex::scoped_lock lock(mutex);
+    const auto timeout = cond.wait_for(lock, d);
+    ASSERT_EQ(boost::cv_status::no_timeout, timeout);
+  }
+
+
+
+  s.Stop();
 }
 
-TEST_F(codebase_http_server_test, global_server_is_running) {
-	ASSERT_TRUE(httpd_.IsRunning());
-}
 
-TEST_F(codebase_http_server_test, DISABLED_websocket_client_connect_and_close) {
-	ASSERT_TRUE(httpd_.IsRunning());
-
-	WebSocketClient c;
-	c.Connect("ws://localhost/");
-	
-}
+}  // namespace net
+}  // namespace ygg
