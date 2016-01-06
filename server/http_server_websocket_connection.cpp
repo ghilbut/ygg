@@ -33,6 +33,7 @@ size_t WebSocket::SendText(const Text & text) const {
 }
 
 size_t WebSocket::SendBinary(const Bytes & bytes) const {
+  mg_send_websocket_frame(conn_, WEBSOCKET_OP_BINARY, &bytes[0], bytes.size());
   return 0;
 }
 

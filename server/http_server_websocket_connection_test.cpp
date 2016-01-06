@@ -8,6 +8,7 @@
 
 
 using ::testing::_;
+using ::testing::ContainerEq;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::StrEq;
@@ -113,7 +114,7 @@ class HttpServerWebSocketTest
     return client;
   }
 
-  void CloseClient(struct mg_connection * client) {
+  void CloseClient(struct mg_connection * const client) {
 
     boost::mutex mutex;
     boost::condition_variable cond;
@@ -126,9 +127,9 @@ class HttpServerWebSocketTest
 
     mg_send_websocket_frame(client, WEBSOCKET_OP_CLOSE, nullptr, 0);
     {
-      boost::chrono::seconds d(10);
+      const boost::chrono::seconds d(10);
       boost::mutex::scoped_lock lock(mutex);
-      auto timeout = cond.wait_for(lock, d);
+      const auto timeout = cond.wait_for(lock, d);
       ASSERT_EQ(boost::cv_status::no_timeout, timeout);
     }
   }
@@ -160,16 +161,16 @@ class HttpServerWebSocketTest
     }
 
     if (event == MG_EV_WEBSOCKET_FRAME) {
-      auto wm = reinterpret_cast<struct websocket_message*>(data);
+      const auto wm = reinterpret_cast<struct websocket_message*>(data);
 
       if ((wm->flags & WEBSOCKET_OP_TEXT) == WEBSOCKET_OP_TEXT) {
-        Text text(wm->data, wm->data + wm->size);
+        const Text text(wm->data, wm->data + wm->size);
         on_client_text_(client, text);
         return;
       }
 
       if ((wm->flags & WEBSOCKET_OP_BINARY) == WEBSOCKET_OP_BINARY) {
-        Bytes bytes(wm->data, wm->data + wm->size);
+        const Bytes bytes(wm->data, wm->data + wm->size);
         on_client_binary_(client, bytes);
         return;
       }
@@ -217,7 +218,7 @@ TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
       target = ws;
     };
 
-  struct mg_connection * client = OpenClient();
+  const auto client = OpenClient();
   ASSERT_NE(nullptr, client);
 
   boost::mutex mutex;
@@ -240,9 +241,9 @@ TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
 
   // check server side websocket closed 
   {
-    boost::chrono::seconds d(10);
+    const boost::chrono::seconds d(10);
     boost::mutex::scoped_lock lock(mutex);
-    auto timeout = cond.wait_for(lock, d);
+    const auto timeout = cond.wait_for(lock, d);
     ASSERT_EQ(boost::cv_status::no_timeout, timeout);
   }
 
@@ -260,13 +261,13 @@ TEST_F(HttpServerWebSocketTest, test_recv_text) {
       target = ws;
     };
 
-  struct mg_connection * client = OpenClient();
+  const auto client = OpenClient();
   ASSERT_NE(nullptr, client);
 
   boost::mutex mutex;
   boost::condition_variable cond;
 
-  const std::string expected(test::GetRandomString());
+  const auto expected(test::GetRandomString());
 
   MockWebSocketDelegate mock_ws;
   EXPECT_CALL(mock_ws, OnText(_, StrEq(expected)))
@@ -301,13 +302,13 @@ TEST_F(HttpServerWebSocketTest, test_send_text) {
       target = ws;
     };
 
-  struct mg_connection * client = OpenClient();
+  const auto client = OpenClient();
   ASSERT_NE(nullptr, client);
 
   boost::mutex mutex;
   boost::condition_variable cond;
 
-  const std::string expected(test::GetRandomString());
+  const auto expected(test::GetRandomString());
 
   on_client_text_ = [&mutex, &cond, &client, &expected](struct mg_connection * ws, const Text & text) {
       ASSERT_EQ(client, ws);
@@ -318,9 +319,88 @@ TEST_F(HttpServerWebSocketTest, test_send_text) {
 
   target->SendText(expected);
   {
-    boost::chrono::seconds d(10);
+    const boost::chrono::seconds d(10);
     boost::mutex::scoped_lock lock(mutex);
-    auto timeout = cond.wait_for(lock, d);
+    const auto timeout = cond.wait_for(lock, d);
+    ASSERT_EQ(boost::cv_status::no_timeout, timeout);
+  }
+
+  target->UnbindDelegate();
+
+  CloseClient(client);
+}
+
+
+TEST_F(HttpServerWebSocketTest, test_recv_binary) {
+
+  Connection::Ptr target;
+
+  on_server_websocket_ = [&target](Connection::Ptr ws) {
+      ASSERT_NE(nullptr, ws);
+      target = ws;
+    };
+
+  const auto client = OpenClient();
+  ASSERT_NE(nullptr, client);
+
+  boost::mutex mutex;
+  boost::condition_variable cond;
+
+  const auto expected(test::GetRandomBytes());
+
+  MockWebSocketDelegate mock_ws;
+  EXPECT_CALL(mock_ws, OnBinary(_, ContainerEq(expected)))
+    .WillOnce(InvokeWithoutArgs([&mutex, &cond]() {
+        boost::mutex::scoped_lock lock(mutex);
+        cond.notify_one();
+      }));
+
+  target->BindDelegate(&mock_ws);
+
+  mg_send_websocket_frame(client,
+                          WEBSOCKET_OP_BINARY,
+                          &expected[0],
+                          expected.size());
+  {
+    boost::mutex::scoped_lock lock(mutex);
+    cond.wait_for(lock, boost::chrono::seconds{10});
+  }
+
+  target->UnbindDelegate();
+
+  CloseClient(client);
+}
+
+
+TEST_F(HttpServerWebSocketTest, test_send_binary) {
+
+  Connection::Ptr target;
+
+  on_server_websocket_ = [&target](Connection::Ptr ws) {
+      ASSERT_NE(nullptr, ws);
+      target = ws;
+    };
+
+  const auto client = OpenClient();
+  ASSERT_NE(nullptr, client);
+
+  boost::mutex mutex;
+  boost::condition_variable cond;
+
+  const auto expected(test::GetRandomBytes());
+
+  on_client_binary_ = [&mutex, &cond, &client, &expected](struct mg_connection * ws, const Bytes& bytes) {
+      ASSERT_EQ(client, ws);
+      ASSERT_EQ(expected, bytes);
+      boost::mutex::scoped_lock lock(mutex);
+      cond.notify_one();
+    };
+
+  target->SendBinary(expected);
+  {
+    const boost::chrono::seconds d(10);
+    boost::mutex::scoped_lock lock(mutex);
+    const auto timeout = cond.wait_for(lock, d);
     ASSERT_EQ(boost::cv_status::no_timeout, timeout);
   }
 
