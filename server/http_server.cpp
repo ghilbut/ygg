@@ -94,15 +94,17 @@ void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
       {
         auto hm = reinterpret_cast<struct http_message*>(data);
         const std::string uri(hm->uri.p, hm->uri.p + hm->uri.len);
-        ws_list_[conn] = WebSocket::New(conn, uri);
+        ws_list_[conn] = WebSocket::New(conn);
+        ws_uri_list_[conn] = uri;
       }
       break;
     case MG_EV_WEBSOCKET_HANDSHAKE_DONE:
       {
-        auto itr = ws_list_.find(conn);
-        if (itr != ws_list_.end()) {
-          delegate_->OnWebSocket(itr->second);
-        }
+        assert(ws_list_.find(conn) != ws_list_.end());
+        assert(ws_uri_list_.find(conn) != ws_uri_list_.end());
+        auto ws = ws_list_[conn];
+        auto uri = ws_uri_list_[conn];
+        delegate_->OnWebSocket(ws, uri);
       }
       break;
     case MG_EV_WEBSOCKET_FRAME:

@@ -126,7 +126,7 @@ class HttpServerTest : public ::testing::Test {
 class MockHttpServerDelegate : public HttpServer::Delegate {
  public:
   MOCK_METHOD2(OnRequest, void(struct mg_connection*, struct http_message*));
-  MOCK_METHOD1(OnWebSocket, void(Connection::Ptr));
+  MOCK_METHOD2(OnWebSocket, void(Connection::Ptr, const std::string&));
 };
 
 class MockWebSocketDelegate : public WebSocket::Delegate {

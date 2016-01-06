@@ -22,7 +22,7 @@ class HttpServer {
    public:
     virtual void OnRequest(struct mg_connection * conn,
                            struct http_message * msg) = 0;
-    virtual void OnWebSocket(Connection::Ptr ws) = 0;
+    virtual void OnWebSocket(Connection::Ptr ws, const std::string & uri) = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -60,7 +60,8 @@ class HttpServer {
   std::atomic_bool stop_;
   std::atomic<Status> status_;
 
-  std::unordered_map<mg_connection*, Connection::Ptr> ws_list_;
+  std::unordered_map<struct mg_connection*, Connection::Ptr> ws_list_;
+  std::unordered_map<struct mg_connection*, std::string> ws_uri_list_;
 
   struct mg_mgr mgr_;
   struct mg_connection * conn_;

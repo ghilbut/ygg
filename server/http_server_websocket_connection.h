@@ -15,18 +15,15 @@ namespace server {
 
 class WebSocket : public Connection {
  public:
-  static Connection::Ptr New(struct mg_connection * conn,
-                             const std::string & uri);
+  static Connection::Ptr New(struct mg_connection * conn);
   ~WebSocket();
 
   virtual size_t SendText(const Text & text) const;
   virtual size_t SendBinary(const Bytes & bytes) const;
   virtual void Close();
 
-  const char * uri() const;
-
  private:
-  WebSocket(struct mg_connection * conn, const std::string & uri);
+  WebSocket(struct mg_connection * conn);
 
 
  private:

@@ -17,10 +17,9 @@ class NullWebSocketDelegate : public Connection::Delegate {
 static NullWebSocketDelegate kNullDelegate;
 
 
-Connection::Ptr WebSocket::New(struct mg_connection * conn,
-                               const std::string & uri) {
+Connection::Ptr WebSocket::New(struct mg_connection * conn) {
   assert(conn != nullptr);
-  return new WebSocket(conn, uri);
+  return new WebSocket(conn);
 }
 
 WebSocket::~WebSocket() {
@@ -41,12 +40,8 @@ void WebSocket::Close() {
   mg_send_websocket_frame(conn_, WEBSOCKET_OP_CLOSE, nullptr, 0);
 }
 
-const char * WebSocket::uri() const {
-  return uri_.c_str();
-}
-
-WebSocket::WebSocket(struct mg_connection * conn, const std::string & uri) 
-  : Connection(), conn_(conn), uri_(uri) {
+WebSocket::WebSocket(struct mg_connection * conn) 
+  : Connection(), conn_(conn) {
   // nothing
 }
 

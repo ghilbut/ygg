@@ -41,14 +41,14 @@ class HttpServerWebSocketTest
   virtual void OnRequest(struct mg_connection*, struct http_message*) {
     // nothing
   }
-  virtual void OnWebSocket(Connection::Ptr ws) {
-    on_server_websocket_(ws);
+  virtual void OnWebSocket(Connection::Ptr ws, const std::string & uri) {
+    on_server_websocket_(ws, uri);
   }
 
   // ::testing::Test
  protected:
   virtual void SetUp() {
-    on_server_websocket_ = [](Connection::Ptr) {};
+    on_server_websocket_ = [](Connection::Ptr, const std::string&) {};
     server_.Start();
 
     stop_ = false;
@@ -91,7 +91,7 @@ class HttpServerWebSocketTest
 
     client = mg_connect(&mgr_, kAddress, callback);
     mg_set_protocol_http_websocket(client);
-    mg_send_websocket_handshake(client, "/ws", NULL);
+    mg_send_websocket_handshake(client, kUri, NULL);
     {
       boost::chrono::seconds d(10);
       boost::mutex::scoped_lock lock(mutex);
@@ -181,7 +181,7 @@ class HttpServerWebSocketTest
 
  protected:
   HttpServer server_;
-  std::function<void (Connection::Ptr)> on_server_websocket_;
+  std::function<void (Connection::Ptr, const std::string&)> on_server_websocket_;
 
   struct mg_mgr mgr_;
   std::atomic_bool stop_;
@@ -202,13 +202,14 @@ class MockWebSocketDelegate : public WebSocket::Delegate {
 };
 
 
-TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
+TEST_F(HttpServerWebSocketTest, websocket_connect_and_close) {
 
   Connection::Ptr target;
 
   // callback when websocket connected on server side.
-  on_server_websocket_ = [&](Connection::Ptr ws) {
+  on_server_websocket_ = [&](Connection::Ptr ws, const std::string & uri) {
       ASSERT_NE(nullptr, ws);
+      ASSERT_EQ(kUri, uri);
       target = ws;
     };
 
@@ -246,12 +247,11 @@ TEST_F(HttpServerWebSocketTest, test_websocket_connect_and_close) {
 }
 
 
-TEST_F(HttpServerWebSocketTest, test_recv_text) {
+TEST_F(HttpServerWebSocketTest, recv_text) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&](Connection::Ptr ws) {
-      ASSERT_NE(nullptr, ws);
+  on_server_websocket_ = [&](Connection::Ptr ws, const std::string & uri) {
       target = ws;
     };
 
@@ -287,12 +287,11 @@ TEST_F(HttpServerWebSocketTest, test_recv_text) {
 }
 
 
-TEST_F(HttpServerWebSocketTest, test_send_text) {
+TEST_F(HttpServerWebSocketTest, send_text) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&](Connection::Ptr ws) {
-      ASSERT_NE(nullptr, ws);
+  on_server_websocket_ = [&](Connection::Ptr ws, const std::string & uri) {
       target = ws;
     };
 
@@ -325,12 +324,11 @@ TEST_F(HttpServerWebSocketTest, test_send_text) {
 }
 
 
-TEST_F(HttpServerWebSocketTest, test_recv_binary) {
+TEST_F(HttpServerWebSocketTest, recv_binary) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&](Connection::Ptr ws) {
-      ASSERT_NE(nullptr, ws);
+  on_server_websocket_ = [&](Connection::Ptr ws, const std::string & uri) {
       target = ws;
     };
 
@@ -366,12 +364,11 @@ TEST_F(HttpServerWebSocketTest, test_recv_binary) {
 }
 
 
-TEST_F(HttpServerWebSocketTest, test_send_binary) {
+TEST_F(HttpServerWebSocketTest, send_binary) {
 
   Connection::Ptr target;
 
-  on_server_websocket_ = [&](Connection::Ptr ws) {
-      ASSERT_NE(nullptr, ws);
+  on_server_websocket_ = [&](Connection::Ptr ws, const std::string & uri) {
       target = ws;
     };
 
