@@ -5,7 +5,7 @@ namespace ygg {
 namespace server {
 
 
-static bool is_websocket(const struct mg_connection * conn) {
+static bool IsWebsocket(const struct mg_connection * const conn) {
   return ((conn->flags & MG_F_IS_WEBSOCKET) == MG_F_IS_WEBSOCKET);
 }
 
@@ -123,7 +123,7 @@ void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
       }
       break;
     case MG_EV_CLOSE:
-      if (is_websocket(conn)) {
+      if (IsWebsocket(conn)) {
         assert(ws_list_.find(conn) != ws_list_.end());
         auto ws = ws_list_[conn];
         ws->FireOnClosedEvent();
