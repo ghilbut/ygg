@@ -47,7 +47,6 @@ class HttpServer {
 
 
  private:
-  void polling();
   void DoHandle(struct mg_connection * conn, int event, void * data);
   static void ev_handler(struct mg_connection * conn,
                          int event,

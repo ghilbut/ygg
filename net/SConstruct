@@ -35,7 +35,7 @@ env.Alias('install', '../lib')
 
 
 # build and run unittest
-print '    ======== build core unittest'
+print '    ======== build net unittest'
 
 sources = [
     '../ext/src/gmock_main.cc',
@@ -68,7 +68,7 @@ test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 # run after build complete
-print '    ======== run server unittest'
+print '    ======== run net unittest'
 
 Command(
   'unittest', 

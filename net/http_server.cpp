@@ -42,8 +42,23 @@ bool HttpServer::Start() {
   conn_ = mg_bind(&mgr_, "8000", ev_handler);
   mg_set_protocol_http_websocket(conn_);
 
-  auto b = boost::bind(&HttpServer::polling, this);
-  boost::thread t(b);
+  boost::thread t([this]() {
+      mutex_.lock();
+      status_ = kRunning;
+      running_cond_.notify_all();
+      mutex_.unlock();
+
+      while (!stop_) {
+        mg_mgr_poll(&mgr_, 1000);
+      }
+
+      mg_mgr_free(&mgr_);
+
+      mutex_.lock();
+      status_ = kStopped;
+      stopped_cond_.notify_all();
+      mutex_.unlock();
+    });
   thread_.swap(t);
 
   boost::mutex::scoped_lock lock(mutex_);
@@ -59,24 +74,6 @@ void HttpServer::Stop() {
   stop_ = true;
 
   thread_.join();
-}
-
-void HttpServer::polling() {
-  mutex_.lock();
-  status_ = kRunning;
-  running_cond_.notify_all();
-  mutex_.unlock();
-
-  while (!stop_) {
-    mg_mgr_poll(&mgr_, 1000);
-  }
-
-  mg_mgr_free(&mgr_);
-
-  mutex_.lock();
-  status_ = kStopped;
-  stopped_cond_.notify_all();
-  mutex_.unlock();
 }
 
 void HttpServer::DoHandle(struct mg_connection * conn, int event, void * data) {
