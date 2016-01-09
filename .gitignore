@@ -262,4 +262,5 @@ ext/
 
 # scons
 .sconsign.dblite
+unittest
 test

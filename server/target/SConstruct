@@ -6,13 +6,6 @@ import sys
 os.system('clear' if os.name is 'posix' else 'CLS')
 
 BASEPATH = Dir('.').abspath
-ROOTPATH = os.path.join(BASEPATH, '../..')
-ROOTPATH = os.path.abspath(ROOTPATH)
-#TESTPATH = os.path.join(BASEPATH, '../test')
-#TESTPATH = os.path.abspath(TESTPATH)
-
-sys.path.append(os.path.join(ROOTPATH, 'build/scons'))
-import utils
 
 print '-----------------------------------------------------------------'
 print '[YGG]  build ygg target server library and run test,'
@@ -21,17 +14,13 @@ print '-----------------------------------------------------------------'
 
 
 
-# build core library
+# build target server library
 print '    ======== build target server library'
 
 CPPPATH = [
     '../../ext/include',
     '../../',
   ]
-
-env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
-
-
 
 sources = [
     '../../ext/src/gmock_main.cc',
@@ -42,14 +31,16 @@ sources = [
     'target_ready.cpp',
   ]
 
-env.StaticLibrary(target='targets', source=sources)
+env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
+lib = env.StaticLibrary(target='targets', source=sources)
+env.Install('../../lib', lib)
+env.Alias('install', '../lib')
 
 
 
 # build and run unittest
 print '    ======== build target server unittest'
 
-# core
 sources = [
     '../../test/fake.cpp',
     '../../test/vars.cpp',

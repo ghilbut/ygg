@@ -1,16 +1,34 @@
-#ifndef YGG_SERVER_TARGET_PROXY_SERVER_H_
-#define YGG_SERVER_TARGET_PROXY_SERVER_H_
+#ifndef SERVER_TARGET_PROXY_SERVER_H_
+#define SERVER_TARGET_PROXY_SERVER_H_
+
+#include "net/http_server.h"
+#include "target/manager.h"
+
+
+using namespace ygg::net;
+using namespace ygg::server::target;
 
 
 namespace ygg {
 namespace server {
 
 
-class TargetProxyServer {
-public:
+class TargetProxyServer : public HttpServer::Delegate {
+ public:
+  TargetProxyServer();
+  ~TargetProxyServer();
+
+  void Start();
+  void Stop();
+
+  virtual void OnRequest(struct mg_connection * conn,
+                         struct http_message * msg);
+  virtual void OnWebSocket(Connection::Ptr ws, const std::string & uri);
 
 
-private:
+ private:
+  HttpServer server_;
+  Manager manager_;
 };
 
 
@@ -18,4 +36,4 @@ private:
 }  // namespace ygg
 
 
-#endif  // YGG_SERVER_TARGET_PROXY_SERVER_H_
+#endif  // SERVER_TARGET_PROXY_SERVER_H_

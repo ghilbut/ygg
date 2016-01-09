@@ -1,8 +1,11 @@
 #include <gmock/gmock.h>
 #include "target_proxy_server.h"
+#include "test/http_client.h"
+#include "test/vars.h"
 #include <mongoose/mongoose.h>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
+#include <atomic>
 
 
 namespace ygg {
@@ -10,66 +13,67 @@ namespace server {
 
 
 class TargetProxyServerTest : public ::testing::Test {
-public:
+ protected:
     void SetUp() {
-
-        mg_mgr_init(&mgr_, NULL);
-        nc_ = mg_bind(&mgr_, "8000", ev_handler);
-        mg_set_protocol_http_websocket(nc_);
-
-        stop_ = false;
-        auto p = boost::bind(&TargetProxyServerTest::polling, this);
-        boost::thread t(p);
-        thread_.swap(t);
-
-        starting_ = false;
-        boost::mutex::scoped_lock lock(mutex_);
-        while (!starting_) {
-            cond_.wait(lock);
-        }
     }
 
     void TearDown() {
-        stop_ = true;
-        thread_.join();
-        mg_mgr_free(&mgr_);
     }
 
 
-private:
-    void polling() {
+ protected:
+  TestHttpClient client_;
 
-        mutex_.lock();
-        starting_ = true;
-        cond_.notify_all();
-        mutex_.unlock();
-
-        while (!stop_) {
-            mg_mgr_poll(&mgr_, 1000);
-        }
-    }
-
-    static void ev_handler(struct mg_connection *nc, int ev, void *p) {
-        if (ev == MG_EV_HTTP_REQUEST) {
-        }
-    }
-
-protected:
-
-private:
-    struct mg_mgr mgr_;
-    struct mg_connection * nc_;
-
-    boost::thread thread_;
-    boost::mutex mutex_;
-    boost::condition_variable cond_;
-    bool starting_;
-
-    std::atomic_bool stop_;
+ private:
 };
 
 
 TEST_F(TargetProxyServerTest, test) {
+
+  TargetProxyServer server;
+  server.Start();
+
+  struct mg_connection * ctrl = client_.Connect("127.0.0.1:8000", "/ctrl");
+  struct mg_connection * target = client_.Connect("127.0.0.1:8000", "/target");
+  ASSERT_NE(nullptr, ctrl);
+  ASSERT_NE(nullptr, target);
+
+  boost::mutex mutex;
+  boost::condition_variable cond;
+
+  client_.on_text_ = [&](struct mg_connection * conn, const std::string & text) {
+      ASSERT_EQ("A", text);
+      boost::mutex::scoped_lock lock(mutex);
+      cond.notify_one();
+    };
+
+  client_.SendText(target, test::GetTargetJson("B"));
+  {
+    const boost::chrono::seconds d(5);
+    boost::mutex::scoped_lock lock(mutex);
+    cond.wait_for(lock, d);
+  }
+  client_.SendText(ctrl, test::GetCtrlJson("A", "B"));
+  {
+    const boost::chrono::seconds d(5);
+    boost::mutex::scoped_lock lock(mutex);
+    cond.wait_for(lock, d);
+  }
+  client_.SendText(target, "A");
+
+  {
+    const boost::chrono::seconds d(10);
+    boost::mutex::scoped_lock lock(mutex);
+    const auto timeout = cond.wait_for(lock, d);
+    ASSERT_EQ(boost::cv_status::no_timeout, timeout);
+  }
+
+  client_.on_text_ = [](struct mg_connection*, const std::string&) {};
+  
+  client_.Close(ctrl);
+  client_.Close(target);
+
+  server.Stop();
 }
 
 

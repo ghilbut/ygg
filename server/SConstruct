@@ -23,8 +23,6 @@ CPPPATH = [
   ]
 
 sources = [
-    'http_server.cpp',
-    'http_server_websocket_connection.cpp',
     'target_proxy_server.cpp',
   ]
 
@@ -35,15 +33,28 @@ env.Alias('install', '../lib')
 
 
 
+# build unittest library
+print '    ======== build server unittest library'
+
+sources = [
+    '../test/fake.cpp',
+    '../test/vars.cpp',
+    'test/http_client.cpp',
+    #'target_proxy_server_test.cpp',
+  ]
+
+lib = env.StaticLibrary(target='server_test', source=sources)
+env.Install('../lib/test', lib)
+env.Alias('install', '../lib/test')
+
+
+
 # build and run unittest
-print '    ======== build core unittest'
+print '    ======== build server unittest'
 
 sources = [
     '../ext/src/gmock_main.cc',
-    '../test/fake.cpp',
-    '../test/vars.cpp',
-    'http_server_test.cpp',
-    'http_server_websocket_connection_test.cpp',
+    'test/http_client_test.cpp',
     'target_proxy_server_test.cpp',
   ]
 
@@ -55,17 +66,21 @@ LIBS = [
     'mongoose',
     'gtest', 
     'core',
+    'net',
     'server',
+    'server_test',
+    'targets',
   ]
 
 LIBPATH = [
     '../ext/lib',
     '../lib',
+    '../lib/test',
   ]
 
 if os.name == 'posix':
   env.Append(LINKFLAGS=['-pthread'])
-test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
+test = env.Program(target='unittest', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 
@@ -73,7 +88,7 @@ test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 print '    ======== run server unittest'
 
 Command(
-  'unittest', 
+  'server_unittest', 
   test, 
   lambda env, target, source: os.system(source[0].abspath))
 
