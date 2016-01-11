@@ -31,6 +31,7 @@ sources = [
     'local_connection.cpp',
     'object.cpp',
     'target_desc.cpp',
+    'target_proxy.cpp',
   ]
 
 lib = env.StaticLibrary(target='core', source=sources)
@@ -50,8 +51,9 @@ sources = [
     'connection_test.cpp',
     'ctrl_desc_test.cpp',
     'object_test.cpp',
-    'proxy_test.cpp',
+    #'proxy_test.cpp',
     'target_desc_test.cpp',
+    'target_proxy_test.cpp',
   ]
 
 LIBS = [

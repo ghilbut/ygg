@@ -15,10 +15,6 @@ TEST(MockTest, test_lifcyclemock) {
     mock.destructed();
 }
 
-TEST(MockTest, test) {
-
-}
-
 
 }  // namespace test
 }  // namespace ygg

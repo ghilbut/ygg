@@ -35,7 +35,18 @@ private:
         : Object(), json(json) {}
 };
 
-typedef Proxy<TestDesc> TestProxy;
+//typedef Proxy<TestDesc> TestProxy;
+class TestProxy : public Proxy<TestProxy, TestDesc> {
+ public:
+  TestProxy(Connection::Ptr & conn, const TestDesc::Ptr &  desc)
+    : Proxy(conn, desc) {
+  }
+
+ private:
+  virtual std::string GetAck() {
+    return "ack";
+  }
+};
 
 
 
@@ -85,6 +96,10 @@ public:
 TEST_F(ProxyTest, return_object_with_connection_and_desc) {
 
     Connection::Ptr conn(FakeConnection::New());
+
+    ConnectionDelegateMock conn_mock;
+    conn->BindDelegate(&conn_mock);
+
     TestDesc::Ptr desc(TestDesc::New(kCtrlJson));
     typename TestProxy::Ptr proxy(TestProxy::New(conn, desc));
 

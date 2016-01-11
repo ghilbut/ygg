@@ -2,26 +2,27 @@
 #define YGG_CORE_PROXY_H_
 
 #include "connection.h"
+#include <string>
 
 
 namespace ygg {
 
 
-template<class DescT>
+template<class Base, class DescT>
 class Proxy
     : public Object
     , public Connection::Delegate {
 
 public:
-    typedef boost::intrusive_ptr<Proxy> Ptr;
-    typedef BaseDelegate<Proxy> Delegate;
+    typedef boost::intrusive_ptr<Base> Ptr;
+    typedef BaseDelegate<Base> Delegate;
 
 public:
-    static typename Proxy::Ptr
+    static Ptr
     New(Connection::Ptr & conn, const typename DescT::Ptr & desc) {
         assert(conn != nullptr);
         assert(desc != nullptr);
-        return new Proxy(conn, desc);
+        return new Base(conn, desc);
     }
 
     virtual ~Proxy() {
@@ -64,7 +65,7 @@ public:
         assert(conn == conn_);
 
         if (delegate_ != nullptr) {
-            delegate_->OnText(this, text);
+            delegate_->OnText((Base*)this, text);
         }
     }
 
@@ -73,7 +74,7 @@ public:
         assert(conn == conn_);
         
         if (delegate_ != nullptr) {
-            delegate_->OnBinary(this, bytes);
+            delegate_->OnBinary((Base*)this, bytes);
         }
     }
 
@@ -85,11 +86,15 @@ public:
         conn_ = nullptr;
 
         if (delegate_ != nullptr) {
-            delegate_->OnClosed(this);
+            delegate_->OnClosed((Base*)this);
         }
     }
 
 private:
+    virtual std::string GetAck() = 0;
+
+//private:
+ protected:
     Proxy(Connection::Ptr & conn, const typename DescT::Ptr &  desc)
         : Object()
         , delegate_(nullptr)
@@ -99,15 +104,17 @@ private:
             assert(conn_ != nullptr);
             assert(desc_ != nullptr);
             conn_->BindDelegate(this);
+
+            conn_->SendText(GetAck());
         }
 
 
 private:
     class NullDelegate : public Delegate {
     public:
-        virtual void OnText(Proxy*, const Text&) {}
-        virtual void OnBinary(Proxy*, const Bytes&) {}
-        virtual void OnClosed(Proxy*) {}
+        virtual void OnText(Base*, const Text&) {}
+        virtual void OnBinary(Base*, const Bytes&) {}
+        virtual void OnClosed(Base*) {}
     };
 
     static NullDelegate kNullDelegate;
