@@ -101,8 +101,6 @@ TEST_F(TargetProxyTest, send_text) {
 
   target->SendText(expected);
   proxy->Close();
-
-  // foo();  // to test for check call stack
 }
 
 TEST_F(TargetProxyTest, recv_text) {
