@@ -4,6 +4,7 @@
 #include "test/fake.h"
 #include "test/mock.h"
 #include "test/vars.h"
+#include <json/json.h>
 
 
 using ::testing::_;
@@ -14,7 +15,6 @@ using namespace ygg::test;
 
 namespace ygg {
 
-
 static const std::string kCtrlJson(GetCtrlJson("A", "B"));
 static const std::string kTargetJson(GetTargetJson("B"));
 
@@ -22,21 +22,26 @@ static const std::string kTargetJson(GetTargetJson("B"));
 class TargetProxyTest : public ::testing::Test {
  protected:
   virtual void SetUp() {
-  text_ = GetRandomString();
-  bytes_ = GetRandomBytes();
+    id_ = GetRandomString();
+    endpoint_ = GetRandomString();
+    ctrl_json_ = GetCtrlJson(id_, endpoint_);
+    target_json_ = GetTargetJson(endpoint_);
   }
 
   virtual void TearDown() {
+    // nothing
   }
 
  protected:
-  std::string text_;
-  std::vector<uint8_t> bytes_;
+  std::string id_;
+  std::string endpoint_;
+  std::string ctrl_json_;
+  std::string target_json_;
 };
 
 
 
-class DelegateMock : public TargetProxy::Delegate {
+class MockTargetProxyDelegate : public TargetProxy::Delegate {
  public:
   MOCK_METHOD2(OnText, void(TargetProxy*, const Text&));
   MOCK_METHOD2(OnBinary, void(TargetProxy*, const Bytes&));
@@ -47,37 +52,56 @@ class DelegateMock : public TargetProxy::Delegate {
 
 TEST_F(TargetProxyTest, return_object_with_connection_and_desc) {
 
-//  Connection::Ptr conn(FakeConnection::New());
   Connection::Ptr conn(LocalConnection::New());
 
-  ConnectionDelegateMock conn_mock;
-  conn->BindDelegate(&conn_mock);
-
-  TargetDesc::Ptr desc(TargetDesc::New(kCtrlJson));
+  TargetDesc::Ptr desc(TargetDesc::New(target_json_));
   TargetProxy::Ptr proxy(TargetProxy::New(conn, desc));
 
   ASSERT_NE(nullptr, proxy);
-  ASSERT_EQ(kCtrlJson, (proxy->desc()).json);
+  ASSERT_EQ(target_json_, (proxy->desc()).json);
+}
 
-  conn->UnbindDelegate();
+MATCHER_P(IsAck, expected, "XXXXXX") {
+  Json::Value root;
+  Json::Reader reader;
+  if (!reader.parse(arg, root)) {
+    return false;
+  }
+  if (!root["endpoint"].isString()) {
+    return false;
+  }
+  return expected == root["endpoint"].asString();
+};
+
+TEST_F(TargetProxyTest, ack) {
+
+  auto target(LocalConnection::New());
+  auto other(reinterpret_cast<LocalConnection*>(target.get())->other());
+
+  ConnectionDelegateMock mock;
+  EXPECT_CALL(mock, OnText(target.get(), IsAck(endpoint_)));
+  target->BindDelegate(&mock);
+
+  auto desc(TargetDesc::New(target_json_));
+  auto proxy(TargetProxy::New(other, desc));
 }
 
 TEST_F(TargetProxyTest, send_text) {
 
-  const Text kExpected(text_);
+  const auto expected(GetRandomString());
 
-  Connection::Ptr user_conn(LocalConnection::New());
-  Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+  auto target(LocalConnection::New());
+  auto other(reinterpret_cast<LocalConnection*>(target.get())->other());
 
-  TargetDesc::Ptr desc(TargetDesc::New(kCtrlJson));
-  TargetProxy::Ptr proxy(TargetProxy::New(proxy_conn, desc));
+  auto desc(TargetDesc::New(target_json_));
+  auto proxy(TargetProxy::New(other, desc));
 
-  DelegateMock mock;
-  EXPECT_CALL(mock, OnText(proxy.get(), kExpected));
+  MockTargetProxyDelegate mock;
+  EXPECT_CALL(mock, OnText(proxy.get(), expected));
   EXPECT_CALL(mock, OnClosed(proxy.get()));
   proxy->BindDelegate(&mock);
 
-  user_conn->SendText(text_);
+  target->SendText(expected);
   proxy->Close();
 
   // foo();  // to test for check call stack
@@ -85,58 +109,58 @@ TEST_F(TargetProxyTest, send_text) {
 
 TEST_F(TargetProxyTest, recv_text) {
 
-  const Text kExpected(text_);
+  const auto expected(GetRandomString());
 
-  Connection::Ptr user_conn(LocalConnection::New());
-  Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+  auto target(LocalConnection::New());
+  auto other(reinterpret_cast<LocalConnection*>(target.get())->other());
 
-  TargetDesc::Ptr desc(TargetDesc::New(kCtrlJson));
-  TargetProxy::Ptr proxy(TargetProxy::New(proxy_conn, desc));
+  auto desc(TargetDesc::New(target_json_));
+  auto proxy(TargetProxy::New(other, desc));
 
   ConnectionDelegateMock mock;
-  EXPECT_CALL(mock, OnText(user_conn.get(), kExpected));
-  EXPECT_CALL(mock, OnClosed(user_conn.get()));
-  user_conn->BindDelegate(&mock);
+  EXPECT_CALL(mock, OnText(target.get(), expected));
+  EXPECT_CALL(mock, OnClosed(target.get()));
+  target->BindDelegate(&mock);
 
-  proxy->SendText(text_);
+  proxy->SendText(expected);
   proxy->Close();
 }
 
 TEST_F(TargetProxyTest, send_binary) {
 
-  const Bytes kExpected(bytes_);
+  const auto expected(GetRandomBytes());
 
-  Connection::Ptr user_conn(LocalConnection::New());
-  Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+  auto target(LocalConnection::New());
+  auto other(reinterpret_cast<LocalConnection*>(target.get())->other());
 
-  TargetDesc::Ptr desc(TargetDesc::New(kCtrlJson));
-  TargetProxy::Ptr proxy(TargetProxy::New(proxy_conn, desc));
+  auto desc(TargetDesc::New(target_json_));
+  auto proxy(TargetProxy::New(other, desc));
 
-  DelegateMock mock;
-  EXPECT_CALL(mock, OnBinary(proxy.get(), kExpected));
+  MockTargetProxyDelegate mock;
+  EXPECT_CALL(mock, OnBinary(proxy.get(), expected));
   EXPECT_CALL(mock, OnClosed(proxy.get()));
   proxy->BindDelegate(&mock);
 
-  user_conn->SendBinary(bytes_);
+  target->SendBinary(expected);
   proxy->Close();
 }
 
 TEST_F(TargetProxyTest, recv_binary) {
 
-  const Bytes kExpected(bytes_);
+  const auto expected(GetRandomBytes());
 
-  Connection::Ptr user_conn(LocalConnection::New());
-  Connection::Ptr proxy_conn(((LocalConnection*)user_conn.get())->other());
+  auto target(LocalConnection::New());
+  auto other(reinterpret_cast<LocalConnection*>(target.get())->other());
 
-  TargetDesc::Ptr desc(TargetDesc::New(kCtrlJson));
-  TargetProxy::Ptr proxy(TargetProxy::New(proxy_conn, desc));
+  auto desc(TargetDesc::New(target_json_));
+  auto proxy(TargetProxy::New(other, desc));
 
   ConnectionDelegateMock mock;
-  EXPECT_CALL(mock, OnBinary(user_conn.get(), kExpected));
-  EXPECT_CALL(mock, OnClosed(user_conn.get()));
-  user_conn->BindDelegate(&mock);
+  EXPECT_CALL(mock, OnBinary(target.get(), expected));
+  EXPECT_CALL(mock, OnClosed(target.get()));
+  target->BindDelegate(&mock);
 
-  proxy->SendBinary(bytes_);
+  proxy->SendBinary(expected);
   proxy->Close();
 }
 
