@@ -59,7 +59,7 @@ TEST_F(TargetProxyTest, return_object_with_connection_and_desc) {
   ASSERT_EQ(target_json_, (proxy->desc()).json);
 }
 
-MATCHER_P(IsAck, expected, "XXXXXX") {
+MATCHER_P(IsAck, expected, "is equal to " + expected) {
   Json::Value root;
   Json::Reader reader;
   if (!reader.parse(arg, root)) {
