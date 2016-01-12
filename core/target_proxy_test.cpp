@@ -10,13 +10,11 @@
 using ::testing::_;
 using ::testing::ElementsAreArray;
 
-using namespace ygg::test;
-
 
 namespace ygg {
 
-static const std::string kCtrlJson(GetCtrlJson("A", "B"));
-static const std::string kTargetJson(GetTargetJson("B"));
+
+using namespace test;
 
 
 class TargetProxyTest : public ::testing::Test {
