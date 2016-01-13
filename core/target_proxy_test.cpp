@@ -38,7 +38,6 @@ class TargetProxyTest : public ::testing::Test {
 };
 
 
-
 class MockTargetProxyDelegate : public TargetProxy::Delegate {
  public:
   MOCK_METHOD2(OnText, void(TargetProxy*, const Text&));
@@ -59,6 +58,7 @@ TEST_F(TargetProxyTest, return_object_with_connection_and_desc) {
   ASSERT_EQ(target_json_, (proxy->desc()).json);
 }
 
+
 MATCHER_P(IsAck, expected, "is equal to " + expected) {
   Json::Value root;
   Json::Reader reader;
@@ -70,6 +70,7 @@ MATCHER_P(IsAck, expected, "is equal to " + expected) {
   }
   return expected == root["endpoint"].asString();
 };
+
 
 TEST_F(TargetProxyTest, ack) {
 
@@ -83,6 +84,7 @@ TEST_F(TargetProxyTest, ack) {
   auto desc(TargetDesc::New(target_json_));
   auto proxy(TargetProxy::New(other, desc));
 }
+
 
 TEST_F(TargetProxyTest, send_text) {
 
@@ -103,6 +105,7 @@ TEST_F(TargetProxyTest, send_text) {
   proxy->Close();
 }
 
+
 TEST_F(TargetProxyTest, recv_text) {
 
   const auto expected(GetRandomString());
@@ -122,6 +125,7 @@ TEST_F(TargetProxyTest, recv_text) {
   proxy->Close();
 }
 
+
 TEST_F(TargetProxyTest, send_binary) {
 
   const auto expected(GetRandomBytes());
@@ -140,6 +144,7 @@ TEST_F(TargetProxyTest, send_binary) {
   target->SendBinary(expected);
   proxy->Close();
 }
+
 
 TEST_F(TargetProxyTest, recv_binary) {
 
