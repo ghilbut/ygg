@@ -28,6 +28,7 @@ env = Environment(CPPPATH=CPPPATH, CXXFLAGS=['-std=c++11', '-g', '-rdynamic'])
 sources = [
     'connection.cpp',
     'ctrl_desc.cpp',
+    'ctrl_proxy.cpp',
     'local_connection.cpp',
     'object.cpp',
     'target_desc.cpp',
@@ -50,6 +51,7 @@ sources = [
     '../test/vars.cpp',  # this should be seperated library
     'connection_test.cpp',
     'ctrl_desc_test.cpp',
+    'ctrl_proxy_test.cpp',
     'object_test.cpp',
     #'proxy_test.cpp',
     'target_desc_test.cpp',
