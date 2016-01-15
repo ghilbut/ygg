@@ -1,9 +1,10 @@
 #include <gmock/gmock.h>
 #include "base_context.h"
 #include "core/ctrl_desc.h"
+#include "core/ctrl_proxy.h"
 #include "core/local_connection.h"
-#include "core/proxy.h"
 #include "core/target_desc.h"
+#include "core/target_proxy.h"
 #include "test/mock.h"
 #include "test/vars.h"
 #include <vector>

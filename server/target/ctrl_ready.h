@@ -3,17 +3,14 @@
 
 #include "core/connection.h"
 #include "core/ctrl_desc.h"
+#include "core/ctrl_proxy.h"
 #include "core/object.h"
-#include "core/proxy.h"
 #include <unordered_set>
 
 
 namespace ygg {
 namespace server {
 namespace target {
-
-
-typedef Proxy<CtrlDesc> CtrlProxy;
 
 
 class CtrlReady : public Connection::Delegate {

@@ -2,19 +2,14 @@
 #define YGG_SERVER_TARGET_BASE_CONTEXT_H_
 
 #include "core/ctrl_desc.h"
+#include "core/ctrl_proxy.h"
 #include "core/target_desc.h"
-#include "core/proxy.h"
+#include "core/target_proxy.h"
 #include <boost/intrusive_ptr.hpp>
 #include <unordered_set>
 
 
 namespace ygg {
-
-
-typedef Proxy<CtrlDesc> CtrlProxy;
-typedef Proxy<TargetDesc> TargetProxy;
-
-
 namespace server {
 namespace target {
 

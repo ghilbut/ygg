@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include "target_ready.h"
 #include "core/local_connection.h"
+#include "core/test/mock_connection_delegate.h"
 #include "test/mock.h"
 #include "test/vars.h"
 #include <json/json.h>
@@ -33,6 +34,12 @@ protected:
 };
 
 
+class MockTargetReadyDelegate : public TargetReady::Delegate {
+ public:
+  MOCK_METHOD1(OnProxy, void (TargetProxy::Ptr&));
+};
+
+
 class NullTargetReadyDelegate : public TargetReady::Delegate {
 public:
     void OnProxy(TargetProxy::Ptr&) {};
@@ -44,7 +51,7 @@ TEST_F(TargetReadyTest, close_connection_when_invalid_json_is_injected) {
     Connection::Ptr target_conn(LocalConnection::New());
     Connection::Ptr proxy_conn(((LocalConnection*)target_conn.get())->other());
 
-    test::ConnectionDelegateMock mock;
+    test::MockConnectionDelegate mock;
     EXPECT_CALL(mock, OnClosed(target_conn.get()));
     target_conn->BindDelegate(&mock);
 
@@ -64,7 +71,7 @@ TEST_F(TargetReadyTest, pass_proxy_when_get_valid_json_from_connection) {
     Connection::Ptr target_conn(LocalConnection::New());
     Connection::Ptr proxy_conn(((LocalConnection*)target_conn.get())->other());
 
-    test::MockTargetReadyDelegate mock;
+    MockTargetReadyDelegate mock;
     EXPECT_CALL(mock, OnProxy(_));
 
     TargetReady ready(&mock);

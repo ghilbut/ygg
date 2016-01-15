@@ -53,7 +53,6 @@ sources = [
     'ctrl_desc_test.cpp',
     'ctrl_proxy_test.cpp',
     'object_test.cpp',
-    #'proxy_test.cpp',
     'target_desc_test.cpp',
     'target_proxy_test.cpp',
   ]
@@ -71,7 +70,7 @@ LIBPATH = [
 
 if os.name == 'posix':
   env.Append(LINKFLAGS=['-pthread'])
-test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
+test = env.Program(target='unittest', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 
@@ -79,7 +78,7 @@ test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 print '    ======== run core unittest'
 
 Command(
-  'unittest', 
+  'core_unittest', 
   test, 
   lambda env, target, source: os.system(source[0].abspath))
 

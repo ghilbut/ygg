@@ -3,17 +3,14 @@
 
 #include "core/connection.h"
 #include "core/object.h"
-#include "core/proxy.h"
 #include "core/target_desc.h"
+#include "core/target_proxy.h"
 #include <unordered_set>
 
 
 namespace ygg {
 namespace server {
 namespace target {
-
-
-typedef Proxy<TargetDesc> TargetProxy;
 
 
 class TargetReady : public Connection::Delegate {

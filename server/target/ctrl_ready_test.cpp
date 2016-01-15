@@ -2,6 +2,7 @@
 #include "ctrl_ready.h"
 #include "core/local_connection.h"
 #include "test/mock.h"
+#include "test/vars.h"
 #include <json/json.h>
 #include <string>
 
@@ -14,21 +15,10 @@ namespace server {
 namespace target {
 
 
-static std::string GetCtrlJson() {
-
-    Json::Value root(Json::objectValue);
-    root["user"] = "A";
-    root["endpoint"] = "B";
-
-    Json::FastWriter w;
-    return w.write(root);
-}
-
-
 class CtrlReadyTest : public ::testing::Test {
 public:
     CtrlReadyTest()
-        : kCtrlJson_(GetCtrlJson()) {
+        : kCtrlJson_(test::GetCtrlJson("A", "B")) {
         // nothing
     }
 
@@ -40,6 +30,12 @@ public:
 
 protected:
     const std::string kCtrlJson_;
+};
+
+
+class MockCtrlReadyDelegate : public CtrlReady::Delegate {
+ public:
+  MOCK_METHOD1(OnProxy, void (CtrlProxy::Ptr&));
 };
 
 
@@ -74,7 +70,7 @@ TEST_F(CtrlReadyTest, pass_proxy_when_get_valid_json_from_connection) {
     Connection::Ptr ctrl_conn(LocalConnection::New());
     Connection::Ptr proxy_conn(((LocalConnection*)ctrl_conn.get())->other());
 
-    test::MockCtrlReadyDelegate mock;
+    MockCtrlReadyDelegate mock;
     EXPECT_CALL(mock, OnProxy(_));
 
     CtrlReady ready(&mock);

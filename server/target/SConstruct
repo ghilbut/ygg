@@ -68,7 +68,7 @@ LIBPATH = [
 
 if os.name == 'posix':
   env.Append(LINKFLAGS=['-pthread'])
-test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
+test = env.Program(target='unittest', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 
 
 
@@ -76,7 +76,7 @@ test = env.Program(target='test', source=sources, LIBS=LIBS, LIBPATH=LIBPATH)
 print '    ======== run target server unittest'
 
 Command(
-  'unittest', 
+  'target_server_unittest', 
   test, 
   lambda env, target, source: os.system(source[0].abspath))
 
