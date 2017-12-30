@@ -1,0 +1,53 @@
+#-*- coding:utf-8 -*-
+
+import os
+import subprocess
+import sys
+
+BASEDIR = Dir('.').abspath
+VERSION = 'jsoncpp-1.8.4'
+
+HEADER_DIR = os.path.join(BASEDIR, VERSION, 'include')
+SOURCE_DIR = os.path.join(BASEDIR, VERSION, 'src/lib_json')
+INCLUDE_DIR = os.path.abspath(os.path.join(BASEDIR, '../include'))
+LIBRARY_DIR = os.path.abspath(os.path.join(BASEDIR, '../lib'))
+
+
+
+################################################################
+##  set environment and get build options
+################################################################
+
+env = Environment(CPPPATH=[ HEADER_DIR ], CXXFLAGS='-std=c++14')
+
+target = os.path.join(BASEDIR, VERSION)
+if env.GetOption('clean'):
+  subprocess.call([ 'rm', '-rf', target ])
+else:
+  if not os.path.exists(target):
+    subprocess.call([ 'tar', '-xzf', target + '.tar.gz', '-C', BASEDIR ])
+if not os.path.exists(LIBRARY_DIR):
+  os.mkdir(LIBRARY_DIR)
+
+
+
+################################################################
+##  build static library
+################################################################
+
+sources = [
+    os.path.join(SOURCE_DIR, 'json_value.cpp'),
+    os.path.join(SOURCE_DIR, 'json_reader.cpp'),
+    os.path.join(SOURCE_DIR, 'json_writer.cpp'),
+  ]
+
+# build static library
+lib = env.StaticLibrary(target='jsoncpp', source=sources)
+env.Install(INCLUDE_DIR, os.path.join(HEADER_DIR, 'json'))
+env.Install(LIBRARY_DIR, lib)
+env.Alias('install', INCLUDE_DIR)
+env.Alias('install', LIBRARY_DIR)
+Default('install')
+
+# "env.Alias('install', '../include')" remove only file, not directory.
+Clean(lib, os.path.join(INCLUDE_DIR, 'json'))

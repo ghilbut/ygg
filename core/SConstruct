@@ -17,7 +17,7 @@ print '-----------------------------------------------------------------'
 print '    ======== build core library'
 
 CPPPATH = [
-    '../ext/include',
+    '../third_party/include',
     '../',
   ]
 
@@ -46,7 +46,7 @@ print '    ======== build core unittest'
 
 # core
 sources = [
-    '../ext/src/gmock_main.cc',
+    '../third_party/src/gmock_main.cc',
     '../test/fake.cpp',  # this should be seperated library
     '../test/vars.cpp',  # this should be seperated library
     'connection_test.cpp',
@@ -64,7 +64,7 @@ LIBS = [
   ]
 
 LIBPATH = [
-    '../ext/lib',
+    '../third_party/lib',
     '../lib',
   ]
 
